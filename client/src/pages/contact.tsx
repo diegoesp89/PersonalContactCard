@@ -1,17 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  User, 
-  Download, 
-  Share2, 
-  MessageCircle, 
-  Phone, 
-  Mail, 
-  Instagram, 
+import {
+  User,
+  Download,
+  Share2,
+  MessageCircle,
+  Phone,
+  Mail,
+  Instagram,
   Globe,
   Building2,
-  ExternalLink
+  ExternalLink,
 } from "lucide-react";
 
 interface Contact {
@@ -40,17 +40,17 @@ export default function ContactPage() {
     try {
       const response = await fetch("/api/contact/vcard");
       if (!response.ok) throw new Error("Failed to generate vCard");
-      
+
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.download = 'contacto.vcf';
+      link.download = "contacto.vcf";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-      
+
       toast({
         title: "Contacto guardado",
         description: "El archivo de contacto se ha descargado exitosamente",
@@ -68,9 +68,9 @@ export default function ContactPage() {
     try {
       if (navigator.share) {
         await navigator.share({
-          title: 'Mi Tarjeta de Contacto',
-          text: 'Aquí tienes mi información de contacto',
-          url: window.location.href
+          title: "Mi Tarjeta de Contacto",
+          text: "Aquí tienes mi información de contacto",
+          url: window.location.href,
         });
       } else {
         await navigator.clipboard.writeText(window.location.href);
@@ -89,7 +89,7 @@ export default function ContactPage() {
   };
 
   const getWhatsAppUrl = (phone: string) => {
-    const cleanPhone = phone.replace(/\D/g, '');
+    const cleanPhone = phone.replace(/\D/g, "");
     return `https://wa.me/${cleanPhone}`;
   };
 
@@ -102,7 +102,7 @@ export default function ContactPage() {
   };
 
   const getInstagramUrl = (username: string) => {
-    const cleanUsername = username.replace('@', '');
+    const cleanUsername = username.replace("@", "");
     return `https://instagram.com/${cleanUsername}`;
   };
 
@@ -113,11 +113,12 @@ export default function ContactPage() {
         <div className="bg-amber-500/20 border-b border-amber-500/30 p-3">
           <div className="max-w-4xl mx-auto text-center">
             <p className="text-amber-200 text-sm font-medium">
-              ⚠️ Esta página está en desarrollo, estos datos podrían no ser correctos
+              ⚠️ Esta página está en desarrollo, estos datos podrían no ser
+              correctos
             </p>
           </div>
         </div>
-        
+
         <div className="flex-1 flex items-center justify-center p-4">
           <div className="glass-effect rounded-3xl p-8 w-full max-w-md">
             <div className="animate-pulse space-y-4">
@@ -138,11 +139,12 @@ export default function ContactPage() {
         <div className="bg-amber-500/20 border-b border-amber-500/30 p-3">
           <div className="max-w-4xl mx-auto text-center">
             <p className="text-amber-200 text-sm font-medium">
-              ⚠️ Esta página está en desarrollo, estos datos podrían no ser correctos
+              ⚠️ Esta página está en desarrollo, estos datos podrían no ser
+              correctos
             </p>
           </div>
         </div>
-        
+
         <div className="flex-1 flex items-center justify-center p-4">
           <div className="glass-effect rounded-3xl p-8 w-full max-w-md text-center">
             <p className="text-slate-400">
@@ -160,18 +162,23 @@ export default function ContactPage() {
       <div className="bg-amber-500/20 border-b border-amber-500/30 p-3">
         <div className="max-w-4xl mx-auto text-center">
           <p className="text-amber-200 text-sm font-medium">
-            ⚠️ Esta página está en desarrollo, estos datos podrían no ser correctos
+            ⚠️ Esta página está en desarrollo, estos datos podrían no ser
+            correctos
           </p>
         </div>
       </div>
-      
+
       <div className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-md">
           <div className="glass-effect rounded-3xl p-8 shadow-2xl">
             {/* Header with Profile */}
             <div className="text-center mb-8">
-              <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-violet-500 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg">
-                <User className="text-white text-3xl w-12 h-12" />
+              <div className="w-24 h-24 rounded-full mx-auto mb-4 shadow-lg overflow-hidden">
+                <img 
+                  src="/cas.jpg" 
+                  alt="Foto de perfil" 
+                  className="w-full h-full object-cover"
+                />
               </div>
               <h1 className="text-2xl font-bold text-slate-100 mb-2">
                 {contact.name}
@@ -181,14 +188,14 @@ export default function ContactPage() {
 
             {/* Action Buttons */}
             <div className="flex gap-3 mb-8">
-              <Button 
+              <Button
                 onClick={handleSaveContact}
                 className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:translate-y-[-2px] shadow-lg"
               >
                 <Download className="w-4 h-4 mr-2" />
                 Guardar Contacto
               </Button>
-              <Button 
+              <Button
                 onClick={handleShareContact}
                 className="flex-1 bg-gradient-to-r from-violet-500 to-violet-600 hover:from-violet-600 hover:to-violet-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:translate-y-[-2px] shadow-lg"
               >
@@ -199,11 +206,10 @@ export default function ContactPage() {
 
             {/* Contact Information */}
             <div className="space-y-4">
-              
               {/* WhatsApp */}
-              <a 
-                href={getWhatsAppUrl(contact.whatsapp)} 
-                target="_blank" 
+              <a
+                href={getWhatsAppUrl(contact.whatsapp)}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
               >
@@ -218,7 +224,7 @@ export default function ContactPage() {
               </a>
 
               {/* Phone */}
-              <a 
+              <a
                 href={getTelUrl(contact.phone)}
                 className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
               >
@@ -233,7 +239,7 @@ export default function ContactPage() {
               </a>
 
               {/* Email */}
-              <a 
+              <a
                 href={getEmailUrl(contact.email)}
                 className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
               >
@@ -248,9 +254,9 @@ export default function ContactPage() {
               </a>
 
               {/* Instagram */}
-              <a 
-                href={getInstagramUrl(contact.instagram)} 
-                target="_blank" 
+              <a
+                href={getInstagramUrl(contact.instagram)}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
               >
@@ -265,9 +271,9 @@ export default function ContactPage() {
               </a>
 
               {/* Website */}
-              <a 
-                href={contact.website} 
-                target="_blank" 
+              <a
+                href={contact.website}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
               >
@@ -276,11 +282,12 @@ export default function ContactPage() {
                 </div>
                 <div className="flex-1">
                   <h3 className="text-slate-100 font-semibold">Sitio Web</h3>
-                  <p className="text-slate-400 text-sm">{contact.website.replace('https://', '')}</p>
+                  <p className="text-slate-400 text-sm">
+                    {contact.website.replace("https://", "")}
+                  </p>
                 </div>
                 <ExternalLink className="text-slate-500 w-4 h-4" />
               </a>
-
             </div>
 
             {/* Bank Transfer Information */}
@@ -292,32 +299,43 @@ export default function ContactPage() {
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
                   <span className="text-slate-400">Banco:</span>
-                  <span className="text-slate-100 font-medium">{contact.bankName}</span>
+                  <span className="text-slate-100 font-medium">
+                    {contact.bankName}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Cuenta:</span>
-                  <span className="text-slate-100 font-medium font-mono">{contact.bankAccount}</span>
+                  <span className="text-slate-100 font-medium font-mono">
+                    {contact.bankAccount}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">CLABE:</span>
-                  <span className="text-slate-100 font-medium font-mono">{contact.bankClabe}</span>
+                  <span className="text-slate-100 font-medium font-mono">
+                    {contact.bankClabe}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Titular:</span>
-                  <span className="text-slate-100 font-medium">{contact.bankHolder}</span>
+                  <span className="text-slate-100 font-medium">
+                    {contact.bankHolder}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Correo:</span>
-                  <span className="text-slate-100 font-medium">{contact.email}</span>
+                  <span className="text-slate-100 font-medium">
+                    {contact.email}
+                  </span>
                 </div>
               </div>
             </div>
 
             {/* Footer */}
             <div className="mt-8 text-center">
-              <p className="text-slate-500 text-xs">Tarjeta de contacto digital</p>
+              <p className="text-slate-500 text-xs">
+                Todos los Derechos Reservados - 2025.
+              </p>
             </div>
-
           </div>
         </div>
       </div>
