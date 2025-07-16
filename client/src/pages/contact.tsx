@@ -353,7 +353,7 @@ Correo: crt.alfaros@gmail.com`;
                     onClick={handleCopyMercadoPago}
                     variant="outline"
                     size="sm"
-                    className="bg-blue-500/10 border-blue-500/30 text-blue-400 hover:bg-blue-500/20"
+                    className="bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20"
                   >
                     <Copy className="w-4 h-4 mr-2" />
                     Copiar
@@ -395,7 +395,7 @@ Correo: crt.alfaros@gmail.com`;
                     onClick={handleCopyBCI}
                     variant="outline"
                     size="sm"
-                    className="bg-red-500/10 border-red-500/30 text-red-400 hover:bg-red-500/20"
+                    className="bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20"
                   >
                     <Copy className="w-4 h-4 mr-2" />
                     Copiar
