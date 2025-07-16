@@ -366,7 +366,7 @@ Correo: crt.alfaros@gmail.com`;
                 </div>
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Número de cuenta:</span>
+                    <span className="text-slate-400">Cuenta:</span>
                     <span className="text-slate-100 font-medium font-mono">
                       1054307950
                     </span>
@@ -419,7 +419,7 @@ Correo: crt.alfaros@gmail.com`;
                 </div>
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Cuenta Vista:</span>
+                    <span className="text-slate-400">Cuenta:</span>
                     <span className="text-slate-100 font-medium font-mono">
                       777014142023
                     </span>
