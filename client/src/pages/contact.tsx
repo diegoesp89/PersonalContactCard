@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Link } from "wouter";
 import { 
   User, 
   Download, 
@@ -12,8 +11,7 @@ import {
   Instagram, 
   Globe,
   Building2,
-  ExternalLink,
-  Edit
+  ExternalLink
 } from "lucide-react";
 
 interface Contact {
@@ -147,35 +145,21 @@ export default function ContactPage() {
           </div>
 
           {/* Action Buttons */}
-          <div className="space-y-3 mb-8">
-            {/* Primary Actions */}
-            <div className="flex gap-3">
-              <Button 
-                onClick={handleSaveContact}
-                className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:translate-y-[-2px] shadow-lg"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Guardar Contacto
-              </Button>
-              <Button 
-                onClick={handleShareContact}
-                className="flex-1 bg-gradient-to-r from-violet-500 to-violet-600 hover:from-violet-600 hover:to-violet-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:translate-y-[-2px] shadow-lg"
-              >
-                <Share2 className="w-4 h-4 mr-2" />
-                Compartir
-              </Button>
-            </div>
-            
-            {/* Edit Button */}
-            <Link href="/edit">
-              <Button 
-                variant="outline"
-                className="w-full border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-slate-100 py-3 px-4 rounded-xl transition-all duration-300 hover:translate-y-[-2px]"
-              >
-                <Edit className="w-4 h-4 mr-2" />
-                Editar Información
-              </Button>
-            </Link>
+          <div className="flex gap-3 mb-8">
+            <Button 
+              onClick={handleSaveContact}
+              className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:translate-y-[-2px] shadow-lg"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Guardar Contacto
+            </Button>
+            <Button 
+              onClick={handleShareContact}
+              className="flex-1 bg-gradient-to-r from-violet-500 to-violet-600 hover:from-violet-600 hover:to-violet-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:translate-y-[-2px] shadow-lg"
+            >
+              <Share2 className="w-4 h-4 mr-2" />
+              Compartir
+            </Button>
           </div>
 
           {/* Contact Information */}
