@@ -1,4 +1,11 @@
-import { users, contacts, type User, type InsertUser, type Contact, type InsertContact } from "@shared/schema";
+import {
+  users,
+  contacts,
+  type User,
+  type InsertUser,
+  type Contact,
+  type InsertContact,
+} from "@shared/schema";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -17,21 +24,21 @@ export class MemStorage implements IStorage {
   constructor() {
     this.users = new Map();
     this.currentUserId = 1;
-    
+
     // Initialize with default contact data
     this.contact = {
       id: 1,
-      name: "Tu Nombre",
-      title: "Tu Profesión / Título",
+      name: "Cristian Alfaro",
+      title: "CAShirts / Crt",
       phone: "+52 123 456 7890",
-      email: "tu.email@example.com",
+      email: "cashirts@gmail.com",
       whatsapp: "+521234567890",
-      instagram: "@tu_usuario",
-      website: "https://tu-sitio-web.com",
-      bankName: "Banco Nacional",
+      instagram: "@cashirts",
+      website: "https://www.cashirts.cl",
+      bankName: "BCI",
       bankAccount: "1234 5678 9012 3456",
       bankClabe: "123456789012345678",
-      bankHolder: "Tu Nombre Completo"
+      bankHolder: "Cristian Alfaro Sepulveda",
     };
   }
 
