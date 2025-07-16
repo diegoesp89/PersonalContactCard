@@ -12,6 +12,7 @@ import {
   Globe,
   Building2,
   ExternalLink,
+  Copy,
 } from "lucide-react";
 
 interface Contact {
@@ -83,6 +84,38 @@ export default function ContactPage() {
       toast({
         title: "Error",
         description: "No se pudo compartir el contacto",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCopyBankData = async () => {
+    if (!contact) return;
+
+    const bankData1 = `MERCADO PAGO
+Número de cuenta: 1054307950
+RUT: 14.142.023-2
+Tipo de cuenta: Vista
+Titular: Cristian Antonio Alfaro Sepúlveda`;
+
+    const bankData2 = `BCI (Banco Crédito e Inversiones)
+Cuenta Vista: 777014142023
+RUT: 14.142.023-2
+Titular: Cristian Antonio Alfaro Sepúlveda
+Correo: crt.alfaros@gmail.com`;
+
+    const fullBankData = `${bankData1}\n\n${bankData2}`;
+
+    try {
+      await navigator.clipboard.writeText(fullBankData);
+      toast({
+        title: "¡Datos copiados!",
+        description: "Los datos bancarios han sido copiados al portapapeles.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudieron copiar los datos bancarios.",
         variant: "destructive",
       });
     }
@@ -292,41 +325,84 @@ export default function ContactPage() {
             </div>
 
             {/* Bank Transfer Information */}
-            <div className="mt-8 p-6 bg-slate-800/50 rounded-xl border border-slate-700">
-              <h3 className="text-slate-100 font-semibold mb-4 flex items-center">
-                <Building2 className="text-emerald-500 mr-2 w-5 h-5" />
-                Datos de Transferencia
-              </h3>
-              <div className="space-y-3 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Banco:</span>
-                  <span className="text-slate-100 font-medium">
-                    {contact.bankName}
-                  </span>
+            <div className="mt-8 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-slate-100 font-semibold flex items-center">
+                  <Building2 className="text-emerald-500 mr-2 w-5 h-5" />
+                  Datos de Transferencia
+                </h3>
+                <Button
+                  onClick={handleCopyBankData}
+                  variant="outline"
+                  size="sm"
+                  className="bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20"
+                >
+                  <Copy className="w-4 h-4 mr-2" />
+                  Copiar Datos
+                </Button>
+              </div>
+
+              {/* Mercado Pago */}
+              <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700">
+                <h4 className="text-slate-100 font-medium mb-3 text-blue-400">
+                  MERCADO PAGO
+                </h4>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Número de cuenta:</span>
+                    <span className="text-slate-100 font-medium font-mono">
+                      1054307950
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">RUT:</span>
+                    <span className="text-slate-100 font-medium">
+                      14.142.023-2
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Tipo de cuenta:</span>
+                    <span className="text-slate-100 font-medium">Vista</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Titular:</span>
+                    <span className="text-slate-100 font-medium">
+                      Cristian Antonio Alfaro Sepúlveda
+                    </span>
+                  </div>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Cuenta:</span>
-                  <span className="text-slate-100 font-medium font-mono">
-                    {contact.bankAccount}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Tipo:</span>
-                  <span className="text-slate-100 font-medium">
-                    {contact.accType}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Titular:</span>
-                  <span className="text-slate-100 font-medium">
-                    {contact.bankHolder}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Correo:</span>
-                  <span className="text-slate-100 font-medium">
-                    {contact.email}
-                  </span>
+              </div>
+
+              {/* BCI */}
+              <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700">
+                <h4 className="text-slate-100 font-medium mb-3 text-red-400">
+                  BCI (Banco Crédito e Inversiones)
+                </h4>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Cuenta Vista:</span>
+                    <span className="text-slate-100 font-medium font-mono">
+                      777014142023
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">RUT:</span>
+                    <span className="text-slate-100 font-medium">
+                      14.142.023-2
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Titular:</span>
+                    <span className="text-slate-100 font-medium">
+                      Cristian Antonio Alfaro Sepúlveda
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Correo:</span>
+                    <span className="text-slate-100 font-medium">
+                      crt.alfaros@gmail.com
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>

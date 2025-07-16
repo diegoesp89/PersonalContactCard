@@ -28,17 +28,17 @@ export class MemStorage implements IStorage {
     // Initialize with default contact data
     this.contact = {
       id: 1,
-      name: "Cristian Alfaro",
-      title: "CAShirts / Crt",
-      phone: "+52 123 456 7890",
-      email: "cashirts@gmail.com",
-      whatsapp: "+521234567890",
-      instagram: "@cashirts",
+      name: "Cristian Alfaro Sepúlveda",
+      title: "ℂ𝕒𝕤.ℂ𝕣𝕥",
+      phone: "+569 8230 6759",
+      email: "crt.cas@gmail.com",
+      whatsapp: "+56982306759",
+      instagram: "cashirts_camisas_a_medida",
       website: "https://www.cashirts.cl",
-      bankName: "BCI",
-      bankAccount: "1234 5678 9012 3456",
-      accType: "Cuenta Corriente",
-      bankHolder: "Cristian Alfaro Sepulveda",
+      bankName: "Mercado Pago y BCI",
+      bankAccount: "MP: 1054307950 / BCI: 777014142023",
+      accType: "Vista",
+      bankHolder: "Cristian Antonio Alfaro Sepúlveda",
     };
   }
 
