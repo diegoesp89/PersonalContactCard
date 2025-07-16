@@ -13,8 +13,6 @@ import {
   Building2,
   ExternalLink,
   Copy,
-  CreditCard,
-  Landmark,
 } from "lucide-react";
 
 interface Contact {
@@ -349,7 +347,11 @@ Correo: crt.alfaros@gmail.com`;
               <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="text-slate-100 font-medium text-blue-400 flex items-center">
-                    <CreditCard className="w-5 h-5 mr-2 text-blue-400" />
+                    <img 
+                      src="/mp.svg" 
+                      alt="Mercado Pago" 
+                      className="w-8 h-8 mr-2"
+                    />
                     MERCADO PAGO
                   </h4>
                   <Button
@@ -392,7 +394,11 @@ Correo: crt.alfaros@gmail.com`;
               <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="text-slate-100 font-medium text-red-400 flex items-center">
-                    <Landmark className="w-5 h-5 mr-2 text-red-400" />
+                    <img 
+                      src="/bci.svg" 
+                      alt="BCI" 
+                      className="w-8 h-8 mr-2"
+                    />
                     BCI (Banco Crédito e Inversiones)
                   </h4>
                   <Button
