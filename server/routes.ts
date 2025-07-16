@@ -53,7 +53,7 @@ NOTE:WhatsApp: https://wa.me/${contact.whatsapp.replace(/\D/g, "")}
 Instagram: ${contact.instagram}
 Banco: ${contact.bankName}
 Cuenta: ${contact.bankAccount}
-Tipo: ${contact.bankClabe}
+Tipo: ${contact.accType}
 Titular: ${contact.bankHolder}
 END:VCARD`;
 

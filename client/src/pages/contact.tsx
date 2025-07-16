@@ -25,7 +25,7 @@ interface Contact {
   website: string;
   bankName: string;
   bankAccount: string;
-  bankClabe: string;
+  accType: string;
   bankHolder: string;
 }
 
@@ -311,9 +311,9 @@ export default function ContactPage() {
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">CLABE:</span>
-                  <span className="text-slate-100 font-medium font-mono">
-                    {contact.bankClabe}
+                  <span className="text-slate-400">Tipo:</span>
+                  <span className="text-slate-100 font-medium">
+                    {contact.accType}
                   </span>
                 </div>
                 <div className="flex justify-between">
