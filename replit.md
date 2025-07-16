@@ -10,6 +10,11 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+- **Julio 16, 2025**: Agregados íconos bancarios (CreditCard para Mercado Pago, Landmark para BCI)
+- **Julio 16, 2025**: Implementados botones de copiar separados para cada cuenta bancaria en color verde
+- **Julio 16, 2025**: Actualizada información de contacto con datos reales del usuario
+- **Julio 16, 2025**: Separadas las dos cuentas bancarias (Mercado Pago y BCI) en secciones independientes
+- **Julio 16, 2025**: Cambiado "CLABE" por "Tipo" en información bancaria
 - **Julio 16, 2025**: Agregado banner de desarrollo informativo en la parte superior
 - **Julio 16, 2025**: Añadido campo de correo electrónico a la sección de datos de transferencia
 - **Julio 16, 2025**: Implementada foto de perfil personalizada usando cas.jpg como imagen circular
