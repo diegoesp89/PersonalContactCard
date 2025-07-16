@@ -8,6 +8,13 @@ This is a modern digital contact card application built as a full-stack web appl
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes
+
+- **Julio 16, 2025**: Agregado banner de desarrollo informativo en la parte superior
+- **Julio 16, 2025**: Añadido campo de correo electrónico a la sección de datos de transferencia
+- **Julio 16, 2025**: Implementada foto de perfil personalizada usando cas.jpg como imagen circular
+- **Julio 16, 2025**: Configuración completa de tarjeta de contacto digital con diseño oscuro y moderno
+
 ## System Architecture
 
 ### Frontend Architecture
