@@ -387,6 +387,12 @@ Correo: crt.alfaros@gmail.com`;
                       Cristian Antonio Alfaro Sepúlveda
                     </span>
                   </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Correo:</span>
+                    <span className="text-slate-100 font-medium">
+                      crt.cas@gmail.com
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -423,6 +429,10 @@ Correo: crt.alfaros@gmail.com`;
                     <span className="text-slate-100 font-medium">
                       14.142.023-2
                     </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Tipo de cuenta:</span>
+                    <span className="text-slate-100 font-medium">Vista</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Titular:</span>
