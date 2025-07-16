@@ -1,0 +1,286 @@
+import { useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { 
+  User, 
+  Download, 
+  Share2, 
+  MessageCircle, 
+  Phone, 
+  Mail, 
+  Instagram, 
+  Globe,
+  Building2,
+  ExternalLink
+} from "lucide-react";
+
+interface Contact {
+  id: number;
+  name: string;
+  title: string;
+  phone: string;
+  email: string;
+  whatsapp: string;
+  instagram: string;
+  website: string;
+  bankName: string;
+  bankAccount: string;
+  bankClabe: string;
+  bankHolder: string;
+}
+
+export default function ContactPage() {
+  const { toast } = useToast();
+
+  const { data: contact, isLoading } = useQuery<Contact>({
+    queryKey: ["/api/contact"],
+  });
+
+  const handleSaveContact = async () => {
+    try {
+      const response = await fetch("/api/contact/vcard");
+      if (!response.ok) throw new Error("Failed to generate vCard");
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'contacto.vcf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Contacto guardado",
+        description: "El archivo de contacto se ha descargado exitosamente",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo guardar el contacto",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleShareContact = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: 'Mi Tarjeta de Contacto',
+          text: 'Aquí tienes mi información de contacto',
+          url: window.location.href
+        });
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast({
+          title: "Enlace copiado",
+          description: "El enlace se ha copiado al portapapeles",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo compartir el contacto",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const getWhatsAppUrl = (phone: string) => {
+    const cleanPhone = phone.replace(/\D/g, '');
+    return `https://wa.me/${cleanPhone}`;
+  };
+
+  const getTelUrl = (phone: string) => {
+    return `tel:${phone}`;
+  };
+
+  const getEmailUrl = (email: string) => {
+    return `mailto:${email}`;
+  };
+
+  const getInstagramUrl = (username: string) => {
+    const cleanUsername = username.replace('@', '');
+    return `https://instagram.com/${cleanUsername}`;
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="glass-effect rounded-3xl p-8 w-full max-w-md">
+          <div className="animate-pulse space-y-4">
+            <div className="w-24 h-24 bg-slate-700 rounded-full mx-auto"></div>
+            <div className="h-4 bg-slate-700 rounded w-3/4 mx-auto"></div>
+            <div className="h-4 bg-slate-700 rounded w-1/2 mx-auto"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!contact) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="glass-effect rounded-3xl p-8 w-full max-w-md text-center">
+          <p className="text-slate-400">No se pudo cargar la información de contacto</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="glass-effect rounded-3xl p-8 shadow-2xl">
+          
+          {/* Header with Profile */}
+          <div className="text-center mb-8">
+            <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-violet-500 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg">
+              <User className="text-white text-3xl w-12 h-12" />
+            </div>
+            <h1 className="text-2xl font-bold text-slate-100 mb-2">{contact.name}</h1>
+            <p className="text-slate-400 font-medium">{contact.title}</p>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-3 mb-8">
+            <Button 
+              onClick={handleSaveContact}
+              className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:translate-y-[-2px] shadow-lg"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Guardar Contacto
+            </Button>
+            <Button 
+              onClick={handleShareContact}
+              className="flex-1 bg-gradient-to-r from-violet-500 to-violet-600 hover:from-violet-600 hover:to-violet-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:translate-y-[-2px] shadow-lg"
+            >
+              <Share2 className="w-4 h-4 mr-2" />
+              Compartir
+            </Button>
+          </div>
+
+          {/* Contact Information */}
+          <div className="space-y-4">
+            
+            {/* WhatsApp */}
+            <a 
+              href={getWhatsAppUrl(contact.whatsapp)} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
+            >
+              <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mr-4 shadow-md">
+                <MessageCircle className="text-white w-5 h-5" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-slate-100 font-semibold">WhatsApp</h3>
+                <p className="text-slate-400 text-sm">{contact.phone}</p>
+              </div>
+              <ExternalLink className="text-slate-500 w-4 h-4" />
+            </a>
+
+            {/* Phone */}
+            <a 
+              href={getTelUrl(contact.phone)}
+              className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
+            >
+              <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mr-4 shadow-md">
+                <Phone className="text-white w-5 h-5" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-slate-100 font-semibold">Teléfono</h3>
+                <p className="text-slate-400 text-sm">{contact.phone}</p>
+              </div>
+              <ExternalLink className="text-slate-500 w-4 h-4" />
+            </a>
+
+            {/* Email */}
+            <a 
+              href={getEmailUrl(contact.email)}
+              className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
+            >
+              <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mr-4 shadow-md">
+                <Mail className="text-white w-5 h-5" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-slate-100 font-semibold">Correo</h3>
+                <p className="text-slate-400 text-sm">{contact.email}</p>
+              </div>
+              <ExternalLink className="text-slate-500 w-4 h-4" />
+            </a>
+
+            {/* Instagram */}
+            <a 
+              href={getInstagramUrl(contact.instagram)} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
+            >
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mr-4 shadow-md">
+                <Instagram className="text-white w-5 h-5" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-slate-100 font-semibold">Instagram</h3>
+                <p className="text-slate-400 text-sm">{contact.instagram}</p>
+              </div>
+              <ExternalLink className="text-slate-500 w-4 h-4" />
+            </a>
+
+            {/* Website */}
+            <a 
+              href={contact.website} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
+            >
+              <div className="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center mr-4 shadow-md">
+                <Globe className="text-white w-5 h-5" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-slate-100 font-semibold">Sitio Web</h3>
+                <p className="text-slate-400 text-sm">{contact.website.replace('https://', '')}</p>
+              </div>
+              <ExternalLink className="text-slate-500 w-4 h-4" />
+            </a>
+
+          </div>
+
+          {/* Bank Transfer Information */}
+          <div className="mt-8 p-6 bg-slate-800/50 rounded-xl border border-slate-700">
+            <h3 className="text-slate-100 font-semibold mb-4 flex items-center">
+              <Building2 className="text-emerald-500 mr-2 w-5 h-5" />
+              Datos de Transferencia
+            </h3>
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between">
+                <span className="text-slate-400">Banco:</span>
+                <span className="text-slate-100 font-medium">{contact.bankName}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Cuenta:</span>
+                <span className="text-slate-100 font-medium font-mono">{contact.bankAccount}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">CLABE:</span>
+                <span className="text-slate-100 font-medium font-mono">{contact.bankClabe}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Titular:</span>
+                <span className="text-slate-100 font-medium">{contact.bankHolder}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="mt-8 text-center">
+            <p className="text-slate-500 text-xs">Tarjeta de contacto digital</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}
