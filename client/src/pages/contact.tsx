@@ -89,33 +89,45 @@ export default function ContactPage() {
     }
   };
 
-  const handleCopyBankData = async () => {
-    if (!contact) return;
-
-    const bankData1 = `MERCADO PAGO
+  const handleCopyMercadoPago = async () => {
+    const bankData = `MERCADO PAGO
 Número de cuenta: 1054307950
 RUT: 14.142.023-2
 Tipo de cuenta: Vista
 Titular: Cristian Antonio Alfaro Sepúlveda`;
 
-    const bankData2 = `BCI (Banco Crédito e Inversiones)
+    try {
+      await navigator.clipboard.writeText(bankData);
+      toast({
+        title: "¡Datos copiados!",
+        description: "Los datos de Mercado Pago han sido copiados al portapapeles.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudieron copiar los datos de Mercado Pago.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCopyBCI = async () => {
+    const bankData = `BCI (Banco Crédito e Inversiones)
 Cuenta Vista: 777014142023
 RUT: 14.142.023-2
 Titular: Cristian Antonio Alfaro Sepúlveda
 Correo: crt.alfaros@gmail.com`;
 
-    const fullBankData = `${bankData1}\n\n${bankData2}`;
-
     try {
-      await navigator.clipboard.writeText(fullBankData);
+      await navigator.clipboard.writeText(bankData);
       toast({
         title: "¡Datos copiados!",
-        description: "Los datos bancarios han sido copiados al portapapeles.",
+        description: "Los datos del BCI han sido copiados al portapapeles.",
       });
     } catch (error) {
       toast({
         title: "Error",
-        description: "No se pudieron copiar los datos bancarios.",
+        description: "No se pudieron copiar los datos del BCI.",
         variant: "destructive",
       });
     }
@@ -326,27 +338,27 @@ Correo: crt.alfaros@gmail.com`;
 
             {/* Bank Transfer Information */}
             <div className="mt-8 space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-slate-100 font-semibold flex items-center">
-                  <Building2 className="text-emerald-500 mr-2 w-5 h-5" />
-                  Datos de Transferencia
-                </h3>
-                <Button
-                  onClick={handleCopyBankData}
-                  variant="outline"
-                  size="sm"
-                  className="bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20"
-                >
-                  <Copy className="w-4 h-4 mr-2" />
-                  Copiar Datos
-                </Button>
-              </div>
+              <h3 className="text-slate-100 font-semibold flex items-center">
+                <Building2 className="text-emerald-500 mr-2 w-5 h-5" />
+                Datos de Transferencia
+              </h3>
 
               {/* Mercado Pago */}
               <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700">
-                <h4 className="text-slate-100 font-medium mb-3 text-blue-400">
-                  MERCADO PAGO
-                </h4>
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-slate-100 font-medium text-blue-400">
+                    MERCADO PAGO
+                  </h4>
+                  <Button
+                    onClick={handleCopyMercadoPago}
+                    variant="outline"
+                    size="sm"
+                    className="bg-blue-500/10 border-blue-500/30 text-blue-400 hover:bg-blue-500/20"
+                  >
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copiar
+                  </Button>
+                </div>
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
                     <span className="text-slate-400">Número de cuenta:</span>
@@ -375,9 +387,20 @@ Correo: crt.alfaros@gmail.com`;
 
               {/* BCI */}
               <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700">
-                <h4 className="text-slate-100 font-medium mb-3 text-red-400">
-                  BCI (Banco Crédito e Inversiones)
-                </h4>
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-slate-100 font-medium text-red-400">
+                    BCI (Banco Crédito e Inversiones)
+                  </h4>
+                  <Button
+                    onClick={handleCopyBCI}
+                    variant="outline"
+                    size="sm"
+                    className="bg-red-500/10 border-red-500/30 text-red-400 hover:bg-red-500/20"
+                  >
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copiar
+                  </Button>
+                </div>
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
                     <span className="text-slate-400">Cuenta Vista:</span>
