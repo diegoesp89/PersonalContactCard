@@ -37,7 +37,7 @@ export class MemStorage implements IStorage {
       website: "https://www.cashirts.cl",
       bankName: "BCI",
       bankAccount: "1234 5678 9012 3456",
-      bankClabe: "123456789012345678",
+      accType: "Cuenta Corriente",
       bankHolder: "Cristian Alfaro Sepulveda",
     };
   }

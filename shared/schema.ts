@@ -13,7 +13,7 @@ export const contacts = pgTable("contacts", {
   website: text("website").notNull(),
   bankName: text("bank_name").notNull(),
   bankAccount: text("bank_account").notNull(),
-  bankClabe: text("bank_clabe").notNull(),
+  accType: text("accType").notNull(),
   bankHolder: text("bank_holder").notNull(),
 });
 
