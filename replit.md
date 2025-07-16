@@ -10,7 +10,7 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-- **Julio 16, 2025**: Agregados íconos bancarios (CreditCard para Mercado Pago, Landmark para BCI)
+- **Julio 16, 2025**: Implementados logos oficiales de bancos con fondo blanco y borde difuminado
 - **Julio 16, 2025**: Implementados botones de copiar separados para cada cuenta bancaria en color verde
 - **Julio 16, 2025**: Actualizada información de contacto con datos reales del usuario
 - **Julio 16, 2025**: Separadas las dos cuentas bancarias (Mercado Pago y BCI) en secciones independientes

@@ -350,7 +350,7 @@ Correo: crt.alfaros@gmail.com`;
                     <img 
                       src="/mp.svg" 
                       alt="Mercado Pago" 
-                      className="w-8 h-8 mr-2"
+                      className="w-8 h-8 mr-2 bg-white rounded-md p-1 shadow-sm"
                     />
                     MERCADO PAGO
                   </h4>
@@ -397,7 +397,7 @@ Correo: crt.alfaros@gmail.com`;
                     <img 
                       src="/bci.svg" 
                       alt="BCI" 
-                      className="w-8 h-8 mr-2"
+                      className="w-8 h-8 mr-2 bg-white rounded-md p-1 shadow-sm"
                     />
                     BCI (Banco Crédito e Inversiones)
                   </h4>
