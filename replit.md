@@ -7,6 +7,7 @@ This is a modern digital contact card application built as a full-stack web appl
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Language: Spanish (Spanish interface preferred for user-facing elements)
 
 ## System Architecture
 
@@ -43,10 +44,12 @@ Preferred communication style: Simple, everyday language.
 
 ### Frontend Features
 - **Contact Display**: Professional card layout with contact information
+- **Contact Editing**: Comprehensive form interface for updating all contact details
 - **Social Media Integration**: Direct links to WhatsApp, Instagram, and personal website
 - **Banking Information**: Secure display of banking details for payments
 - **vCard Export**: One-click download of contact information in standard vCard format
 - **Responsive Design**: Mobile-first approach with dark theme
+- **Navigation**: Seamless routing between view and edit modes
 
 ## Data Flow
 
