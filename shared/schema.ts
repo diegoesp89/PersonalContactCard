@@ -15,6 +15,7 @@ export const contacts = pgTable("contacts", {
   bankAccount: text("bank_account").notNull(),
   accType: text("accType").notNull(),
   bankHolder: text("bank_holder").notNull(),
+  inDev: text("inDev").notNull().default("false"),
 });
 
 export const insertContactSchema = createInsertSchema(contacts).omit({

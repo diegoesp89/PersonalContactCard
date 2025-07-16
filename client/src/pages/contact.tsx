@@ -27,6 +27,7 @@ interface Contact {
   bankAccount: string;
   accType: string;
   bankHolder: string;
+  inDev: string;
 }
 
 export default function ContactPage() {
@@ -99,7 +100,8 @@ Titular: Cristian Antonio Alfaro Sepúlveda`;
       await navigator.clipboard.writeText(bankData);
       toast({
         title: "¡Datos copiados!",
-        description: "Los datos de Mercado Pago han sido copiados al portapapeles.",
+        description:
+          "Los datos de Mercado Pago han sido copiados al portapapeles.",
       });
     } catch (error) {
       toast({
@@ -153,16 +155,6 @@ Correo: crt.alfaros@gmail.com`;
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col">
-        {/* Development Banner */}
-        <div className="bg-amber-500/20 border-b border-amber-500/30 p-3">
-          <div className="max-w-4xl mx-auto text-center">
-            <p className="text-amber-200 text-sm font-medium">
-              ⚠️ Esta página está en desarrollo, estos datos podrían no ser
-              correctos
-            </p>
-          </div>
-        </div>
-
         <div className="flex-1 flex items-center justify-center p-4">
           <div className="glass-effect rounded-3xl p-8 w-full max-w-md">
             <div className="animate-pulse space-y-4">
@@ -179,16 +171,6 @@ Correo: crt.alfaros@gmail.com`;
   if (!contact) {
     return (
       <div className="min-h-screen flex flex-col">
-        {/* Development Banner */}
-        <div className="bg-amber-500/20 border-b border-amber-500/30 p-3">
-          <div className="max-w-4xl mx-auto text-center">
-            <p className="text-amber-200 text-sm font-medium">
-              ⚠️ Esta página está en desarrollo, estos datos podrían no ser
-              correctos
-            </p>
-          </div>
-        </div>
-
         <div className="flex-1 flex items-center justify-center p-4">
           <div className="glass-effect rounded-3xl p-8 w-full max-w-md text-center">
             <p className="text-slate-400">
@@ -202,15 +184,17 @@ Correo: crt.alfaros@gmail.com`;
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Development Banner */}
-      <div className="bg-amber-500/20 border-b border-amber-500/30 p-3">
-        <div className="max-w-4xl mx-auto text-center">
-          <p className="text-amber-200 text-sm font-medium">
-            ⚠️ Esta página está en desarrollo, estos datos podrían no ser
-            correctos
-          </p>
+      {/* Development Banner - Solo se muestra si inDev es "true" */}
+      {contact.inDev === "true" && (
+        <div className="bg-amber-500/20 border-b border-amber-500/30 p-3">
+          <div className="max-w-4xl mx-auto text-center">
+            <p className="text-amber-200 text-sm font-medium">
+              ⚠️ Esta página está en desarrollo, estos datos podrían no ser
+              correctos
+            </p>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-md">
@@ -218,11 +202,11 @@ Correo: crt.alfaros@gmail.com`;
             {/* Header with Profile */}
             <div className="text-center mb-8">
               <div className="w-24 h-24 rounded-full mx-auto mb-4 shadow-lg overflow-hidden bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center">
-                <img 
-                  src="/cas.jpg" 
-                  alt="Foto de perfil" 
+                <img
+                  src="/cas.jpg"
+                  alt="Foto de perfil"
                   className="w-full h-full object-cover"
-                  style={{ display: 'block' }}
+                  style={{ display: "block" }}
                 />
               </div>
               <h1 className="text-2xl font-bold text-slate-100 mb-2">
@@ -314,8 +298,6 @@ Correo: crt.alfaros@gmail.com`;
                 </div>
                 <ExternalLink className="text-slate-500 w-4 h-4" />
               </a>
-
-
             </div>
 
             {/* Bank Transfer Information */}
@@ -329,9 +311,9 @@ Correo: crt.alfaros@gmail.com`;
               <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="text-slate-100 font-medium text-blue-400 flex items-center">
-                    <img 
-                      src="/mp.svg" 
-                      alt="Mercado Pago" 
+                    <img
+                      src="/mp.svg"
+                      alt="Mercado Pago"
                       className="w-8 h-8 mr-2 bg-white rounded-md p-1 shadow-sm"
                     />
                     MERCADO PAGO
@@ -382,9 +364,9 @@ Correo: crt.alfaros@gmail.com`;
               <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="text-slate-100 font-medium text-red-400 flex items-center">
-                    <img 
-                      src="/bci.svg" 
-                      alt="BCI" 
+                    <img
+                      src="/bci.svg"
+                      alt="BCI"
                       className="w-8 h-8 mr-2 bg-white rounded-md p-1 shadow-sm"
                     />
                     BCI (Banco Crédito e Inversiones)
@@ -435,7 +417,7 @@ Correo: crt.alfaros@gmail.com`;
             {/* Footer */}
             <div className="mt-8 text-center">
               <p className="text-slate-500 text-xs">
-                Todos los Derechos Reservados - 2025.
+                CAS - Todos los Derechos Reservados - 2025.
               </p>
             </div>
           </div>

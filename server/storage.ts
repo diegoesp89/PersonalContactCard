@@ -39,6 +39,7 @@ export class MemStorage implements IStorage {
       bankAccount: "MP: 1054307950 / BCI: 777014142023",
       accType: "Vista",
       bankHolder: "Cristian Antonio Alfaro Sepúlveda",
+      inDev: "false",
     };
   }
 
