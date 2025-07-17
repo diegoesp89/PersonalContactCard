@@ -47,13 +47,25 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: contacts = [], isLoading } = useQuery<Contact[]>({
+  const { data: contacts = [], isLoading, error } = useQuery<Contact[]>({
     queryKey: ["/api/admin/contacts"],
-    queryFn: () => apiRequest("/api/admin/contacts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password })
-    })
+    queryFn: async () => {
+      try {
+        const response = await fetch("/api/admin/contacts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password })
+        });
+        if (!response.ok) {
+          throw new Error(`Failed to fetch contacts: ${response.statusText}`);
+        }
+        return response.json();
+      } catch (error) {
+        console.error("Error fetching contacts:", error);
+        throw error;
+      }
+    },
+    retry: 1
   });
 
   const toggleVisibilityMutation = useMutation({
@@ -107,7 +119,25 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-        <div className="text-slate-400">Cargando contactos...</div>
+        <div className="text-slate-100">Cargando panel de administración...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        <Card className="w-full max-w-md glass-effect border-slate-700">
+          <CardHeader>
+            <CardTitle className="text-red-400">Error</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-slate-300 mb-4">Error al cargar el panel de administración</p>
+            <Button onClick={() => window.location.reload()} className="w-full">
+              Reintentar
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }

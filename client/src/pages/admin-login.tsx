@@ -20,15 +20,23 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
     setIsLoading(true);
 
     try {
+      console.log("Attempting login with password:", password);
       const response = await fetch("/api/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password })
       });
       
+      console.log("Login response:", response.status, response.statusText);
+      
       if (!response.ok) {
+        const errorData = await response.text();
+        console.log("Login error response:", errorData);
         throw new Error("Invalid password");
       }
+
+      const responseData = await response.json();
+      console.log("Login success:", responseData);
 
       toast({
         title: "Acceso autorizado",
@@ -37,6 +45,7 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
       
       onLogin();
     } catch (error) {
+      console.error("Login error:", error);
       toast({
         title: "Error de autenticación",
         description: "Contraseña incorrecta",
