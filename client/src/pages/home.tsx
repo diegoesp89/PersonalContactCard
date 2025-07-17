@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { Instagram } from "lucide-react";
+import ImageModal from "@/components/ImageModal";
 
 export default function HomePage() {
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
   const logoRef = useRef<HTMLDivElement>(null);
 
   // Mouse movement and gyroscope effects
@@ -87,6 +89,7 @@ export default function HomePage() {
             transformStyle: 'preserve-3d',
             willChange: 'transform'
           }}
+          onClick={() => setShowImageModal(true)}
         >
           {!imageLoaded && (
             <div className="w-full h-full bg-slate-700/50 animate-pulse flex items-center justify-center">
@@ -126,6 +129,14 @@ export default function HomePage() {
           </a>
         </div>
       </div>
+
+      {/* Image Modal */}
+      <ImageModal
+        isOpen={showImageModal}
+        imageUrl="/cas.jpg"
+        altText="CA Shirts Logo"
+        onClose={() => setShowImageModal(false)}
+      />
     </div>
   );
 }

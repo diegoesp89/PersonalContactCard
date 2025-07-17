@@ -17,6 +17,7 @@ import {
   X,
 } from "lucide-react";
 import { FaTiktok, FaLinkedin, FaTelegram } from "react-icons/fa";
+import ImageModal from "@/components/ImageModal";
 
 interface Contact {
   id: number;
@@ -62,6 +63,7 @@ export default function ContactPage() {
   const [showQRView, setShowQRView] = useState(false);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
 
   // Try to get route parameter from URL
@@ -385,6 +387,7 @@ Correo: ${bank.email}`;
                   transformStyle: 'preserve-3d',
                   willChange: 'transform'
                 }}
+                onClick={() => contact.profileImage && setShowImageModal(true)}
               >
                 {contact.profileImage ? (
                   <>
@@ -792,6 +795,14 @@ Correo: ${bank.email}`;
           </div>
         </div>
       </div>
+
+      {/* Image Modal */}
+      <ImageModal
+        isOpen={showImageModal}
+        imageUrl={contact.profileImage || ''}
+        altText={contact.name}
+        onClose={() => setShowImageModal(false)}
+      />
     </div>
   );
 }
