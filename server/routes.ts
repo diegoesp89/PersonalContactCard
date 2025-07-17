@@ -182,7 +182,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Generate and download vCard
+  // Generate and download vCard by route
+  app.get("/api/contact/:ruta/vcard", async (req, res) => {
+    try {
+      const { ruta } = req.params;
+      const contact = await storage.getContactByRuta(ruta);
+      if (!contact) {
+        return res.status(404).json({ error: "Contact not found" });
+      }
+
+      const vcard = `BEGIN:VCARD
+VERSION:3.0
+FN:${contact.name}
+TITLE:${contact.title}
+TEL:${contact.phone || ''}
+EMAIL:${contact.email}
+URL:${contact.website || ''}
+NOTE:WhatsApp: ${contact.whatsapp || ''}\\nInstagram: ${contact.instagram || ''}\\nTikTok: ${contact.tiktok || ''}\\nLinkedIn: ${contact.linkedin || ''}\\nTelegram: ${contact.telegram || ''}\\nOficina: ${contact.officeAddress || ''}
+END:VCARD`;
+
+      res.setHeader('Content-Type', 'text/vcard');
+      res.setHeader('Content-Disposition', `attachment; filename="${contact.name.replace(/\s+/g, '_')}.vcf"`);
+      res.send(vcard);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to generate vCard" });
+    }
+  });
+
+  // Generate and download vCard (default contact)
   app.get("/api/contact/vcard", async (req, res) => {
     try {
       const contact = await storage.getContact();
@@ -194,10 +221,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 VERSION:3.0
 FN:${contact.name}
 TITLE:${contact.title}
-TEL:${contact.phone}
+TEL:${contact.phone || ''}
 EMAIL:${contact.email}
-URL:${contact.website}
-NOTE:WhatsApp: ${contact.whatsapp}\\nInstagram: ${contact.instagram}\\nBank: ${contact.bankName}\\nAccount: ${contact.bankAccount}\\nType: ${contact.accType}\\nHolder: ${contact.bankHolder}
+URL:${contact.website || ''}
+NOTE:WhatsApp: ${contact.whatsapp || ''}\\nInstagram: ${contact.instagram || ''}\\nTikTok: ${contact.tiktok || ''}\\nLinkedIn: ${contact.linkedin || ''}\\nTelegram: ${contact.telegram || ''}\\nOficina: ${contact.officeAddress || ''}
 END:VCARD`;
 
       res.setHeader('Content-Type', 'text/vcard');

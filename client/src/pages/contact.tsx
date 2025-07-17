@@ -72,14 +72,22 @@ export default function ContactPage() {
 
   const handleSaveContact = async () => {
     try {
-      const response = await fetch("/api/contact/vcard");
+      if (!contact) {
+        throw new Error("No contact data available");
+      }
+
+      const endpoint = routeParam 
+        ? `/api/contact/${routeParam}/vcard` 
+        : "/api/contact/vcard";
+      
+      const response = await fetch(endpoint);
       if (!response.ok) throw new Error("Failed to generate vCard");
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = "contacto.vcf";
+      link.download = `${contact.name.replace(/\s+/g, '_')}.vcf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
