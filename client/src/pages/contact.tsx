@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import {
   Phone,
@@ -11,6 +12,8 @@ import {
   ExternalLink,
   Copy,
   Globe,
+  QrCode,
+  X,
 } from "lucide-react";
 import { FaTiktok, FaLinkedin, FaTelegram } from "react-icons/fa";
 
@@ -52,6 +55,9 @@ interface Bank {
 
 export default function ContactPage() {
   const { toast } = useToast();
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
+  const [loadingQR, setLoadingQR] = useState(false);
 
   // Try to get route parameter from URL
   const path = window.location.pathname;
@@ -107,25 +113,77 @@ export default function ContactPage() {
   };
 
   const handleShareContact = async () => {
+    if (!contact) return;
+    
+    setLoadingQR(true);
+    setShowQRModal(true);
+    
     try {
-      if (navigator.share) {
-        await navigator.share({
-          title: "Mi Tarjeta de Contacto",
-          text: "Aquí tienes mi información de contacto",
-          url: window.location.href,
-        });
+      // Generate QR code
+      const response = await fetch(`/api/contact/${contact.id}/qr`);
+      if (response.ok) {
+        const blob = await response.blob();
+        const qrUrl = URL.createObjectURL(blob);
+        setQrCodeUrl(qrUrl);
       } else {
-        await navigator.clipboard.writeText(window.location.href);
-        toast({
-          title: "Enlace copiado",
-          description: "El enlace se ha copiado al portapapeles",
-        });
+        throw new Error("Failed to generate QR code");
       }
     } catch (error) {
       toast({
         title: "Error",
-        description: "No se pudo compartir el contacto",
+        description: "No se pudo generar el código QR",
         variant: "destructive",
+      });
+      setShowQRModal(false);
+    } finally {
+      setLoadingQR(false);
+    }
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      toast({
+        title: "¡Enlace copiado!",
+        description: "El enlace se ha copiado al portapapeles",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo copiar el enlace",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleNativeShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: `Contacto de ${contact?.name}`,
+          text: "Aquí tienes mi información de contacto",
+          url: window.location.href,
+        });
+      } else {
+        handleCopyLink();
+      }
+    } catch (error) {
+      // User cancelled share or error occurred
+    }
+  };
+
+  const handleDownloadQR = () => {
+    if (qrCodeUrl && contact) {
+      const link = document.createElement("a");
+      link.href = qrCodeUrl;
+      link.download = `QR_${contact.name.replace(/\s+/g, '_')}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast({
+        title: "QR descargado",
+        description: "El código QR se ha descargado exitosamente",
       });
     }
   };
@@ -267,13 +325,86 @@ Correo: ${bank.email}`;
                 <Download className="w-4 h-4 mr-2" />
                 Guardar Contacto
               </Button>
-              <Button
-                onClick={handleShareContact}
-                className="flex-1 bg-gradient-to-r from-violet-500 to-violet-600 hover:from-violet-600 hover:to-violet-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:translate-y-[-2px] shadow-lg"
-              >
-                <Share2 className="w-4 h-4 mr-2" />
-                Compartir
-              </Button>
+              
+              <Dialog open={showQRModal} onOpenChange={setShowQRModal}>
+                <DialogTrigger asChild>
+                  <Button
+                    onClick={handleShareContact}
+                    className="flex-1 bg-gradient-to-r from-violet-500 to-violet-600 hover:from-violet-600 hover:to-violet-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:translate-y-[-2px] shadow-lg hover:scale-105"
+                  >
+                    <QrCode className="w-4 h-4 mr-2" />
+                    Compartir QR
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700">
+                  <DialogHeader>
+                    <DialogTitle className="text-slate-100 text-center flex items-center justify-center gap-2">
+                      <QrCode className="w-5 h-5 text-violet-400" />
+                      Compartir Contacto
+                    </DialogTitle>
+                  </DialogHeader>
+                  
+                  <div className="flex flex-col items-center space-y-6 py-4">
+                    {/* QR Code Display */}
+                    <div className="bg-white p-4 rounded-xl shadow-lg">
+                      {loadingQR ? (
+                        <div className="w-48 h-48 flex items-center justify-center">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-500"></div>
+                        </div>
+                      ) : qrCodeUrl ? (
+                        <img
+                          src={qrCodeUrl}
+                          alt="Código QR del contacto"
+                          className="w-48 h-48 object-contain"
+                        />
+                      ) : (
+                        <div className="w-48 h-48 flex items-center justify-center text-gray-500">
+                          Error al cargar QR
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Contact Info */}
+                    <div className="text-center">
+                      <h3 className="font-semibold text-slate-100">{contact?.name}</h3>
+                      <p className="text-sm text-slate-400">{contact?.title}</p>
+                      <p className="text-xs text-slate-500 mt-2">
+                        Escanea el código para acceder al contacto
+                      </p>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex flex-col sm:flex-row gap-3 w-full">
+                      <Button
+                        onClick={handleDownloadQR}
+                        variant="outline"
+                        className="flex-1 bg-slate-700 border-slate-600 text-slate-100 hover:bg-slate-600"
+                        disabled={!qrCodeUrl}
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        Descargar QR
+                      </Button>
+                      
+                      <Button
+                        onClick={handleCopyLink}
+                        variant="outline"
+                        className="flex-1 bg-slate-700 border-slate-600 text-slate-100 hover:bg-slate-600"
+                      >
+                        <Copy className="w-4 h-4 mr-2" />
+                        Copiar Enlace
+                      </Button>
+                      
+                      <Button
+                        onClick={handleNativeShare}
+                        className="flex-1 bg-gradient-to-r from-violet-500 to-violet-600 hover:from-violet-600 hover:to-violet-700 text-white"
+                      >
+                        <Share2 className="w-4 h-4 mr-2" />
+                        Compartir
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
 
             {/* Contact Information */}
