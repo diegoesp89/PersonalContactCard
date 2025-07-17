@@ -10,7 +10,9 @@ import {
   Plus, 
   Edit, 
   Trash2,
-  AlertTriangle
+  AlertTriangle,
+  QrCode,
+  LogOut
 } from "lucide-react";
 
 interface Contact {
@@ -133,6 +135,36 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
     }
   });
 
+  const downloadQR = async (contact: Contact) => {
+    try {
+      const response = await fetch(`/api/contact/${contact.id}/qr`);
+      if (!response.ok) {
+        throw new Error("Failed to generate QR code");
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `QR_${contact.name.replace(/\s+/g, '_')}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      
+      toast({
+        title: "QR Descargado",
+        description: `Código QR de ${contact.name} descargado exitosamente.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo generar el código QR.",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
@@ -251,6 +283,16 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
                   >
                     <Edit className="w-3 h-3 mr-1" />
                     Editar
+                  </Button>
+                  
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => downloadQR(contact)}
+                    className="border-purple-500 text-purple-400 hover:bg-purple-500/10"
+                    title="Descargar código QR"
+                  >
+                    <QrCode className="w-3 h-3" />
                   </Button>
                   
                   {/* Development toggle - only for superadmin */}

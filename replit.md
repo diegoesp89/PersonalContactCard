@@ -22,6 +22,9 @@ Preferred communication style: Simple, everyday language.
 - **Julio 17, 2025**: Implementado colorpicker con input color HTML5 y campo de texto hexadecimal
 - **Julio 17, 2025**: Migrado storage de memoria a base de datos PostgreSQL con Drizzle ORM
 - **Julio 17, 2025**: Configurado seeding automático de datos iniciales en startup
+- **Julio 17, 2025**: Agregada funcionalidad de descarga de códigos QR para enlaces de contacto
+- **Julio 17, 2025**: Implementado endpoint `/api/contact/:id/qr` para generar QR codes en formato PNG
+- **Julio 17, 2025**: Añadido botón de descarga QR en panel de administración para cada contacto
 - **Julio 17, 2025**: Simplificado sistema - eliminados campos "visible" y "approved" (todos los contactos son siempre visibles y aprobados)
 - **Julio 17, 2025**: Agregado robots.txt y meta tags para evitar indexación por buscadores
 - **Julio 17, 2025**: Creada página de inicio simple con solo logo y correo electrónico de contacto por defecto

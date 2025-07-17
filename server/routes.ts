@@ -6,6 +6,7 @@ import { z } from "zod";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import QRCode from "qrcode";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Ensure uploads directory exists
@@ -188,6 +189,39 @@ END:VCARD`;
       res.send(vcard);
     } catch (error) {
       res.status(500).json({ error: "Failed to generate vCard" });
+    }
+  });
+
+  // Generate QR Code for contact
+  app.get("/api/contact/:id/qr", async (req, res) => {
+    try {
+      const contactId = parseInt(req.params.id);
+      const contacts = await storage.getAllContacts();
+      const foundContact = contacts.find(c => c.id === contactId);
+      
+      if (!foundContact) {
+        return res.status(404).json({ error: "Contact not found" });
+      }
+
+      const contactUrl = `https://cashirts.replit.app/${foundContact.ruta}`;
+      
+      // Generate QR code as PNG buffer
+      const qrCodeBuffer = await QRCode.toBuffer(contactUrl, {
+        type: 'png',
+        width: 300,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      });
+
+      res.setHeader('Content-Type', 'image/png');
+      res.setHeader('Content-Disposition', `attachment; filename="QR_${foundContact.name.replace(/\s+/g, '_')}.png"`);
+      res.send(qrCodeBuffer);
+    } catch (error) {
+      console.error("Error generating QR code:", error);
+      res.status(500).json({ error: "Error generating QR code" });
     }
   });
 
