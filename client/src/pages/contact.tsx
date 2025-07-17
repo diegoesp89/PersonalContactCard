@@ -48,13 +48,19 @@ export default function ContactPage() {
 
   // Try to get route parameter from URL
   const path = window.location.pathname;
-  const routeParam = path === "/" ? null : path.substring(1);
+  const routeParam = path === "/" || path === "" ? null : path.substring(1);
   
   const { data: contact, isLoading } = useQuery<Contact>({
     queryKey: routeParam ? ["/api/contact", routeParam] : ["/api/contact"],
     queryFn: routeParam 
-      ? () => fetch(`/api/contact/${routeParam}`).then(res => res.json())
-      : undefined
+      ? () => fetch(`/api/contact/${routeParam}`).then(res => {
+          if (!res.ok) throw new Error('Contact not found');
+          return res.json();
+        })
+      : () => fetch("/api/contact").then(res => {
+          if (!res.ok) throw new Error('Contact not found');
+          return res.json();
+        })
   });
 
   const handleSaveContact = async () => {
