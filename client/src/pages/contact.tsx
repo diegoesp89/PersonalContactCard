@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -60,10 +60,66 @@ export default function ContactPage() {
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
   const [loadingQR, setLoadingQR] = useState(false);
   const [showQRView, setShowQRView] = useState(false);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const profileRef = useRef<HTMLDivElement>(null);
 
   // Try to get route parameter from URL
   const path = window.location.pathname;
   const routeParam = path === "/" || path === "" ? null : path.substring(1);
+
+  // Mouse movement effect for desktop
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (profileRef.current) {
+        const rect = profileRef.current.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        const deltaX = (e.clientX - centerX) / rect.width;
+        const deltaY = (e.clientY - centerY) / rect.height;
+        
+        setTilt({
+          x: deltaY * 5, // Max 5 degrees tilt
+          y: deltaX * -5
+        });
+      }
+    };
+
+    const handleMouseLeave = () => {
+      setTilt({ x: 0, y: 0 });
+    };
+
+    // Gyroscope effect for mobile
+    const handleDeviceOrientation = (e: DeviceOrientationEvent) => {
+      if (e.beta !== null && e.gamma !== null) {
+        setTilt({
+          x: Math.max(-10, Math.min(10, e.beta / 3)), // Limit range and reduce sensitivity
+          y: Math.max(-10, Math.min(10, e.gamma / 3))
+        });
+      }
+    };
+
+    // Check if device supports orientation
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener('deviceorientation', handleDeviceOrientation);
+    }
+
+    const profileElement = profileRef.current;
+    if (profileElement) {
+      profileElement.addEventListener('mousemove', handleMouseMove);
+      profileElement.addEventListener('mouseleave', handleMouseLeave);
+    }
+
+    return () => {
+      if (window.DeviceOrientationEvent) {
+        window.removeEventListener('deviceorientation', handleDeviceOrientation);
+      }
+      if (profileElement) {
+        profileElement.removeEventListener('mousemove', handleMouseMove);
+        profileElement.removeEventListener('mouseleave', handleMouseLeave);
+      }
+    };
+  }, []);
   
   const { data: contact, isLoading } = useQuery<Contact>({
     queryKey: routeParam ? ["/api/contact", routeParam] : ["/api/contact"],
@@ -304,15 +360,30 @@ Correo: ${bank.email}`;
           <div className="glass-effect rounded-3xl p-8 shadow-2xl" style={{ backgroundColor: `${contact.backgroundColor || '#1e293b'}e6` }}>
             {/* Header with Profile */}
             <div className="text-center mb-8 relative">
-              <div className="w-24 h-24 rounded-full mx-auto mb-4 shadow-lg overflow-hidden relative">
+              <div 
+                ref={profileRef}
+                className="w-24 h-24 rounded-full mx-auto mb-4 shadow-lg overflow-hidden relative transition-transform duration-300 ease-out"
+                style={{
+                  transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) translateZ(20px)`,
+                  transformStyle: 'preserve-3d'
+                }}
+              >
                 {contact.profileImage ? (
                   <img
                     src={contact.profileImage}
                     alt={contact.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform duration-300"
+                    style={{
+                      transform: `translateZ(10px) scale(1.02)`
+                    }}
                   />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center text-white text-xl font-bold">
+                  <div 
+                    className="w-full h-full bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center text-white text-xl font-bold transition-transform duration-300"
+                    style={{
+                      transform: `translateZ(10px) scale(1.02)`
+                    }}
+                  >
                     {contact.name.split(' ').map(n => n[0]).join('').toUpperCase()}
                   </div>
                 )}
