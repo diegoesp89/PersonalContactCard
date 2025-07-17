@@ -319,7 +319,7 @@ Correo: ${bank.email}`;
                 
                 {/* DEMO Ribbon - Solo se muestra si inDev es "true" */}
                 {contact?.inDev === "true" && (
-                  <div className="absolute top-1 right-1 bg-red-500 text-white text-[8px] font-bold px-1.5 py-0.5 transform rotate-45 shadow-lg border border-red-600 z-10 whitespace-nowrap">
+                  <div className="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] font-bold px-1.5 py-0.5 transform rotate-45 shadow-lg border border-red-600 z-10 whitespace-nowrap">
                     DEMO
                   </div>
                 )}
