@@ -46,6 +46,9 @@ interface AdminDashboardProps {
 export default function AdminDashboard({ onLogout, onEditContact, password }: AdminDashboardProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  
+  // Check if user is superadmin
+  const isSuperAdmin = password === "Mafatanga2025";
 
   const { data: contacts = [], isLoading, error } = useQuery<Contact[]>({
     queryKey: ["/api/admin/contacts"],
@@ -128,6 +131,36 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
     }
   });
 
+  const toggleApprovalMutation = useMutation({
+    mutationFn: async ({ id, approved }: { id: number; approved: string }) => {
+      const response = await fetch(`/api/admin/contacts/${id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password, approved: approved === "true" ? "false" : "true" })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/contacts"] });
+      toast({
+        title: "Aprobación actualizada",
+        description: "El estado de aprobación del contacto ha sido cambiado",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "No se pudo actualizar la aprobación",
+        variant: "destructive",
+      });
+    }
+  });
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
@@ -164,8 +197,17 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
               <Users className="w-5 h-5 text-blue-400" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-100">Panel de Administración</h1>
-              <p className="text-slate-400">Gestión de contactos y usuarios</p>
+              <h1 className="text-2xl font-bold text-slate-100">
+                Panel de Administración
+                {isSuperAdmin && (
+                  <span className="ml-2 text-sm bg-amber-500/20 text-amber-400 px-2 py-1 rounded-md">
+                    SuperAdmin
+                  </span>
+                )}
+              </h1>
+              <p className="text-slate-400">
+                {isSuperAdmin ? "Acceso completo - Gestión y aprobación de contactos" : "Gestión de contactos"}
+              </p>
             </div>
           </div>
           <div className="flex gap-2">
@@ -251,6 +293,27 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
                     <Edit className="w-3 h-3 mr-1" />
                     Editar
                   </Button>
+                  
+                  {/* Approval button - only for superadmin */}
+                  {isSuperAdmin && (
+                    <Button
+                      size="sm"
+                      variant={contact.approved === "true" ? "default" : "secondary"}
+                      onClick={() => toggleApprovalMutation.mutate({ 
+                        id: contact.id, 
+                        approved: contact.approved 
+                      })}
+                      disabled={toggleApprovalMutation.isPending}
+                      title={contact.approved === "true" ? "Desaprobar contacto" : "Aprobar contacto"}
+                    >
+                      {contact.approved === "true" ? (
+                        <XCircle className="w-3 h-3" />
+                      ) : (
+                        <CheckCircle className="w-3 h-3" />
+                      )}
+                    </Button>
+                  )}
+                  
                   <Button
                     size="sm"
                     variant="outline"
@@ -259,6 +322,7 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
                       visible: contact.visible 
                     })}
                     disabled={toggleVisibilityMutation.isPending}
+                    title={contact.visible === "true" ? "Ocultar contacto" : "Mostrar contacto"}
                   >
                     {contact.visible === "true" ? (
                       <EyeOff className="w-3 h-3" />

@@ -8,7 +8,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Middleware for admin authentication
   const authenticateAdmin = (req: any, res: any, next: any) => {
     const { password } = req.body;
-    if (password !== "CamisasWenas.!") {
+    // Accept both admin and superadmin passwords
+    if (password !== "CamisasWenas.!" && password !== "Mafatanga2025") {
       return res.status(401).json({ error: "Invalid password" });
     }
     next();

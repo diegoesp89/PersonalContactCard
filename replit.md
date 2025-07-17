@@ -10,16 +10,16 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+- **Julio 17, 2025**: Implementado sistema de doble nivel de autenticación - SuperAdmin ("Mafatanga2025") puede aprobar contactos
+- **Julio 17, 2025**: Agregado botón de aprobación exclusivo para SuperAdmin con indicador visual
+- **Julio 17, 2025**: Corregido error en función apiRequest que impedía crear/editar contactos
 - **Julio 16, 2025**: Implementado sistema completo de administración con panel de admin en /edit
-- **Julio 16, 2025**: Añadido sistema de autenticación con contraseña "CamisasWenas.!" para panel de admin
+- **Julio 16, 2025**: Añadido sistema de autenticación con contraseña "CamisasWenas.!" para admin básico
 - **Julio 16, 2025**: Creado sistema de rutas dinámicas - cada contacto tiene campo "ruta" para generar URLs personalizadas
 - **Julio 16, 2025**: Implementado campo "approved" - si es false, muestra banner "Contacto en proceso, gracias por su espera"
 - **Julio 16, 2025**: Agregado sistema dinámico de bancos - se pueden añadir N cantidad de bancos por contacto
 - **Julio 16, 2025**: Creado panel de gestión de contactos con opciones de crear, editar, mostrar/ocultar y eliminar
 - **Julio 16, 2025**: Implementado campo "visible" para controlar qué contactos aparecen en el panel
-- **Julio 16, 2025**: Actualizado banner de desarrollo para ser controlable vía campo "inDev" en storage
-- **Julio 16, 2025**: Migrado sistema de bancos estático a dinámico usando JSON para almacenar múltiples bancos
-- **Julio 16, 2025**: Configuración completa de tarjeta de contacto digital con diseño oscuro y moderno
 
 ## System Architecture
 
