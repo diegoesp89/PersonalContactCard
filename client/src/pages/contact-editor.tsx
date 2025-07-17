@@ -86,7 +86,7 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
     bankAccount: contact?.bankAccount || "",
     accType: contact?.accType || "",
     bankHolder: contact?.bankHolder || "",
-    inDev: contact?.inDev || (isSuperAdmin ? "false" : "true"),
+    inDev: contact?.inDev || "true", // Always default to true for new contacts
     ruta: contact?.ruta || "",
 
     banks: contact?.banks || "[]"

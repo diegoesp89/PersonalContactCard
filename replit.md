@@ -16,7 +16,8 @@ Preferred communication style: Simple, everyday language.
 - **Julio 17, 2025**: Mejorado manejo de handles - funciona con o sin @ automáticamente para todas las plataformas
 - **Julio 17, 2025**: Implementado sistema de doble nivel de autenticación - SuperAdmin ("Mafatanga2025") y Admin básico ("CamisasWenas.!")
 - **Julio 17, 2025**: Configurado niveles de permiso: aprobación disponible para ambos, control "inDev" exclusivo para SuperAdmin
-- **Julio 17, 2025**: Corregido comportamiento por defecto: nuevos contactos creados por admin normal tienen "inDev" = true automáticamente
+- **Julio 17, 2025**: Corregido comportamiento por defecto: todos los nuevos contactos tienen "inDev" = true automáticamente
+- **Julio 17, 2025**: Solo SuperAdmin puede ver y modificar el campo "inDev" - admin normal no ve esta opción
 - **Julio 17, 2025**: Simplificado sistema - eliminados campos "visible" y "approved" (todos los contactos son siempre visibles y aprobados)
 - **Julio 17, 2025**: Agregado robots.txt y meta tags para evitar indexación por buscadores
 - **Julio 17, 2025**: Creada página de inicio simple con solo logo y correo electrónico de contacto por defecto

@@ -102,9 +102,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: result.error });
       }
       
-      // Set default values based on admin level
+      // Set default value for inDev - always true for new contacts
       if (!result.data.inDev) {
-        result.data.inDev = isSuperAdmin ? "false" : "true";
+        result.data.inDev = "true";
       }
       
       const contact = await storage.createContact(result.data);
@@ -119,6 +119,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { id } = req.params;
       const { password, ...updateData } = req.body;
+      
+      // Only superadmin can modify inDev field
+      if ("inDev" in updateData && password !== "Mafatanga2025") {
+        delete updateData.inDev; // Remove inDev from update if not superadmin
+      }
       
       const contact = await storage.updateContact(parseInt(id), updateData);
       res.json(contact);
