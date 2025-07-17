@@ -31,6 +31,7 @@ Preferred communication style: Simple, everyday language.
 - **Julio 17, 2025**: Creada página de inicio simple con logo y enlace a Instagram como contacto principal
 - **Julio 17, 2025**: Agregado indicador visual SuperAdmin en header del panel con descripción de permisos
 - **Julio 17, 2025**: Corregido error en función apiRequest que impedía crear/editar contactos
+- **Julio 17, 2025**: Corregido endpoint de subida de imágenes - agregado `/api/upload` además de `/api/admin/upload-image`
 - **Julio 16, 2025**: Implementado sistema completo de administración con panel de admin en /edit
 - **Julio 16, 2025**: Añadido sistema de autenticación con contraseña "CamisasWenas.!" para admin básico
 - **Julio 16, 2025**: Creado sistema de rutas dinámicas - cada contacto tiene campo "ruta" para generar URLs personalizadas

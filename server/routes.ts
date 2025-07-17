@@ -151,6 +151,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Upload profile image
+  app.post("/api/upload", upload.single('profileImage'), (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No file uploaded" });
+      }
+      
+      const filename = req.file.filename;
+      const imageUrl = `/uploads/${filename}`;
+      
+      res.json({ imageUrl });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to upload image" });
+    }
+  });
+
+  // Upload profile image (admin alternative endpoint)
   app.post("/api/admin/upload-image", upload.single('profileImage'), (req, res) => {
     try {
       if (!req.file) {
