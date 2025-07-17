@@ -34,7 +34,7 @@ Preferred communication style: Simple, everyday language.
 - **Julio 17, 2025**: Corregido endpoint de subida de imágenes - agregado `/api/upload` además de `/api/admin/upload-image`
 - **Julio 17, 2025**: Agregada validación condicional - WhatsApp y teléfono solo se muestran si tienen datos
 - **Julio 17, 2025**: Corregido botón "Guardar Contacto" - ahora genera vCard específico por ruta con todos los campos incluidos
-- **Julio 17, 2025**: Implementado botón "Compartir QR" animado con modal interactivo, generación de código QR, descarga QR y compartir nativo
+- **Julio 17, 2025**: Implementado modal "Compartir" con múltiples opciones: QR code, copiar enlace y compartir nativo con navegación entre vistas
 - **Julio 16, 2025**: Implementado sistema completo de administración con panel de admin en /edit
 - **Julio 16, 2025**: Añadido sistema de autenticación con contraseña "CamisasWenas.!" para admin básico
 - **Julio 16, 2025**: Creado sistema de rutas dinámicas - cada contacto tiene campo "ruta" para generar URLs personalizadas

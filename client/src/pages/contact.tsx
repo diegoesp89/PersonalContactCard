@@ -56,9 +56,10 @@ interface Bank {
 
 export default function ContactPage() {
   const { toast } = useToast();
-  const [showQRModal, setShowQRModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
   const [loadingQR, setLoadingQR] = useState(false);
+  const [showQRView, setShowQRView] = useState(false);
 
   // Try to get route parameter from URL
   const path = window.location.pathname;
@@ -113,11 +114,16 @@ export default function ContactPage() {
     }
   };
 
-  const handleShareContact = async () => {
+  const handleShareContact = () => {
+    setShowShareModal(true);
+    setShowQRView(false);
+  };
+
+  const handleShowQR = async () => {
     if (!contact) return;
     
     setLoadingQR(true);
-    setShowQRModal(true);
+    setShowQRView(true);
     
     try {
       // Generate QR code
@@ -135,7 +141,7 @@ export default function ContactPage() {
         description: "No se pudo generar el código QR",
         variant: "destructive",
       });
-      setShowQRModal(false);
+      setShowQRView(false);
     } finally {
       setLoadingQR(false);
     }
@@ -327,83 +333,123 @@ Correo: ${bank.email}`;
                 Guardar Contacto
               </Button>
               
-              <Dialog open={showQRModal} onOpenChange={setShowQRModal}>
+              <Dialog open={showShareModal} onOpenChange={setShowShareModal}>
                 <DialogTrigger asChild>
                   <Button
                     onClick={handleShareContact}
                     className="flex-1 bg-gradient-to-r from-violet-500 to-violet-600 hover:from-violet-600 hover:to-violet-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:translate-y-[-2px] shadow-lg hover:scale-105"
                   >
-                    <QrCode className="w-4 h-4 mr-2" />
-                    Compartir QR
+                    <Share2 className="w-4 h-4 mr-2" />
+                    Compartir
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700">
                   <DialogHeader>
                     <DialogTitle className="text-slate-100 text-center flex items-center justify-center gap-2">
-                      <QrCode className="w-5 h-5 text-violet-400" />
+                      <Share2 className="w-5 h-5 text-violet-400" />
                       Compartir Contacto
                     </DialogTitle>
                   </DialogHeader>
                   
-                  <div className="flex flex-col items-center space-y-6 py-4">
-                    {/* QR Code Display */}
-                    <div className="bg-white p-4 rounded-xl shadow-lg">
-                      {loadingQR ? (
-                        <div className="w-48 h-48 flex items-center justify-center">
-                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-500"></div>
-                        </div>
-                      ) : qrCodeUrl ? (
-                        <img
-                          src={qrCodeUrl}
-                          alt="Código QR del contacto"
-                          className="w-48 h-48 object-contain"
-                        />
-                      ) : (
-                        <div className="w-48 h-48 flex items-center justify-center text-gray-500">
-                          Error al cargar QR
-                        </div>
-                      )}
-                    </div>
+                  {!showQRView ? (
+                    <div className="flex flex-col space-y-4 py-4">
+                      {/* Contact Info */}
+                      <div className="text-center mb-4">
+                        <h3 className="font-semibold text-slate-100">{contact?.name}</h3>
+                        <p className="text-sm text-slate-400">{contact?.title}</p>
+                      </div>
 
-                    {/* Contact Info */}
-                    <div className="text-center">
-                      <h3 className="font-semibold text-slate-100">{contact?.name}</h3>
-                      <p className="text-sm text-slate-400">{contact?.title}</p>
-                      <p className="text-xs text-slate-500 mt-2">
-                        Escanea el código para acceder al contacto
-                      </p>
+                      {/* Share Options */}
+                      <div className="space-y-3">
+                        <Button
+                          onClick={handleShowQR}
+                          className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white py-3 rounded-xl transition-all duration-300 hover:scale-105"
+                        >
+                          <QrCode className="w-5 h-5 mr-3" />
+                          Mostrar Código QR
+                        </Button>
+                        
+                        <Button
+                          onClick={handleCopyLink}
+                          variant="outline"
+                          className="w-full bg-slate-700 border-slate-600 text-slate-100 hover:bg-slate-600 py-3 rounded-xl"
+                        >
+                          <Copy className="w-5 h-5 mr-3" />
+                          Copiar Enlace
+                        </Button>
+                        
+                        <Button
+                          onClick={handleNativeShare}
+                          variant="outline"
+                          className="w-full bg-slate-700 border-slate-600 text-slate-100 hover:bg-slate-600 py-3 rounded-xl"
+                        >
+                          <Share2 className="w-5 h-5 mr-3" />
+                          Compartir Enlace
+                        </Button>
+                      </div>
                     </div>
+                  ) : (
+                    <div className="flex flex-col items-center space-y-6 py-4">
+                      {/* Back Button */}
+                      <Button
+                        onClick={() => setShowQRView(false)}
+                        variant="ghost"
+                        className="self-start text-slate-400 hover:text-slate-100 p-2"
+                      >
+                        ← Volver
+                      </Button>
 
-                    {/* Action Buttons */}
-                    <div className="flex flex-col sm:flex-row gap-3 w-full">
-                      <Button
-                        onClick={handleDownloadQR}
-                        variant="outline"
-                        className="flex-1 bg-slate-700 border-slate-600 text-slate-100 hover:bg-slate-600"
-                        disabled={!qrCodeUrl}
-                      >
-                        <Download className="w-4 h-4 mr-2" />
-                        Descargar QR
-                      </Button>
-                      
-                      <Button
-                        onClick={handleCopyLink}
-                        variant="outline"
-                        className="flex-1 bg-slate-700 border-slate-600 text-slate-100 hover:bg-slate-600"
-                      >
-                        <Copy className="w-4 h-4 mr-2" />
-                        Copiar Enlace
-                      </Button>
-                      
-                      <Button
-                        onClick={handleNativeShare}
-                        className="flex-1 bg-gradient-to-r from-violet-500 to-violet-600 hover:from-violet-600 hover:to-violet-700 text-white"
-                      >
-                        <Share2 className="w-4 h-4 mr-2" />
-                        Compartir
-                      </Button>
+                      {/* QR Code Display */}
+                      <div className="bg-white p-4 rounded-xl shadow-lg">
+                        {loadingQR ? (
+                          <div className="w-48 h-48 flex items-center justify-center">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-500"></div>
+                          </div>
+                        ) : qrCodeUrl ? (
+                          <img
+                            src={qrCodeUrl}
+                            alt="Código QR del contacto"
+                            className="w-48 h-48 object-contain"
+                          />
+                        ) : (
+                          <div className="w-48 h-48 flex items-center justify-center text-gray-500">
+                            Error al cargar QR
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Contact Info */}
+                      <div className="text-center">
+                        <h3 className="font-semibold text-slate-100">{contact?.name}</h3>
+                        <p className="text-sm text-slate-400">{contact?.title}</p>
+                        <p className="text-xs text-slate-500 mt-2">
+                          Escanea el código para acceder al contacto
+                        </p>
+                      </div>
+
+                      {/* QR Action Buttons */}
+                      <div className="flex flex-col sm:flex-row gap-3 w-full">
+                        <Button
+                          onClick={handleDownloadQR}
+                          variant="outline"
+                          className="flex-1 bg-slate-700 border-slate-600 text-slate-100 hover:bg-slate-600"
+                          disabled={!qrCodeUrl}
+                        >
+                          <Download className="w-4 h-4 mr-2" />
+                          Descargar QR
+                        </Button>
+                        
+                        <Button
+                          onClick={handleCopyLink}
+                          variant="outline"
+                          className="flex-1 bg-slate-700 border-slate-600 text-slate-100 hover:bg-slate-600"
+                        >
+                          <Copy className="w-4 h-4 mr-2" />
+                          Copiar Enlace
+                        </Button>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </DialogContent>
               </Dialog>
             </div>
