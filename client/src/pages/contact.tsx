@@ -27,6 +27,7 @@ interface Contact {
   telegram: string;
   website: string;
   profileImage: string;
+  officeAddress: string;
   bankName: string;
   bankAccount: string;
   accType: string;
@@ -409,6 +410,19 @@ Correo: ${bank.email}`;
                   </div>
                   <ExternalLink className="text-slate-500 w-4 h-4" />
                 </a>
+              )}
+
+              {/* Office Address */}
+              {contact.officeAddress && (
+                <div className="contact-item flex items-center p-4 rounded-xl border border-slate-700">
+                  <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mr-4 shadow-md">
+                    <Building2 className="text-white w-5 h-5" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-slate-100 font-semibold">Oficina</h3>
+                    <p className="text-slate-400 text-sm">{contact.officeAddress}</p>
+                  </div>
+                </div>
               )}
             </div>
 

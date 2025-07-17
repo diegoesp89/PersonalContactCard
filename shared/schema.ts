@@ -15,6 +15,7 @@ export const contacts = pgTable("contacts", {
   telegram: text("telegram").notNull().default(""),
   website: text("website").notNull(),
   profileImage: text("profile_image").notNull().default(""),
+  officeAddress: text("office_address").notNull().default(""),
   bankName: text("bank_name").notNull(),
   bankAccount: text("bank_account").notNull(),
   accType: text("accType").notNull(),

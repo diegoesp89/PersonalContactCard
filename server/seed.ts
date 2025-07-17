@@ -23,6 +23,7 @@ export async function seedDatabase() {
     telegram: "",
     website: "https://www.cashirts.cl",
     profileImage: "",
+    officeAddress: "Av. Las Condes 123, Las Condes, Santiago",
     bankName: "Mercado Pago y BCI",
     bankAccount: "MP: 1054307950 / BCI: 777014142023",
     accType: "Vista",

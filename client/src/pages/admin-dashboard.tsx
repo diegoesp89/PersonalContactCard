@@ -28,6 +28,7 @@ interface Contact {
   telegram: string;
   website: string;
   profileImage: string;
+  officeAddress: string;
   bankName: string;
   bankAccount: string;
   accType: string;

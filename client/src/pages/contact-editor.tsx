@@ -32,6 +32,7 @@ interface Contact {
   telegram: string;
   website: string;
   profileImage: string;
+  officeAddress: string;
   bankName: string;
   bankAccount: string;
   accType: string;
@@ -83,6 +84,7 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
     telegram: contact?.telegram || "",
     website: contact?.website || "",
     profileImage: contact?.profileImage || "",
+    officeAddress: contact?.officeAddress || "",
     bankName: contact?.bankName || "",
     bankAccount: contact?.bankAccount || "",
     accType: contact?.accType || "",
@@ -138,7 +140,7 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
     formData.append('profileImage', file);
 
     try {
-      const response = await fetch('/api/admin/upload-image', {
+      const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
       });
@@ -424,6 +426,16 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                   onChange={(e) => updateField("website", e.target.value)}
                   className="bg-slate-800/50 border-slate-600 text-slate-100"
                   placeholder="https://ejemplo.com"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <Label htmlFor="officeAddress" className="text-slate-200">Dirección de Oficina</Label>
+                <Input
+                  id="officeAddress"
+                  value={formData.officeAddress}
+                  onChange={(e) => updateField("officeAddress", e.target.value)}
+                  className="bg-slate-800/50 border-slate-600 text-slate-100"
+                  placeholder="Ej: Av. Las Condes 123, Las Condes, Santiago"
                 />
               </div>
               <div>
