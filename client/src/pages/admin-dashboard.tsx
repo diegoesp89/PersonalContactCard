@@ -29,6 +29,7 @@ interface Contact {
   linkedin: string;
   telegram: string;
   website: string;
+  profileImage: string;
   bankName: string;
   bankAccount: string;
   accType: string;

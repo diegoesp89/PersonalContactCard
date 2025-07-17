@@ -26,6 +26,7 @@ interface Contact {
   linkedin: string;
   telegram: string;
   website: string;
+  profileImage: string;
   bankName: string;
   bankAccount: string;
   accType: string;
@@ -246,13 +247,18 @@ Correo: ${bank.email}`;
           <div className="glass-effect rounded-3xl p-8 shadow-2xl">
             {/* Header with Profile */}
             <div className="text-center mb-8">
-              <div className="w-24 h-24 rounded-full mx-auto mb-4 shadow-lg overflow-hidden bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center">
-                <img
-                  src="/cas.jpg"
-                  alt="Foto de perfil"
-                  className="w-full h-full object-cover"
-                  style={{ display: "block" }}
-                />
+              <div className="w-24 h-24 rounded-full mx-auto mb-4 shadow-lg overflow-hidden">
+                {contact.profileImage ? (
+                  <img
+                    src={contact.profileImage}
+                    alt={contact.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center text-white text-xl font-bold">
+                    {contact.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                  </div>
+                )}
               </div>
               <h1 className="text-2xl font-bold text-slate-100 mb-2">
                 {contact.name}

@@ -44,6 +44,7 @@ export class MemStorage implements IStorage {
       linkedin: "",
       telegram: "",
       website: "https://www.cashirts.cl",
+      profileImage: "",
       bankName: "Mercado Pago y BCI",
       bankAccount: "MP: 1054307950 / BCI: 777014142023",
       accType: "Vista",

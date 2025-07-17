@@ -13,7 +13,9 @@ import {
   Plus, 
   Trash2, 
   Upload,
-  Building2 
+  Building2,
+  User,
+  X
 } from "lucide-react";
 import { z } from "zod";
 
@@ -29,6 +31,7 @@ interface Contact {
   linkedin: string;
   telegram: string;
   website: string;
+  profileImage: string;
   bankName: string;
   bankAccount: string;
   accType: string;
@@ -64,6 +67,9 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
   
   // Check if user is superadmin
   const isSuperAdmin = password === "Mafatanga2025";
+  
+  // State for image upload
+  const [uploading, setUploading] = useState(false);
 
   const [formData, setFormData] = useState<Contact>({
     name: contact?.name || "",
@@ -76,6 +82,7 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
     linkedin: contact?.linkedin || "",
     telegram: contact?.telegram || "",
     website: contact?.website || "",
+    profileImage: contact?.profileImage || "",
     bankName: contact?.bankName || "",
     bankAccount: contact?.bankAccount || "",
     accType: contact?.accType || "",
@@ -101,6 +108,61 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
 
   const updateField = (field: keyof Contact, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  // Image upload function
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Error",
+        description: "Solo se permiten archivos de imagen",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "Error", 
+        description: "La imagen debe ser menor a 5MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('profileImage', file);
+
+    try {
+      const response = await fetch('/api/admin/upload-image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload image');
+      }
+
+      const data = await response.json();
+      updateField('profileImage', data.imageUrl);
+      
+      toast({
+        title: "¡Imagen subida!",
+        description: "La imagen de perfil se ha guardado correctamente",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo subir la imagen",
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+    }
   };
 
   const addBank = () => {
@@ -202,6 +264,64 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Profile Image */}
+          <Card className="glass-effect border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-slate-100">Imagen de Perfil</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-6">
+                <div className="flex-shrink-0">
+                  {formData.profileImage ? (
+                    <div className="relative">
+                      <img
+                        src={formData.profileImage}
+                        alt="Imagen de perfil"
+                        className="w-24 h-24 rounded-full object-cover border-2 border-slate-600"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => updateField('profileImage', '')}
+                        className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-white text-xs hover:bg-red-600 transition-colors"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="w-24 h-24 rounded-full bg-slate-700 flex items-center justify-center border-2 border-slate-600">
+                      <User className="w-8 h-8 text-slate-400" />
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <Label htmlFor="profileImage" className="text-slate-200 block mb-2">
+                    Subir Imagen
+                  </Label>
+                  <input
+                    id="profileImage"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => document.getElementById('profileImage')?.click()}
+                    disabled={uploading}
+                    className="bg-slate-800/50 border-slate-600 text-slate-100 hover:bg-slate-700/50"
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    {uploading ? "Subiendo..." : "Seleccionar Imagen"}
+                  </Button>
+                  <p className="text-xs text-slate-400 mt-2">
+                    JPG, PNG o GIF. Máximo 5MB.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Basic Information */}
           <Card className="glass-effect border-slate-700">
             <CardHeader>

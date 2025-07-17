@@ -10,6 +10,8 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+- **Julio 17, 2025**: Implementado sistema de subida de imagen de perfil con almacenamiento en client/public/uploads/
+- **Julio 17, 2025**: Agregado endpoint de subida de archivos con validación de tamaño y tipo
 - **Julio 17, 2025**: Expandido sistema de redes sociales - agregados TikTok, LinkedIn, Telegram con iconos específicos
 - **Julio 17, 2025**: Mejorado manejo de handles - funciona con o sin @ automáticamente para todas las plataformas
 - **Julio 17, 2025**: Implementado sistema de doble nivel de autenticación - SuperAdmin ("Mafatanga2025") y Admin básico ("CamisasWenas.!")
