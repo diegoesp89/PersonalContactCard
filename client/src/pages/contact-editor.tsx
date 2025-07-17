@@ -58,6 +58,9 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const isEditing = !!contact?.id;
+  
+  // Check if user is superadmin
+  const isSuperAdmin = password === "Mafatanga2025";
 
   const [formData, setFormData] = useState<Contact>({
     name: contact?.name || "",
@@ -316,20 +319,23 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                   }
                 />
               </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label className="text-slate-200">En Desarrollo</Label>
-                  <p className="text-xs text-slate-400">
-                    Muestra banner de desarrollo
-                  </p>
+              {/* Development mode - only for superadmin */}
+              {isSuperAdmin && (
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-slate-200">En Desarrollo</Label>
+                    <p className="text-xs text-slate-400">
+                      Muestra banner de desarrollo (Solo SuperAdmin)
+                    </p>
+                  </div>
+                  <Switch
+                    checked={formData.inDev === "true"}
+                    onCheckedChange={(checked) => 
+                      updateField("inDev", checked ? "true" : "false")
+                    }
+                  />
                 </div>
-                <Switch
-                  checked={formData.inDev === "true"}
-                  onCheckedChange={(checked) => 
-                    updateField("inDev", checked ? "true" : "false")
-                  }
-                />
-              </div>
+              )}
             </CardContent>
           </Card>
 

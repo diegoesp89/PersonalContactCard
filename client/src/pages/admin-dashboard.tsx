@@ -206,7 +206,7 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
                 )}
               </h1>
               <p className="text-slate-400">
-                {isSuperAdmin ? "Acceso completo - Gestión y aprobación de contactos" : "Gestión de contactos"}
+                {isSuperAdmin ? "Acceso completo - Gestión, aprobación y desarrollo" : "Gestión y aprobación de contactos"}
               </p>
             </div>
           </div>
@@ -294,25 +294,23 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
                     Editar
                   </Button>
                   
-                  {/* Approval button - only for superadmin */}
-                  {isSuperAdmin && (
-                    <Button
-                      size="sm"
-                      variant={contact.approved === "true" ? "default" : "secondary"}
-                      onClick={() => toggleApprovalMutation.mutate({ 
-                        id: contact.id, 
-                        approved: contact.approved 
-                      })}
-                      disabled={toggleApprovalMutation.isPending}
-                      title={contact.approved === "true" ? "Desaprobar contacto" : "Aprobar contacto"}
-                    >
-                      {contact.approved === "true" ? (
-                        <XCircle className="w-3 h-3" />
-                      ) : (
-                        <CheckCircle className="w-3 h-3" />
-                      )}
-                    </Button>
-                  )}
+                  {/* Approval button - available for all admins */}
+                  <Button
+                    size="sm"
+                    variant={contact.approved === "true" ? "default" : "secondary"}
+                    onClick={() => toggleApprovalMutation.mutate({ 
+                      id: contact.id, 
+                      approved: contact.approved 
+                    })}
+                    disabled={toggleApprovalMutation.isPending}
+                    title={contact.approved === "true" ? "Desaprobar contacto" : "Aprobar contacto"}
+                  >
+                    {contact.approved === "true" ? (
+                      <XCircle className="w-3 h-3" />
+                    ) : (
+                      <CheckCircle className="w-3 h-3" />
+                    )}
+                  </Button>
                   
                   <Button
                     size="sm"

@@ -10,8 +10,9 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-- **Julio 17, 2025**: Implementado sistema de doble nivel de autenticación - SuperAdmin ("Mafatanga2025") puede aprobar contactos
-- **Julio 17, 2025**: Agregado botón de aprobación exclusivo para SuperAdmin con indicador visual
+- **Julio 17, 2025**: Implementado sistema de doble nivel de autenticación - SuperAdmin ("Mafatanga2025") y Admin básico ("CamisasWenas.!")
+- **Julio 17, 2025**: Configurado niveles de permiso: aprobación disponible para ambos, control "inDev" exclusivo para SuperAdmin
+- **Julio 17, 2025**: Agregado indicador visual SuperAdmin en header del panel con descripción de permisos
 - **Julio 17, 2025**: Corregido error en función apiRequest que impedía crear/editar contactos
 - **Julio 16, 2025**: Implementado sistema completo de administración con panel de admin en /edit
 - **Julio 16, 2025**: Añadido sistema de autenticación con contraseña "CamisasWenas.!" para admin básico
