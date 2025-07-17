@@ -271,36 +271,40 @@ Correo: ${bank.email}`;
             {/* Contact Information */}
             <div className="space-y-4">
               {/* WhatsApp */}
-              <a
-                href={getWhatsAppUrl(contact.whatsapp)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-green-500/10 hover:border-green-500/30"
-              >
-                <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mr-4 shadow-md">
-                  <Phone className="text-white w-5 h-5" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-slate-100 font-semibold">WhatsApp</h3>
-                  <p className="text-slate-400 text-sm">{contact.whatsapp}</p>
-                </div>
-                <ExternalLink className="text-slate-500 w-4 h-4" />
-              </a>
+              {contact.whatsapp && (
+                <a
+                  href={getWhatsAppUrl(contact.whatsapp)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-green-500/10 hover:border-green-500/30"
+                >
+                  <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mr-4 shadow-md">
+                    <Phone className="text-white w-5 h-5" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-slate-100 font-semibold">WhatsApp</h3>
+                    <p className="text-slate-400 text-sm">{contact.whatsapp}</p>
+                  </div>
+                  <ExternalLink className="text-slate-500 w-4 h-4" />
+                </a>
+              )}
 
               {/* Phone */}
-              <a
-                href={getTelUrl(contact.phone)}
-                className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
-              >
-                <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mr-4 shadow-md">
-                  <Phone className="text-white w-5 h-5" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-slate-100 font-semibold">Teléfono</h3>
-                  <p className="text-slate-400 text-sm">{contact.phone}</p>
-                </div>
-                <ExternalLink className="text-slate-500 w-4 h-4" />
-              </a>
+              {contact.phone && (
+                <a
+                  href={getTelUrl(contact.phone)}
+                  className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
+                >
+                  <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mr-4 shadow-md">
+                    <Phone className="text-white w-5 h-5" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-slate-100 font-semibold">Teléfono</h3>
+                    <p className="text-slate-400 text-sm">{contact.phone}</p>
+                  </div>
+                  <ExternalLink className="text-slate-500 w-4 h-4" />
+                </a>
+              )}
 
               {/* Email */}
               <a
