@@ -6,6 +6,8 @@ import {
   type Contact,
   type InsertContact,
 } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -137,4 +139,61 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// New DatabaseStorage class
+export class DatabaseStorage implements IStorage {
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
+    return user;
+  }
+
+  async getContact(): Promise<Contact | undefined> {
+    const [contact] = await db.select().from(contacts).limit(1);
+    return contact || undefined;
+  }
+
+  async getContactByRuta(ruta: string): Promise<Contact | undefined> {
+    const [contact] = await db.select().from(contacts).where(eq(contacts.ruta, ruta));
+    return contact || undefined;
+  }
+
+  async getAllContacts(): Promise<Contact[]> {
+    const allContacts = await db.select().from(contacts);
+    return allContacts;
+  }
+
+  async createContact(insertContact: InsertContact): Promise<Contact> {
+    const [contact] = await db
+      .insert(contacts)
+      .values(insertContact)
+      .returning();
+    return contact;
+  }
+
+  async updateContact(id: number, updateData: Partial<InsertContact>): Promise<Contact> {
+    const [contact] = await db
+      .update(contacts)
+      .set(updateData)
+      .where(eq(contacts.id, id))
+      .returning();
+    return contact;
+  }
+
+  async deleteContact(id: number): Promise<void> {
+    await db.delete(contacts).where(eq(contacts.id, id));
+  }
+}
+
+export const storage = new DatabaseStorage();
