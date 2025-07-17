@@ -130,11 +130,18 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
         ? `/api/admin/contacts/${contact!.id}`
         : "/api/admin/contacts/create";
       
-      return apiRequest(endpoint, {
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password, ...data })
       });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error ${response.status}: ${errorText}`);
+      }
+      
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/contacts"] });

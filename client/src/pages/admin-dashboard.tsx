@@ -70,11 +70,17 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
 
   const toggleVisibilityMutation = useMutation({
     mutationFn: async ({ id, visible }: { id: number; visible: string }) => {
-      return apiRequest(`/api/admin/contacts/${id}`, {
+      const response = await fetch(`/api/admin/contacts/${id}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password, visible: visible === "true" ? "false" : "true" })
       });
+      
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+      
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/contacts"] });
@@ -94,11 +100,17 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
 
   const deleteContactMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest(`/api/admin/contacts/${id}`, {
+      const response = await fetch(`/api/admin/contacts/${id}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password })
       });
+      
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+      
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/contacts"] });
