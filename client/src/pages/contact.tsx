@@ -82,8 +82,8 @@ export default function ContactPage() {
         const deltaY = (e.clientY - centerY) / (rect.height / 2);
         
         setTilt({
-          x: deltaY * 20, // Max 20 degrees tilt
-          y: deltaX * -20
+          x: 0, // No vertical tilt
+          y: deltaX * -20 // Only horizontal tilt
         });
       }
     };
@@ -109,8 +109,8 @@ export default function ContactPage() {
     const handleDeviceOrientation = (e: DeviceOrientationEvent) => {
       if (e.beta !== null && e.gamma !== null) {
         setTilt({
-          x: Math.max(-25, Math.min(25, e.beta * 0.8)), 
-          y: Math.max(-25, Math.min(25, e.gamma * 0.8))
+          x: 0, // No vertical tilt
+          y: Math.max(-25, Math.min(25, e.gamma * 0.8)) // Only horizontal tilt
         });
       }
     };
