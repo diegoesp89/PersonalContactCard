@@ -10,6 +10,8 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+- **Julio 17, 2025**: Expandido sistema de redes sociales - agregados TikTok, LinkedIn, Telegram con iconos específicos
+- **Julio 17, 2025**: Mejorado manejo de handles - funciona con o sin @ automáticamente para todas las plataformas
 - **Julio 17, 2025**: Implementado sistema de doble nivel de autenticación - SuperAdmin ("Mafatanga2025") y Admin básico ("CamisasWenas.!")
 - **Julio 17, 2025**: Configurado niveles de permiso: aprobación disponible para ambos, control "inDev" exclusivo para SuperAdmin
 - **Julio 17, 2025**: Agregado indicador visual SuperAdmin en header del panel con descripción de permisos

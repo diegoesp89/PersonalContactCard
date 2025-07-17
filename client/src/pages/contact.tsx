@@ -156,22 +156,22 @@ Correo: ${bank.email}`;
   };
 
   const getInstagramUrl = (username: string) => {
-    const cleanUsername = username.replace("@", "");
+    const cleanUsername = username.replace(/^@+/, "");
     return `https://instagram.com/${cleanUsername}`;
   };
 
   const getTikTokUrl = (username: string) => {
-    const cleanUsername = username.replace("@", "");
+    const cleanUsername = username.replace(/^@+/, "");
     return `https://tiktok.com/@${cleanUsername}`;
   };
 
   const getLinkedInUrl = (username: string) => {
-    const cleanUsername = username.replace("@", "");
+    const cleanUsername = username.replace(/^@+/, "");
     return `https://linkedin.com/in/${cleanUsername}`;
   };
 
   const getTelegramUrl = (username: string) => {
-    const cleanUsername = username.replace("@", "");
+    const cleanUsername = username.replace(/^@+/, "");
     return `https://t.me/${cleanUsername}`;
   };
 
@@ -340,7 +340,7 @@ Correo: ${bank.email}`;
                   </div>
                   <div className="flex-1">
                     <h3 className="text-slate-100 font-semibold">Instagram</h3>
-                    <p className="text-slate-400 text-sm">@{contact.instagram}</p>
+                    <p className="text-slate-400 text-sm">@{contact.instagram.replace(/^@+/, "")}</p>
                   </div>
                   <ExternalLink className="text-slate-500 w-4 h-4" />
                 </a>
@@ -359,7 +359,7 @@ Correo: ${bank.email}`;
                   </div>
                   <div className="flex-1">
                     <h3 className="text-slate-100 font-semibold">TikTok</h3>
-                    <p className="text-slate-400 text-sm">@{contact.tiktok.replace("@", "")}</p>
+                    <p className="text-slate-400 text-sm">@{contact.tiktok.replace(/^@+/, "")}</p>
                   </div>
                   <ExternalLink className="text-slate-500 w-4 h-4" />
                 </a>
@@ -397,7 +397,7 @@ Correo: ${bank.email}`;
                   </div>
                   <div className="flex-1">
                     <h3 className="text-slate-100 font-semibold">Telegram</h3>
-                    <p className="text-slate-400 text-sm">@{contact.telegram.replace("@", "")}</p>
+                    <p className="text-slate-400 text-sm">@{contact.telegram.replace(/^@+/, "")}</p>
                   </div>
                   <ExternalLink className="text-slate-500 w-4 h-4" />
                 </a>
