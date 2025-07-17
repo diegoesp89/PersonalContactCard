@@ -25,6 +25,9 @@ interface Contact {
   email: string;
   whatsapp: string;
   instagram: string;
+  tiktok: string;
+  linkedin: string;
+  telegram: string;
   website: string;
   bankName: string;
   bankAccount: string;

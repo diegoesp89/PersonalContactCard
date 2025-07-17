@@ -10,7 +10,9 @@ import {
   Download,
   ExternalLink,
   Copy,
+  Globe,
 } from "lucide-react";
+import { FaTiktok, FaLinkedin, FaTelegram } from "react-icons/fa";
 
 interface Contact {
   id: number;
@@ -20,6 +22,9 @@ interface Contact {
   email: string;
   whatsapp: string;
   instagram: string;
+  tiktok: string;
+  linkedin: string;
+  telegram: string;
   website: string;
   bankName: string;
   bankAccount: string;
@@ -153,6 +158,21 @@ Correo: ${bank.email}`;
   const getInstagramUrl = (username: string) => {
     const cleanUsername = username.replace("@", "");
     return `https://instagram.com/${cleanUsername}`;
+  };
+
+  const getTikTokUrl = (username: string) => {
+    const cleanUsername = username.replace("@", "");
+    return `https://tiktok.com/@${cleanUsername}`;
+  };
+
+  const getLinkedInUrl = (username: string) => {
+    const cleanUsername = username.replace("@", "");
+    return `https://linkedin.com/in/${cleanUsername}`;
+  };
+
+  const getTelegramUrl = (username: string) => {
+    const cleanUsername = username.replace("@", "");
+    return `https://t.me/${cleanUsername}`;
   };
 
   if (isLoading) {
@@ -308,21 +328,99 @@ Correo: ${bank.email}`;
               </a>
 
               {/* Instagram */}
-              <a
-                href={getInstagramUrl(contact.instagram)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
-              >
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mr-4 shadow-md">
-                  <Instagram className="text-white w-5 h-5" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-slate-100 font-semibold">Instagram</h3>
-                  <p className="text-slate-400 text-sm">{contact.instagram}</p>
-                </div>
-                <ExternalLink className="text-slate-500 w-4 h-4" />
-              </a>
+              {contact.instagram && (
+                <a
+                  href={getInstagramUrl(contact.instagram)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
+                >
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mr-4 shadow-md">
+                    <Instagram className="text-white w-5 h-5" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-slate-100 font-semibold">Instagram</h3>
+                    <p className="text-slate-400 text-sm">@{contact.instagram}</p>
+                  </div>
+                  <ExternalLink className="text-slate-500 w-4 h-4" />
+                </a>
+              )}
+
+              {/* TikTok */}
+              {contact.tiktok && (
+                <a
+                  href={getTikTokUrl(contact.tiktok)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
+                >
+                  <div className="w-12 h-12 bg-gradient-to-br from-black to-gray-800 rounded-xl flex items-center justify-center mr-4 shadow-md">
+                    <FaTiktok className="text-white w-5 h-5" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-slate-100 font-semibold">TikTok</h3>
+                    <p className="text-slate-400 text-sm">@{contact.tiktok.replace("@", "")}</p>
+                  </div>
+                  <ExternalLink className="text-slate-500 w-4 h-4" />
+                </a>
+              )}
+
+              {/* LinkedIn */}
+              {contact.linkedin && (
+                <a
+                  href={getLinkedInUrl(contact.linkedin)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
+                >
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center mr-4 shadow-md">
+                    <FaLinkedin className="text-white w-5 h-5" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-slate-100 font-semibold">LinkedIn</h3>
+                    <p className="text-slate-400 text-sm">{contact.linkedin}</p>
+                  </div>
+                  <ExternalLink className="text-slate-500 w-4 h-4" />
+                </a>
+              )}
+
+              {/* Telegram */}
+              {contact.telegram && (
+                <a
+                  href={getTelegramUrl(contact.telegram)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
+                >
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center mr-4 shadow-md">
+                    <FaTelegram className="text-white w-5 h-5" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-slate-100 font-semibold">Telegram</h3>
+                    <p className="text-slate-400 text-sm">@{contact.telegram.replace("@", "")}</p>
+                  </div>
+                  <ExternalLink className="text-slate-500 w-4 h-4" />
+                </a>
+              )}
+
+              {/* Website */}
+              {contact.website && (
+                <a
+                  href={contact.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
+                >
+                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-xl flex items-center justify-center mr-4 shadow-md">
+                    <Globe className="text-white w-5 h-5" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-slate-100 font-semibold">Sitio Web</h3>
+                    <p className="text-slate-400 text-sm">{contact.website}</p>
+                  </div>
+                  <ExternalLink className="text-slate-500 w-4 h-4" />
+                </a>
+              )}
             </div>
 
             {/* Bank Transfer Information */}

@@ -25,6 +25,9 @@ interface Contact {
   email: string;
   whatsapp: string;
   instagram: string;
+  tiktok: string;
+  linkedin: string;
+  telegram: string;
   website: string;
   bankName: string;
   bankAccount: string;
@@ -69,6 +72,9 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
     email: contact?.email || "",
     whatsapp: contact?.whatsapp || "",
     instagram: contact?.instagram || "",
+    tiktok: contact?.tiktok || "",
+    linkedin: contact?.linkedin || "",
+    telegram: contact?.telegram || "",
     website: contact?.website || "",
     bankName: contact?.bankName || "",
     bankAccount: contact?.bankAccount || "",
@@ -257,6 +263,37 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                   value={formData.instagram}
                   onChange={(e) => updateField("instagram", e.target.value)}
                   className="bg-slate-800/50 border-slate-600 text-slate-100"
+                  placeholder="usuario_instagram"
+                />
+              </div>
+              <div>
+                <Label htmlFor="tiktok" className="text-slate-200">TikTok</Label>
+                <Input
+                  id="tiktok"
+                  value={formData.tiktok}
+                  onChange={(e) => updateField("tiktok", e.target.value)}
+                  className="bg-slate-800/50 border-slate-600 text-slate-100"
+                  placeholder="@usuario_tiktok"
+                />
+              </div>
+              <div>
+                <Label htmlFor="linkedin" className="text-slate-200">LinkedIn</Label>
+                <Input
+                  id="linkedin"
+                  value={formData.linkedin}
+                  onChange={(e) => updateField("linkedin", e.target.value)}
+                  className="bg-slate-800/50 border-slate-600 text-slate-100"
+                  placeholder="usuario-linkedin"
+                />
+              </div>
+              <div>
+                <Label htmlFor="telegram" className="text-slate-200">Telegram</Label>
+                <Input
+                  id="telegram"
+                  value={formData.telegram}
+                  onChange={(e) => updateField("telegram", e.target.value)}
+                  className="bg-slate-800/50 border-slate-600 text-slate-100"
+                  placeholder="@usuario_telegram"
                 />
               </div>
               <div>
@@ -266,6 +303,7 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                   value={formData.website}
                   onChange={(e) => updateField("website", e.target.value)}
                   className="bg-slate-800/50 border-slate-600 text-slate-100"
+                  placeholder="https://ejemplo.com"
                 />
               </div>
               <div>
