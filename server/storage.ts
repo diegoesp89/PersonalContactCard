@@ -51,8 +51,7 @@ export class MemStorage implements IStorage {
       bankHolder: "Cristian Antonio Alfaro Sepúlveda",
       inDev: "false",
       ruta: "cristian",
-      approved: "true",
-      visible: "true",
+
       banks: JSON.stringify([
         {
           id: "mp",

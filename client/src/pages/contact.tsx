@@ -33,8 +33,7 @@ interface Contact {
   bankHolder: string;
   inDev: string;
   ruta: string;
-  approved: string;
-  visible: string;
+
   banks: string; // JSON string of Bank[]
 }
 
@@ -209,24 +208,7 @@ Correo: ${bank.email}`;
   // Parse banks from JSON
   const banks: Bank[] = contact?.banks ? JSON.parse(contact.banks) : [];
 
-  // Check if contact is approved
-  if (contact && contact.approved === "false") {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-        <div className="glass-effect rounded-3xl p-8 w-full max-w-md text-center">
-          <div className="w-16 h-16 mx-auto mb-4 bg-amber-500/20 rounded-full flex items-center justify-center">
-            <div className="w-8 h-8 bg-amber-500 rounded-full animate-pulse"></div>
-          </div>
-          <h1 className="text-xl font-bold text-slate-100 mb-4">
-            Contacto en proceso
-          </h1>
-          <p className="text-slate-400">
-            Gracias por su espera.
-          </p>
-        </div>
-      </div>
-    );
-  }
+
 
   return (
     <div className="min-h-screen flex flex-col">

@@ -21,8 +21,7 @@ export const contacts = pgTable("contacts", {
   bankHolder: text("bank_holder").notNull(),
   inDev: text("inDev").notNull().default("false"),
   ruta: text("ruta").notNull().unique(),
-  approved: text("approved").notNull().default("false"),
-  visible: text("visible").notNull().default("true"),
+
   banks: text("banks").notNull().default("[]"), // JSON array of bank objects
 });
 

@@ -102,7 +102,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: result.error });
       }
       
-      // Set default inDev based on admin level if not provided
+      // Set default values based on admin level
       if (!result.data.inDev) {
         result.data.inDev = isSuperAdmin ? "false" : "true";
       }

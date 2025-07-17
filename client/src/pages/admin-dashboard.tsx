@@ -36,8 +36,7 @@ interface Contact {
   bankHolder: string;
   inDev: string;
   ruta: string;
-  approved: string;
-  visible: string;
+
   banks: string;
 }
 

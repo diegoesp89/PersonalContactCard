@@ -38,8 +38,7 @@ interface Contact {
   bankHolder: string;
   inDev: string;
   ruta: string;
-  approved: string;
-  visible: string;
+
   banks: string;
 }
 
@@ -89,8 +88,7 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
     bankHolder: contact?.bankHolder || "",
     inDev: contact?.inDev || (isSuperAdmin ? "false" : "true"),
     ruta: contact?.ruta || "",
-    approved: contact?.approved || "false",
-    visible: contact?.visible || "true",
+
     banks: contact?.banks || "[]"
   });
 
@@ -449,34 +447,7 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
               <CardTitle className="text-slate-100">Configuración</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label className="text-slate-200">Aprobado</Label>
-                  <p className="text-xs text-slate-400">
-                    Si está desactivado, se mostrará "Contacto en proceso"
-                  </p>
-                </div>
-                <Switch
-                  checked={formData.approved === "true"}
-                  onCheckedChange={(checked) => 
-                    updateField("approved", checked ? "true" : "false")
-                  }
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label className="text-slate-200">Visible</Label>
-                  <p className="text-xs text-slate-400">
-                    Controla si el contacto aparece en el panel
-                  </p>
-                </div>
-                <Switch
-                  checked={formData.visible === "true"}
-                  onCheckedChange={(checked) => 
-                    updateField("visible", checked ? "true" : "false")
-                  }
-                />
-              </div>
+
               {/* Development mode - only for superadmin */}
               {isSuperAdmin && (
                 <div className="flex items-center justify-between">
