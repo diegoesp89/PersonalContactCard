@@ -38,6 +38,7 @@ Preferred communication style: Simple, everyday language.
 - **Julio 17, 2025**: Agregado ribbon diagonal "DEMO" en imagen de perfil que se activa/desactiva con el estado inDev
 - **Julio 17, 2025**: Convertido campo de ruta (/X) en enlaces clickeables en paneles de admin para acceso directo al perfil
 - **Julio 17, 2025**: Implementado efecto de paralaje 3D en imagen de perfil responsive a giroscopio móvil y movimiento de mouse
+- **Julio 17, 2025**: Agregado skeleton loader animado para imagen de perfil durante carga
 - **Julio 16, 2025**: Implementado sistema completo de administración con panel de admin en /edit
 - **Julio 16, 2025**: Añadido sistema de autenticación con contraseña "CamisasWenas.!" para admin básico
 - **Julio 16, 2025**: Creado sistema de rutas dinámicas - cada contacto tiene campo "ruta" para generar URLs personalizadas

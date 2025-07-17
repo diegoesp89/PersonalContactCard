@@ -61,6 +61,7 @@ export default function ContactPage() {
   const [loadingQR, setLoadingQR] = useState(false);
   const [showQRView, setShowQRView] = useState(false);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const [imageLoaded, setImageLoaded] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
 
   // Try to get route parameter from URL
@@ -386,11 +387,22 @@ Correo: ${bank.email}`;
                 }}
               >
                 {contact.profileImage ? (
-                  <img
-                    src={contact.profileImage}
-                    alt={contact.name}
-                    className="w-full h-full object-cover"
-                  />
+                  <>
+                    {!imageLoaded && (
+                      <div className="w-full h-full bg-slate-700/50 animate-pulse flex items-center justify-center">
+                        <div className="w-8 h-8 bg-slate-600/50 rounded-full animate-pulse"></div>
+                      </div>
+                    )}
+                    <img
+                      src={contact.profileImage}
+                      alt={contact.name}
+                      className={`w-full h-full object-cover transition-opacity duration-300 ${
+                        imageLoaded ? 'opacity-100' : 'opacity-0 absolute inset-0'
+                      }`}
+                      onLoad={() => setImageLoaded(true)}
+                      onError={() => setImageLoaded(true)}
+                    />
+                  </>
                 ) : (
                   <div 
                     className="w-full h-full bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center text-white text-xl font-bold"
