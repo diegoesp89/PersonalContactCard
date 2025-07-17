@@ -18,6 +18,8 @@ Preferred communication style: Simple, everyday language.
 - **Julio 17, 2025**: Configurado niveles de permiso: aprobación disponible para ambos, control "inDev" exclusivo para SuperAdmin
 - **Julio 17, 2025**: Corregido comportamiento por defecto: nuevos contactos creados por admin normal tienen "inDev" = true automáticamente
 - **Julio 17, 2025**: Simplificado sistema - eliminados campos "visible" y "approved" (todos los contactos son siempre visibles y aprobados)
+- **Julio 17, 2025**: Agregado robots.txt y meta tags para evitar indexación por buscadores
+- **Julio 17, 2025**: Creada página de inicio simple con solo logo y correo electrónico de contacto por defecto
 - **Julio 17, 2025**: Agregado indicador visual SuperAdmin en header del panel con descripción de permisos
 - **Julio 17, 2025**: Corregido error en función apiRequest que impedía crear/editar contactos
 - **Julio 16, 2025**: Implementado sistema completo de administración con panel de admin en /edit
