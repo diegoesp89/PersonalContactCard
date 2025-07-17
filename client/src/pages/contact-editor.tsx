@@ -38,6 +38,7 @@ interface Contact {
   bankHolder: string;
   inDev: string;
   ruta: string;
+  backgroundColor: string;
 
   banks: string;
 }
@@ -88,6 +89,7 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
     bankHolder: contact?.bankHolder || "",
     inDev: contact?.inDev || "true", // Always default to true for new contacts
     ruta: contact?.ruta || "",
+    backgroundColor: contact?.backgroundColor || "#1e293b", // Default slate-800
 
     banks: contact?.banks || "[]"
   });
@@ -447,6 +449,28 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
               <CardTitle className="text-slate-100">Configuración</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+
+              {/* Background Color Picker */}
+              <div className="space-y-2">
+                <Label className="text-slate-200">Color de Fondo</Label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={formData.backgroundColor}
+                    onChange={(e) => updateField("backgroundColor", e.target.value)}
+                    className="w-12 h-10 rounded border border-slate-600 bg-transparent cursor-pointer"
+                  />
+                  <Input
+                    value={formData.backgroundColor}
+                    onChange={(e) => updateField("backgroundColor", e.target.value)}
+                    className="bg-slate-800/50 border-slate-600 text-slate-100"
+                    placeholder="#1e293b"
+                  />
+                </div>
+                <p className="text-xs text-slate-400">
+                  Color de fondo para la tarjeta de contacto
+                </p>
+              </div>
 
               {/* Development mode - only for superadmin */}
               {isSuperAdmin && (

@@ -51,6 +51,7 @@ export class MemStorage implements IStorage {
       bankHolder: "Cristian Antonio Alfaro Sepúlveda",
       inDev: "false",
       ruta: "cristian",
+      backgroundColor: "#1e293b", // Default slate-800
 
       banks: JSON.stringify([
         {

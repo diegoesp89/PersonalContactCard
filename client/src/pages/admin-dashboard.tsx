@@ -32,6 +32,7 @@ interface Contact {
   bankHolder: string;
   inDev: string;
   ruta: string;
+  backgroundColor: string;
 
   banks: string;
 }

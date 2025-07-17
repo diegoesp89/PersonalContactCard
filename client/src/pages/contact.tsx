@@ -33,6 +33,7 @@ interface Contact {
   bankHolder: string;
   inDev: string;
   ruta: string;
+  backgroundColor: string;
 
   banks: string; // JSON string of Bank[]
 }
@@ -224,9 +225,9 @@ Correo: ${bank.email}`;
         </div>
       )}
 
-      <div className="flex-1 flex items-center justify-center p-4">
+      <div className="flex-1 flex items-center justify-center p-4" style={{ backgroundColor: contact.backgroundColor || '#1e293b' }}>
         <div className="w-full max-w-md">
-          <div className="glass-effect rounded-3xl p-8 shadow-2xl">
+          <div className="glass-effect rounded-3xl p-8 shadow-2xl" style={{ backgroundColor: `${contact.backgroundColor || '#1e293b'}e6` }}>
             {/* Header with Profile */}
             <div className="text-center mb-8">
               <div className="w-24 h-24 rounded-full mx-auto mb-4 shadow-lg overflow-hidden">

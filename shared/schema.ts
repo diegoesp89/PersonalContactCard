@@ -21,6 +21,7 @@ export const contacts = pgTable("contacts", {
   bankHolder: text("bank_holder").notNull(),
   inDev: text("inDev").notNull().default("false"),
   ruta: text("ruta").notNull().unique(),
+  backgroundColor: text("background_color").notNull().default("#1e293b"), // Default slate-800
 
   banks: text("banks").notNull().default("[]"), // JSON array of bank objects
 });
