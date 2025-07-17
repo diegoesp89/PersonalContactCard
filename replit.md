@@ -10,14 +10,15 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-- **Julio 16, 2025**: Implementados logos oficiales de bancos con fondo blanco y borde difuminado
-- **Julio 16, 2025**: Implementados botones de copiar separados para cada cuenta bancaria en color verde
-- **Julio 16, 2025**: Actualizada información de contacto con datos reales del usuario
-- **Julio 16, 2025**: Separadas las dos cuentas bancarias (Mercado Pago y BCI) en secciones independientes
-- **Julio 16, 2025**: Cambiado "CLABE" por "Tipo" en información bancaria
-- **Julio 16, 2025**: Agregado banner de desarrollo informativo en la parte superior
-- **Julio 16, 2025**: Añadido campo de correo electrónico a la sección de datos de transferencia
-- **Julio 16, 2025**: Implementada foto de perfil personalizada usando cas.jpg como imagen circular
+- **Julio 16, 2025**: Implementado sistema completo de administración con panel de admin en /edit
+- **Julio 16, 2025**: Añadido sistema de autenticación con contraseña "CamisasWenas.!" para panel de admin
+- **Julio 16, 2025**: Creado sistema de rutas dinámicas - cada contacto tiene campo "ruta" para generar URLs personalizadas
+- **Julio 16, 2025**: Implementado campo "approved" - si es false, muestra banner "Contacto en proceso, gracias por su espera"
+- **Julio 16, 2025**: Agregado sistema dinámico de bancos - se pueden añadir N cantidad de bancos por contacto
+- **Julio 16, 2025**: Creado panel de gestión de contactos con opciones de crear, editar, mostrar/ocultar y eliminar
+- **Julio 16, 2025**: Implementado campo "visible" para controlar qué contactos aparecen en el panel
+- **Julio 16, 2025**: Actualizado banner de desarrollo para ser controlable vía campo "inDev" en storage
+- **Julio 16, 2025**: Migrado sistema de bancos estático a dinámico usando JSON para almacenar múltiples bancos
 - **Julio 16, 2025**: Configuración completa de tarjeta de contacto digital con diseño oscuro y moderno
 
 ## System Architecture

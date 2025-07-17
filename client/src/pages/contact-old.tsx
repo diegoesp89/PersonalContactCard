@@ -2,12 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import {
+  User,
+  Download,
+  Share2,
+  MessageCircle,
   Phone,
   Mail,
   Instagram,
   Building2,
-  Share2,
-  Download,
   ExternalLink,
   Copy,
 } from "lucide-react";
@@ -259,14 +261,14 @@ Correo: ${bank.email}`;
                 href={getWhatsAppUrl(contact.whatsapp)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-green-500/10 hover:border-green-500/30"
+                className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
               >
                 <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mr-4 shadow-md">
-                  <Phone className="text-white w-5 h-5" />
+                  <MessageCircle className="text-white w-5 h-5" />
                 </div>
                 <div className="flex-1">
                   <h3 className="text-slate-100 font-semibold">WhatsApp</h3>
-                  <p className="text-slate-400 text-sm">{contact.whatsapp}</p>
+                  <p className="text-slate-400 text-sm">{contact.phone}</p>
                 </div>
                 <ExternalLink className="text-slate-500 w-4 h-4" />
               </a>
@@ -384,6 +386,60 @@ Correo: ${bank.email}`;
                 ))}
               </div>
             )}
+
+              {/* BCI */}
+              <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-slate-100 font-medium text-red-400 flex items-center">
+                    <img
+                      src="/bci.svg"
+                      alt="BCI"
+                      className="w-8 h-8 mr-2 bg-white rounded-md p-1 shadow-sm"
+                    />
+                    BCI (Banco Crédito e Inversiones)
+                  </h4>
+                  <Button
+                    onClick={handleCopyBCI}
+                    variant="outline"
+                    size="sm"
+                    className="bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20"
+                  >
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copiar
+                  </Button>
+                </div>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Cuenta:</span>
+                    <span className="text-slate-100 font-medium font-mono">
+                      777014142023
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">RUT:</span>
+                    <span className="text-slate-100 font-medium">
+                      14.142.023-2
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Tipo de cuenta:</span>
+                    <span className="text-slate-100 font-medium">Vista</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Titular:</span>
+                    <span className="text-slate-100 font-medium">
+                      Cristian Antonio Alfaro Sepúlveda
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Correo:</span>
+                    <span className="text-slate-100 font-medium">
+                      crt.alfaros@gmail.com
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             {/* Footer */}
             <div className="mt-8 text-center">
