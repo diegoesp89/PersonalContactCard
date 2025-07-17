@@ -267,7 +267,7 @@ Correo: ${bank.email}`;
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-3 mb-8">
+            <div className="flex flex-col sm:flex-row gap-3 mb-8">
               <Button
                 onClick={handleSaveContact}
                 className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:translate-y-[-2px] shadow-lg"
