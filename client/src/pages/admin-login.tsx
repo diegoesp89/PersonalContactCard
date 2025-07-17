@@ -7,7 +7,7 @@ import { Lock } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
 interface AdminLoginProps {
-  onLogin: () => void;
+  onLogin: (password: string) => void;
 }
 
 export default function AdminLogin({ onLogin }: AdminLoginProps) {
@@ -30,12 +30,14 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
         throw new Error("Invalid password");
       }
 
+      const isSuperAdmin = password === "Mafatanga2025";
+      
       toast({
         title: "Acceso autorizado",
-        description: "Bienvenido al panel de administración",
+        description: isSuperAdmin ? "Bienvenido SuperAdmin" : "Bienvenido al panel de administración",
       });
       
-      onLogin();
+      onLogin(password);
     } catch (error) {
       toast({
         title: "Error de autenticación",

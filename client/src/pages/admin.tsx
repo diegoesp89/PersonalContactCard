@@ -18,8 +18,7 @@ interface Contact {
   bankHolder: string;
   inDev: string;
   ruta: string;
-  approved: string;
-  visible: string;
+
   banks: string;
 }
 
@@ -30,8 +29,8 @@ export default function AdminPage() {
   const [selectedContact, setSelectedContact] = useState<Contact | undefined>();
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    setPassword("CamisasWenas.!");
+  const handleLogin = (inputPassword: string) => {
+    setPassword(inputPassword);
     setCurrentView("dashboard");
   };
 

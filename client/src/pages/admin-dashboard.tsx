@@ -9,12 +9,8 @@ import {
   Users, 
   Plus, 
   Edit, 
-  Eye, 
-  EyeOff, 
   Trash2,
-  Settings,
-  CheckCircle,
-  XCircle
+  AlertTriangle
 } from "lucide-react";
 
 interface Contact {
@@ -74,35 +70,7 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
     retry: 1
   });
 
-  const toggleVisibilityMutation = useMutation({
-    mutationFn: async ({ id, visible }: { id: number; visible: string }) => {
-      const response = await fetch(`/api/admin/contacts/${id}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password, visible: visible === "true" ? "false" : "true" })
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
-      }
-      
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/contacts"] });
-      toast({
-        title: "Visibilidad actualizada",
-        description: "El estado del contacto ha sido cambiado",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "No se pudo actualizar la visibilidad",
-        variant: "destructive",
-      });
-    }
-  });
+
 
   const deleteContactMutation = useMutation({
     mutationFn: async (id: number) => {
@@ -134,12 +102,12 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
     }
   });
 
-  const toggleApprovalMutation = useMutation({
-    mutationFn: async ({ id, approved }: { id: number; approved: string }) => {
+  const toggleDevMutation = useMutation({
+    mutationFn: async ({ id, inDev }: { id: number; inDev: string }) => {
       const response = await fetch(`/api/admin/contacts/${id}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password, approved: approved === "true" ? "false" : "true" })
+        body: JSON.stringify({ password, inDev: inDev === "true" ? "false" : "true" })
       });
       
       if (!response.ok) {
@@ -151,14 +119,14 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/contacts"] });
       toast({
-        title: "Aprobación actualizada",
-        description: "El estado de aprobación del contacto ha sido cambiado",
+        title: "Estado actualizado",
+        description: "El estado de desarrollo del contacto ha sido cambiado",
       });
     },
     onError: () => {
       toast({
         title: "Error",
-        description: "No se pudo actualizar la aprobación",
+        description: "No se pudo actualizar el estado de desarrollo",
         variant: "destructive",
       });
     }
@@ -240,15 +208,8 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
                     <p className="text-sm text-slate-400">{contact.title}</p>
                   </div>
                   <div className="flex gap-1">
-                    {contact.approved === "true" ? (
-                      <CheckCircle className="w-4 h-4 text-green-400" />
-                    ) : (
-                      <XCircle className="w-4 h-4 text-red-400" />
-                    )}
-                    {contact.visible === "true" ? (
-                      <Eye className="w-4 h-4 text-blue-400" />
-                    ) : (
-                      <EyeOff className="w-4 h-4 text-slate-500" />
+                    {contact.inDev === "true" && (
+                      <AlertTriangle className="w-4 h-4 text-amber-400" title="En desarrollo" />
                     )}
                   </div>
                 </div>
@@ -265,16 +226,10 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
                   <p className="text-xs text-slate-400">Estado</p>
                   <div className="flex gap-2">
                     <Badge 
-                      variant={contact.approved === "true" ? "default" : "destructive"}
+                      variant={contact.inDev === "true" ? "secondary" : "default"}
                       className="text-xs"
                     >
-                      {contact.approved === "true" ? "Aprobado" : "Pendiente"}
-                    </Badge>
-                    <Badge 
-                      variant={contact.visible === "true" ? "default" : "secondary"}
-                      className="text-xs"
-                    >
-                      {contact.visible === "true" ? "Visible" : "Oculto"}
+                      {contact.inDev === "true" ? "En Desarrollo" : "Publicado"}
                     </Badge>
                   </div>
                 </div>
@@ -297,40 +252,21 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
                     Editar
                   </Button>
                   
-                  {/* Approval button - available for all admins */}
-                  <Button
-                    size="sm"
-                    variant={contact.approved === "true" ? "default" : "secondary"}
-                    onClick={() => toggleApprovalMutation.mutate({ 
-                      id: contact.id, 
-                      approved: contact.approved 
-                    })}
-                    disabled={toggleApprovalMutation.isPending}
-                    title={contact.approved === "true" ? "Desaprobar contacto" : "Aprobar contacto"}
-                  >
-                    {contact.approved === "true" ? (
-                      <XCircle className="w-3 h-3" />
-                    ) : (
-                      <CheckCircle className="w-3 h-3" />
-                    )}
-                  </Button>
-                  
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => toggleVisibilityMutation.mutate({ 
-                      id: contact.id, 
-                      visible: contact.visible 
-                    })}
-                    disabled={toggleVisibilityMutation.isPending}
-                    title={contact.visible === "true" ? "Ocultar contacto" : "Mostrar contacto"}
-                  >
-                    {contact.visible === "true" ? (
-                      <EyeOff className="w-3 h-3" />
-                    ) : (
-                      <Eye className="w-3 h-3" />
-                    )}
-                  </Button>
+                  {/* Development toggle - only for superadmin */}
+                  {isSuperAdmin && (
+                    <Button
+                      size="sm"
+                      variant={contact.inDev === "true" ? "secondary" : "default"}
+                      onClick={() => toggleDevMutation.mutate({ 
+                        id: contact.id, 
+                        inDev: contact.inDev 
+                      })}
+                      disabled={toggleDevMutation.isPending}
+                      title={contact.inDev === "true" ? "Publicar contacto" : "Marcar en desarrollo"}
+                    >
+                      <AlertTriangle className="w-3 h-3" />
+                    </Button>
+                  )}
                   <Button
                     size="sm"
                     variant="destructive"
