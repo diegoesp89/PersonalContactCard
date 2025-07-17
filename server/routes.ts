@@ -95,9 +95,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/contacts/create", authenticateAdmin, async (req, res) => {
     try {
       const { password, ...contactData } = req.body;
+      const isSuperAdmin = password === "Mafatanga2025";
+      
       const result = insertContactSchema.safeParse(contactData);
       if (!result.success) {
         return res.status(400).json({ error: result.error });
+      }
+      
+      // Set default inDev based on admin level if not provided
+      if (!result.data.inDev) {
+        result.data.inDev = isSuperAdmin ? "false" : "true";
       }
       
       const contact = await storage.createContact(result.data);
