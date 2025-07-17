@@ -1,15 +1,106 @@
+import { useState, useEffect, useRef } from "react";
 import { Instagram } from "lucide-react";
 
 export default function HomePage() {
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const logoRef = useRef<HTMLDivElement>(null);
+
+  // Mouse movement and gyroscope effects
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (logoRef.current) {
+        const rect = logoRef.current.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        const deltaX = (e.clientX - centerX) / (rect.width / 2);
+        const deltaY = (e.clientY - centerY) / (rect.height / 2);
+        
+        setTilt({
+          x: deltaY * 20, // Max 20 degrees tilt
+          y: deltaX * -20
+        });
+      }
+    };
+
+    const handleMouseLeave = () => {
+      setTilt({ x: 0, y: 0 });
+    };
+
+    // Global mouse movement for container area
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (logoRef.current) {
+        const rect = logoRef.current.getBoundingClientRect();
+        const isHovering = e.clientX >= rect.left && e.clientX <= rect.right && 
+                          e.clientY >= rect.top && e.clientY <= rect.bottom;
+        
+        if (isHovering) {
+          handleMouseMove(e);
+        }
+      }
+    };
+
+    // Gyroscope effect for mobile
+    const handleDeviceOrientation = (e: DeviceOrientationEvent) => {
+      if (e.beta !== null && e.gamma !== null) {
+        setTilt({
+          x: Math.max(-25, Math.min(25, e.beta * 0.8)), 
+          y: Math.max(-25, Math.min(25, e.gamma * 0.8))
+        });
+      }
+    };
+
+    // Add event listeners
+    document.addEventListener('mousemove', handleGlobalMouseMove);
+    
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener('deviceorientation', handleDeviceOrientation);
+    }
+
+    const logoElement = logoRef.current;
+    if (logoElement) {
+      logoElement.addEventListener('mouseleave', handleMouseLeave);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleGlobalMouseMove);
+      
+      if (window.DeviceOrientationEvent) {
+        window.removeEventListener('deviceorientation', handleDeviceOrientation);
+      }
+      
+      if (logoElement) {
+        logoElement.removeEventListener('mouseleave', handleMouseLeave);
+      }
+    };
+  }, []);
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <div className="glass-effect rounded-3xl p-8 w-full max-w-md text-center">
         {/* Logo */}
-        <div className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden shadow-2xl">
+        <div 
+          ref={logoRef}
+          className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden shadow-2xl relative transition-transform duration-300 ease-out cursor-pointer"
+          style={{
+            transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+            transformStyle: 'preserve-3d',
+            willChange: 'transform'
+          }}
+        >
+          {!imageLoaded && (
+            <div className="w-full h-full bg-slate-700/50 animate-pulse flex items-center justify-center">
+              <div className="w-12 h-12 bg-slate-600/50 rounded-full animate-pulse"></div>
+            </div>
+          )}
           <img
             src="/cas.jpg"
             alt="CA Shirts Logo"
-            className="w-full h-full object-cover"
+            className={`w-full h-full object-cover transition-opacity duration-300 ${
+              imageLoaded ? 'opacity-100' : 'opacity-0 absolute inset-0'
+            }`}
+            onLoad={() => setImageLoaded(true)}
+            onError={() => setImageLoaded(true)}
           />
         </div>
         
