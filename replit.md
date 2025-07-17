@@ -36,6 +36,7 @@ Preferred communication style: Simple, everyday language.
 - **Julio 17, 2025**: Corregido botón "Guardar Contacto" - ahora genera vCard específico por ruta con todos los campos incluidos
 - **Julio 17, 2025**: Implementado modal "Compartir" con múltiples opciones: QR code, copiar enlace y compartir nativo con navegación entre vistas
 - **Julio 17, 2025**: Agregado ribbon diagonal "DEMO" en imagen de perfil que se activa/desactiva con el estado inDev
+- **Julio 17, 2025**: Convertido campo de ruta (/X) en enlaces clickeables en paneles de admin para acceso directo al perfil
 - **Julio 16, 2025**: Implementado sistema completo de administración con panel de admin en /edit
 - **Julio 16, 2025**: Añadido sistema de autenticación con contraseña "CamisasWenas.!" para admin básico
 - **Julio 16, 2025**: Creado sistema de rutas dinámicas - cada contacto tiene campo "ruta" para generar URLs personalizadas

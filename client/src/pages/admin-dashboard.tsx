@@ -251,9 +251,19 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
               <CardContent className="space-y-3">
                 <div className="space-y-1">
                   <p className="text-xs text-slate-400">Ruta</p>
-                  <Badge variant="outline" className="text-xs">
-                    /{contact.ruta}
-                  </Badge>
+                  <a 
+                    href={`/${contact.ruta}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block"
+                  >
+                    <Badge 
+                      variant="outline" 
+                      className="text-xs cursor-pointer hover:bg-blue-500/10 hover:border-blue-500/30 transition-colors"
+                    >
+                      /{contact.ruta}
+                    </Badge>
+                  </a>
                 </div>
                 
                 <div className="space-y-1">
