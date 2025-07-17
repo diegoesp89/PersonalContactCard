@@ -67,7 +67,7 @@ export default function ContactPage() {
   const path = window.location.pathname;
   const routeParam = path === "/" || path === "" ? null : path.substring(1);
 
-  // Mouse movement effect for desktop
+  // Mouse movement and gyroscope effects
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (profileRef.current) {
@@ -75,12 +75,12 @@ export default function ContactPage() {
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
         
-        const deltaX = (e.clientX - centerX) / rect.width;
-        const deltaY = (e.clientY - centerY) / rect.height;
+        const deltaX = (e.clientX - centerX) / (rect.width / 2);
+        const deltaY = (e.clientY - centerY) / (rect.height / 2);
         
         setTilt({
-          x: deltaY * 5, // Max 5 degrees tilt
-          y: deltaX * -5
+          x: deltaY * 10, // Max 10 degrees tilt
+          y: deltaX * -10
         });
       }
     };
@@ -89,33 +89,49 @@ export default function ContactPage() {
       setTilt({ x: 0, y: 0 });
     };
 
+    // Global mouse movement for container area
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (profileRef.current) {
+        const rect = profileRef.current.getBoundingClientRect();
+        const isHovering = e.clientX >= rect.left && e.clientX <= rect.right && 
+                          e.clientY >= rect.top && e.clientY <= rect.bottom;
+        
+        if (isHovering) {
+          handleMouseMove(e);
+        }
+      }
+    };
+
     // Gyroscope effect for mobile
     const handleDeviceOrientation = (e: DeviceOrientationEvent) => {
       if (e.beta !== null && e.gamma !== null) {
         setTilt({
-          x: Math.max(-10, Math.min(10, e.beta / 3)), // Limit range and reduce sensitivity
-          y: Math.max(-10, Math.min(10, e.gamma / 3))
+          x: Math.max(-15, Math.min(15, e.beta / 2)), 
+          y: Math.max(-15, Math.min(15, e.gamma / 2))
         });
       }
     };
 
-    // Check if device supports orientation
+    // Add event listeners
+    document.addEventListener('mousemove', handleGlobalMouseMove);
+    
     if (window.DeviceOrientationEvent) {
       window.addEventListener('deviceorientation', handleDeviceOrientation);
     }
 
     const profileElement = profileRef.current;
     if (profileElement) {
-      profileElement.addEventListener('mousemove', handleMouseMove);
       profileElement.addEventListener('mouseleave', handleMouseLeave);
     }
 
     return () => {
+      document.removeEventListener('mousemove', handleGlobalMouseMove);
+      
       if (window.DeviceOrientationEvent) {
         window.removeEventListener('deviceorientation', handleDeviceOrientation);
       }
+      
       if (profileElement) {
-        profileElement.removeEventListener('mousemove', handleMouseMove);
         profileElement.removeEventListener('mouseleave', handleMouseLeave);
       }
     };
@@ -362,27 +378,22 @@ Correo: ${bank.email}`;
             <div className="text-center mb-8 relative">
               <div 
                 ref={profileRef}
-                className="w-24 h-24 rounded-full mx-auto mb-4 shadow-lg overflow-hidden relative transition-transform duration-300 ease-out"
+                className="w-24 h-24 rounded-full mx-auto mb-4 shadow-lg overflow-hidden relative transition-transform duration-300 ease-out cursor-pointer"
                 style={{
-                  transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) translateZ(20px)`,
-                  transformStyle: 'preserve-3d'
+                  transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+                  transformStyle: 'preserve-3d',
+                  willChange: 'transform'
                 }}
               >
                 {contact.profileImage ? (
                   <img
                     src={contact.profileImage}
                     alt={contact.name}
-                    className="w-full h-full object-cover transition-transform duration-300"
-                    style={{
-                      transform: `translateZ(10px) scale(1.02)`
-                    }}
+                    className="w-full h-full object-cover"
                   />
                 ) : (
                   <div 
-                    className="w-full h-full bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center text-white text-xl font-bold transition-transform duration-300"
-                    style={{
-                      transform: `translateZ(10px) scale(1.02)`
-                    }}
+                    className="w-full h-full bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center text-white text-xl font-bold"
                   >
                     {contact.name.split(' ').map(n => n[0]).join('').toUpperCase()}
                   </div>
