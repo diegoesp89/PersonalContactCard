@@ -304,7 +304,7 @@ Correo: ${bank.email}`;
           <div className="glass-effect rounded-3xl p-8 shadow-2xl" style={{ backgroundColor: `${contact.backgroundColor || '#1e293b'}e6` }}>
             {/* Header with Profile */}
             <div className="text-center mb-8">
-              <div className="w-24 h-24 rounded-full mx-auto mb-4 shadow-lg overflow-hidden">
+              <div className="w-24 h-24 rounded-full mx-auto mb-4 shadow-lg overflow-hidden relative">
                 {contact.profileImage ? (
                   <img
                     src={contact.profileImage}
@@ -314,6 +314,15 @@ Correo: ${bank.email}`;
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center text-white text-xl font-bold">
                     {contact.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                  </div>
+                )}
+                
+                {/* DEMO Ribbon - Solo se muestra si inDev es "true" */}
+                {contact?.inDev === "true" && (
+                  <div className="absolute top-0 right-0 w-full h-full pointer-events-none overflow-hidden rounded-full">
+                    <div className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-3 py-0.5 transform rotate-45 origin-center shadow-lg border border-red-600">
+                      DEMO
+                    </div>
                   </div>
                 )}
               </div>
