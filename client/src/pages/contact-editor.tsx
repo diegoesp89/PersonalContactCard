@@ -18,6 +18,7 @@ import {
   X
 } from "lucide-react";
 import { z } from "zod";
+import ImageGalleryModal from "@/components/ImageGalleryModal";
 
 interface Contact {
   id?: number;
@@ -71,6 +72,7 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
   
   // State for image upload
   const [uploading, setUploading] = useState(false);
+  const [showGalleryModal, setShowGalleryModal] = useState(false);
 
   const [formData, setFormData] = useState<Contact>({
     name: contact?.name || "",
@@ -274,50 +276,55 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
             <CardContent>
               <div className="flex items-center gap-6">
                 <div className="flex-shrink-0">
-                  {formData.profileImage ? (
-                    <div className="relative">
-                      <img
-                        src={formData.profileImage}
-                        alt="Imagen de perfil"
-                        className="w-24 h-24 rounded-full object-cover border-2 border-slate-600"
-                      />
+                  <div 
+                    className="relative cursor-pointer group"
+                    onClick={() => setShowGalleryModal(true)}
+                  >
+                    {formData.profileImage ? (
+                      <>
+                        <img
+                          src={formData.profileImage}
+                          alt="Imagen de perfil"
+                          className="w-24 h-24 rounded-full object-cover border-2 border-slate-600 group-hover:opacity-80 transition-opacity"
+                        />
+                        <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <Upload className="w-6 h-6 text-white" />
+                        </div>
+                      </>
+                    ) : (
+                      <div className="w-24 h-24 rounded-full bg-slate-700 flex items-center justify-center border-2 border-slate-600 group-hover:bg-slate-600 transition-colors">
+                        <Upload className="w-8 h-8 text-slate-400" />
+                      </div>
+                    )}
+                    {formData.profileImage && (
                       <button
                         type="button"
-                        onClick={() => updateField('profileImage', '')}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateField('profileImage', '');
+                        }}
                         className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-white text-xs hover:bg-red-600 transition-colors"
                       >
                         <X className="w-3 h-3" />
                       </button>
-                    </div>
-                  ) : (
-                    <div className="w-24 h-24 rounded-full bg-slate-700 flex items-center justify-center border-2 border-slate-600">
-                      <User className="w-8 h-8 text-slate-400" />
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
                 <div className="flex-1">
-                  <Label htmlFor="profileImage" className="text-slate-200 block mb-2">
-                    Subir Imagen
+                  <Label className="text-slate-200 block mb-2">
+                    Imagen de Perfil
                   </Label>
-                  <input
-                    id="profileImage"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                  />
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => document.getElementById('profileImage')?.click()}
-                    disabled={uploading}
+                    onClick={() => setShowGalleryModal(true)}
                     className="bg-slate-800/50 border-slate-600 text-slate-100 hover:bg-slate-700/50"
                   >
                     <Upload className="w-4 h-4 mr-2" />
-                    {uploading ? "Subiendo..." : "Seleccionar Imagen"}
+                    {formData.profileImage ? "Cambiar Imagen" : "Seleccionar de Galería"}
                   </Button>
                   <p className="text-xs text-slate-400 mt-2">
-                    JPG, PNG o GIF. Máximo 5MB.
+                    Haz clic para abrir la galería de imágenes
                   </p>
                 </div>
               </div>
@@ -614,6 +621,14 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
           </div>
         </form>
       </div>
+
+      {/* Image Gallery Modal */}
+      <ImageGalleryModal
+        isOpen={showGalleryModal}
+        currentImage={formData.profileImage}
+        onSelectImage={(imageUrl) => updateField('profileImage', imageUrl)}
+        onClose={() => setShowGalleryModal(false)}
+      />
     </div>
   );
 }

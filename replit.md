@@ -42,6 +42,7 @@ Preferred communication style: Simple, everyday language.
 - **Julio 17, 2025**: Implementado efecto de paralaje 3D también en logo de página de inicio con misma sensibilidad
 - **Julio 17, 2025**: Agregado modal de imagen ampliada al hacer clic en imágenes de perfil (contactos y homepage)
 - **Julio 17, 2025**: Modificado efecto de paralaje para ser solo horizontal (sin movimiento vertical) en imágenes
+- **Julio 17, 2025**: Agregado modal de galería de imágenes en editor de contactos con opción de subir y seleccionar imágenes existentes
 - **Julio 16, 2025**: Implementado sistema completo de administración con panel de admin en /edit
 - **Julio 16, 2025**: Añadido sistema de autenticación con contraseña "CamisasWenas.!" para admin básico
 - **Julio 16, 2025**: Creado sistema de rutas dinámicas - cada contacto tiene campo "ruta" para generar URLs personalizadas

@@ -182,6 +182,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get gallery images
+  app.get("/api/gallery", (req, res) => {
+    try {
+      const files = fs.readdirSync(uploadsDir);
+      const imageFiles = files
+        .filter(file => {
+          const ext = path.extname(file).toLowerCase();
+          return ['.jpg', '.jpeg', '.png', '.gif', '.webp'].includes(ext);
+        })
+        .map(file => ({
+          filename: file,
+          url: `/uploads/${file}`,
+          uploadDate: fs.statSync(path.join(uploadsDir, file)).mtime
+        }))
+        .sort((a, b) => b.uploadDate.getTime() - a.uploadDate.getTime()); // Most recent first
+      
+      res.json(imageFiles);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to get gallery images" });
+    }
+  });
+
   // Generate and download vCard by route
   app.get("/api/contact/:ruta/vcard", async (req, res) => {
     try {
