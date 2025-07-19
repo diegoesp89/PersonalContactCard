@@ -39,6 +39,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     fs.mkdirSync(uploadsDir, { recursive: true });
   }
 
+  // Serve static files from uploads directory BEFORE other routes
+  app.use('/uploads', (req, res, next) => {
+    const filename = req.path.substring(1); // Remove leading slash
+    const filePath = path.join(uploadsDir, filename);
+    
+    logger.log('STATIC_FILE_REQUEST', {
+      requestPath: req.path,
+      filename,
+      filePath,
+      exists: fs.existsSync(filePath)
+    }, req);
+    
+    if (fs.existsSync(filePath)) {
+      logger.log('STATIC_FILE_SERVED', { filePath }, req);
+      res.sendFile(filePath);
+    } else {
+      logger.log('STATIC_FILE_NOT_FOUND', { 
+        filePath,
+        uploadsDir,
+        availableFiles: fs.existsSync(uploadsDir) ? fs.readdirSync(uploadsDir) : []
+      }, req);
+      res.status(404).send('File not found');
+    }
+  });
+
   // Configure multer for memory storage (we'll handle file storage ourselves)
   const upload = multer({
     storage: multer.memoryStorage(),

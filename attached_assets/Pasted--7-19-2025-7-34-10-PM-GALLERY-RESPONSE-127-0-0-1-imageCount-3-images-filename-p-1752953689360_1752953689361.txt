@@ -1,0 +1,36 @@
+[7/19/2025, 7:34:10 PM] GALLERY_RESPONSE (127.0.0.1)
+{ "imageCount": 3, "images": [ { "filename": "profile-1752953650374-369518498.jpg", "url": "/uploads/profile-1752953650374-369518498.jpg" }, { "filename": "profile-1752952414938-570654162.jpg", "url": "/uploads/profile-1752952414938-570654162.jpg" }, { "filename": "profile-1752774401349-975382280.png", "url": "/uploads/profile-1752774401349-975382280.png" } ] }
+[7/19/2025, 7:34:10 PM] GALLERY_LOCAL_FILES (127.0.0.1)
+{ "uploadsDir": "/home/runner/workspace/client/public/uploads", "allFiles": [ "profile-1752774401349-975382280.png", "profile-1752952414938-570654162.jpg", "profile-1752953650374-369518498.jpg" ], "imageCount": 3 }
+[7/19/2025, 7:34:10 PM] GALLERY_REQUEST (127.0.0.1)
+{ "objectStorageAvailable": false, "uploadsDir": "/home/runner/workspace/client/public/uploads", "uploadsDirExists": true }
+[7/19/2025, 7:34:10 PM] IMAGE_UPLOADED (127.0.0.1)
+{ "filename": "profile-1752953650374-369518498.jpg", "originalName": "1000157323.jpg", "size": 176762, "mimetype": "image/jpeg", "imageUrl": "/uploads/profile-1752953650374-369518498.jpg" }
+[7/19/2025, 7:34:10 PM] FILE_SAVE_SUCCESS (127.0.0.1)
+{ "exists": true, "size": 176762, "expectedSize": 176762, "path": "/home/runner/workspace/client/public/uploads/profile-1752953650374-369518498.jpg" }
+[7/19/2025, 7:34:10 PM] FILE_SAVE_ATTEMPT (127.0.0.1)
+{ "localPath": "/home/runner/workspace/client/public/uploads/profile-1752953650374-369518498.jpg", "bufferSize": 176762, "uploadsDir": "/home/runner/workspace/client/public/uploads", "dirExists": true }
+[7/19/2025, 7:34:10 PM] FILE_PROCESSING (127.0.0.1)
+{ "originalname": "1000157323.jpg", "mimetype": "image/jpeg", "size": 176762, "bufferLength": 176762, "generatedFilename": "profile-1752953650374-369518498.jpg", "fileExtension": ".jpg", "uploadsDir": "/home/runner/workspace/client/public/uploads" }
+[7/19/2025, 7:34:10 PM] UPLOAD_REQUEST_START (127.0.0.1)
+{ "hasFile": true, "headers": { "content-type": "multipart/form-data; boundary=----WebKitFormBoundary957uh0ujUVzMf6eH", "content-length": "176958" }, "bodyKeys": [] }
+[7/19/2025, 7:34:10 PM] FILE_FILTER_ACCEPTED
+{ "mimetype": "image/jpeg" }
+[7/19/2025, 7:34:10 PM] FILE_FILTER_CHECK
+{ "originalname": "1000157323.jpg", "mimetype": "image/jpeg", "fieldname": "profileImage", "encoding": "7bit" }
+[7/19/2025, 7:34:10 PM] UPLOAD_ENDPOINT_HIT (127.0.0.1)
+{ "contentType": "multipart/form-data; boundary=----WebKitFormBoundary957uh0ujUVzMf6eH", "contentLength": "176958", "hasFiles": false, "bodySize": 2 }
+[7/19/2025, 7:33:59 PM] GALLERY_RESPONSE (127.0.0.1)
+{ "imageCount": 2, "images": [ { "filename": "profile-1752952414938-570654162.jpg", "url": "/uploads/profile-1752952414938-570654162.jpg" }, { "filename": "profile-1752774401349-975382280.png", "url": "/uploads/profile-1752774401349-975382280.png" } ] }
+[7/19/2025, 7:33:59 PM] GALLERY_LOCAL_FILES (127.0.0.1)
+{ "uploadsDir": "/home/runner/workspace/client/public/uploads", "allFiles": [ "profile-1752774401349-975382280.png", "profile-1752952414938-570654162.jpg" ], "imageCount": 2 }
+[7/19/2025, 7:33:59 PM] GALLERY_REQUEST (127.0.0.1)
+{ "objectStorageAvailable": false, "uploadsDir": "/home/runner/workspace/client/public/uploads", "uploadsDirExists": true }
+[7/19/2025, 7:31:12 PM] LOGS_ACCESSED (172.31.128.84)
+{ "logCount": 3, "limit": 100, "adminAction": true }
+[7/19/2025, 7:30:39 PM] LOGS_ACCESSED (172.31.128.84)
+{ "logCount": 2, "limit": 100, "adminAction": true }
+[7/19/2025, 7:30:07 PM] LOGS_ACCESSED (172.31.128.84)
+{ "logCount": 1, "limit": 100, "adminAction": true }
+[7/19/2025, 7:29:34 PM] LOGS_ACCESSED (172.31.128.84)
+{ "logCount": 0, "limit": 100, "adminAction": true }
