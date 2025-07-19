@@ -46,11 +46,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       fileSize: 5 * 1024 * 1024, // 5MB limit
     },
     fileFilter: function (req, file, cb) {
-      console.log('File filter check:', {
+      const filterData = {
         originalname: file.originalname,
         mimetype: file.mimetype,
-        fieldname: file.fieldname
-      });
+        fieldname: file.fieldname,
+        encoding: file.encoding
+      };
+
+      console.log('File filter check:', filterData);
+      logger.log('FILE_FILTER_CHECK', filterData);
       
       const allowedMimes = [
         'image/jpeg',
@@ -61,8 +65,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       ];
       
       if (allowedMimes.includes(file.mimetype)) {
+        logger.log('FILE_FILTER_ACCEPTED', { mimetype: file.mimetype });
         cb(null, true);
       } else {
+        logger.log('FILE_FILTER_REJECTED', { 
+          mimetype: file.mimetype, 
+          allowedTypes: allowedMimes 
+        });
         console.log('File rejected, mimetype not allowed:', file.mimetype);
         cb(new Error(`File type ${file.mimetype} not allowed. Allowed types: ${allowedMimes.join(', ')}`));
       }
@@ -204,8 +213,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Upload profile image with Object Storage
   app.post("/api/upload", (req, res) => {
+    logger.log('UPLOAD_ENDPOINT_HIT', {
+      contentType: req.get('content-type'),
+      contentLength: req.get('content-length'),
+      hasFiles: !!req.files,
+      bodySize: JSON.stringify(req.body || {}).length
+    }, req);
+
     upload.single('profileImage')(req, res, async (err) => {
       if (err) {
+        logger.log('MULTER_ERROR', {
+          error: err.message,
+          code: err.code,
+          field: err.field,
+          stack: err.stack
+        }, req);
         console.error('Multer error:', err);
         return res.status(400).json({ 
           error: err.message,
@@ -219,6 +241,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   async function handleImageUpload(req: any, res: any) {
     try {
+      logger.log('UPLOAD_REQUEST_START', {
+        hasFile: !!req.file,
+        headers: {
+          'content-type': req.get('content-type'),
+          'content-length': req.get('content-length')
+        },
+        bodyKeys: Object.keys(req.body || {})
+      }, req);
+
       console.log('Upload request received:', {
         file: req.file ? {
           originalname: req.file.originalname,
@@ -228,6 +259,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       if (!req.file) {
+        logger.log('UPLOAD_ERROR', { reason: 'No file in request' }, req);
         return res.status(400).json({ error: "No file uploaded" });
       }
       
@@ -244,6 +276,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const filename = 'profile-' + uniqueSuffix + fileExtension;
       
+      logger.log('FILE_PROCESSING', {
+        originalname: req.file.originalname,
+        mimetype: req.file.mimetype,
+        size: req.file.size,
+        bufferLength: req.file.buffer?.length,
+        generatedFilename: filename,
+        fileExtension,
+        uploadsDir
+      }, req);
+
       console.log('Processing file:', {
         originalname: req.file.originalname,
         mimetype: req.file.mimetype,
@@ -268,21 +310,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const localPath = path.join(uploadsDir, filename);
       
       try {
+        logger.log('FILE_SAVE_ATTEMPT', {
+          localPath,
+          bufferSize: req.file.buffer.length,
+          uploadsDir,
+          dirExists: fs.existsSync(uploadsDir)
+        }, req);
+
         fs.writeFileSync(localPath, req.file.buffer);
         console.log('File saved locally:', localPath);
         
         // Verify the file was written correctly
         const stats = fs.statSync(localPath);
-        console.log('File verification:', {
+        const verification = {
           exists: fs.existsSync(localPath),
           size: stats.size,
-          expectedSize: req.file.buffer.length
-        });
+          expectedSize: req.file.buffer.length,
+          path: localPath
+        };
+        
+        logger.log('FILE_SAVE_SUCCESS', verification, req);
+        console.log('File verification:', verification);
         
         if (stats.size !== req.file.buffer.length) {
           throw new Error(`File size mismatch: expected ${req.file.buffer.length}, got ${stats.size}`);
         }
       } catch (writeError) {
+        logger.log('FILE_SAVE_ERROR', {
+          error: writeError.message,
+          stack: writeError.stack,
+          localPath,
+          uploadsDir,
+          dirExists: fs.existsSync(uploadsDir)
+        }, req);
         console.error('Error writing file locally:', writeError);
         throw writeError;
       }
@@ -310,6 +370,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/image/:filename", async (req, res) => {
     try {
       const { filename } = req.params;
+      
+      logger.log('IMAGE_REQUEST', {
+        filename,
+        objectStorageAvailable: !!objectStorage,
+        uploadsDir
+      }, req);
       
       if (objectStorage) {
         try {
@@ -344,9 +410,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Fallback to local file
       const localPath = path.join(uploadsDir, filename);
+      
+      logger.log('IMAGE_LOCAL_FALLBACK', {
+        filename,
+        localPath,
+        exists: fs.existsSync(localPath),
+        uploadsDir
+      }, req);
+      
       if (fs.existsSync(localPath)) {
+        logger.log('IMAGE_SERVED_LOCAL', { filename, localPath }, req);
         res.sendFile(localPath);
       } else {
+        logger.log('IMAGE_NOT_FOUND', { 
+          filename, 
+          localPath,
+          uploadsDir,
+          uploadsContents: fs.existsSync(uploadsDir) ? fs.readdirSync(uploadsDir) : 'Directory does not exist'
+        }, req);
         res.status(404).json({ error: "Image not found" });
       }
     } catch (error) {
@@ -359,6 +440,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/gallery", async (req, res) => {
     try {
       let imageFiles = [];
+      
+      logger.log('GALLERY_REQUEST', {
+        objectStorageAvailable: !!objectStorage,
+        uploadsDir,
+        uploadsDirExists: fs.existsSync(uploadsDir)
+      }, req);
       
       if (objectStorage) {
         try {
@@ -383,6 +470,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // If Object Storage failed or not available, use local files
       if (imageFiles.length === 0 && fs.existsSync(uploadsDir)) {
         const files = fs.readdirSync(uploadsDir);
+        
+        logger.log('GALLERY_LOCAL_FILES', {
+          uploadsDir,
+          allFiles: files,
+          imageCount: files.length
+        }, req);
+        
         imageFiles = files
           .filter(file => {
             const ext = path.extname(file).toLowerCase();
@@ -395,6 +489,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }))
           .sort((a, b) => b.uploadDate.getTime() - a.uploadDate.getTime());
       }
+      
+      logger.log('GALLERY_RESPONSE', {
+        imageCount: imageFiles.length,
+        images: imageFiles.map(f => ({ filename: f.filename, url: f.url }))
+      }, req);
       
       res.json(imageFiles);
     } catch (error) {
