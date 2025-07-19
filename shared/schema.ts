@@ -1,4 +1,4 @@
-import { pgTable, text, serial } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -60,3 +60,22 @@ export const insertUserSchema = createInsertSchema(users).pick({
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+
+// Analytics table for tracking user interactions
+export const analytics = pgTable("analytics", {
+  id: serial("id").primaryKey(),
+  contactId: integer("contact_id").notNull(),
+  event: text("event").notNull(), // 'view', 'whatsapp_click', 'instagram_click', 'vcard_download', etc.
+  userAgent: text("user_agent"),
+  ipAddress: text("ip_address"),
+  referrer: text("referrer"),
+  timestamp: timestamp("timestamp").defaultNow(),
+});
+
+export const insertAnalyticsSchema = createInsertSchema(analytics).omit({
+  id: true,
+  timestamp: true,
+});
+
+export type InsertAnalytics = z.infer<typeof insertAnalyticsSchema>;
+export type Analytics = typeof analytics.$inferSelect;
