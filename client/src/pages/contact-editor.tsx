@@ -119,7 +119,10 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
 
   // Image upload function with crop support
   const handleImageUpload = async (file: File) => {
+    console.log('handleImageUpload called with file:', file);
+    
     if (!file.type.startsWith('image/')) {
+      console.error('Invalid file type:', file.type);
       toast({
         title: "Error",
         description: "Solo se permiten archivos de imagen",
@@ -129,6 +132,7 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
     }
 
     if (file.size > 5 * 1024 * 1024) {
+      console.error('File too large:', file.size);
       toast({
         title: "Error", 
         description: "La imagen debe ser menor a 5MB",
@@ -137,9 +141,12 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
       return;
     }
 
+    console.log('Starting upload process...');
     setUploading(true);
     const uploadFormData = new FormData();
     uploadFormData.append('profileImage', file);
+
+    console.log('FormData created, making request to /api/upload');
 
     try {
       const response = await fetch('/api/upload', {
@@ -147,25 +154,34 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
         body: uploadFormData,
       });
 
+      console.log('Upload response received:', response.status, response.statusText);
+
       if (!response.ok) {
-        throw new Error('Failed to upload image');
+        const errorText = await response.text();
+        console.error('Upload failed:', response.status, errorText);
+        throw new Error(`Upload failed: ${response.status} ${errorText}`);
       }
 
       const data = await response.json();
+      console.log('Upload successful, received data:', data);
+      
       updateField('profileImage', data.imageUrl);
+      console.log('Updated profileImage field to:', data.imageUrl);
       
       toast({
         title: "¡Imagen subida!",
         description: "La imagen de perfil se ha guardado y recortada correctamente",
       });
     } catch (error) {
+      console.error('Upload error:', error);
       toast({
         title: "Error",
-        description: "No se pudo subir la imagen",
+        description: `No se pudo subir la imagen: ${error.message}`,
         variant: "destructive",
       });
     } finally {
       setUploading(false);
+      console.log('Upload process finished');
     }
   };
 

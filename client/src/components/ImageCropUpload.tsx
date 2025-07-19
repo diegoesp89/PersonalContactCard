@@ -82,63 +82,114 @@ export function ImageCropUpload({ onImageSelect, isUploading, currentImage }: Im
   }, []);
 
   const cropImage = useCallback(async (): Promise<File | null> => {
-    if (!selectedFile || !previewImage || !canvasRef.current || !imageRef.current) return null;
+    console.log('Starting crop process...');
+    
+    if (!selectedFile || !previewImage || !canvasRef.current || !imageRef.current) {
+      console.error('Missing required elements for crop:', {
+        selectedFile: !!selectedFile,
+        previewImage: !!previewImage,
+        canvas: !!canvasRef.current,
+        image: !!imageRef.current
+      });
+      return null;
+    }
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
-    if (!ctx) return null;
+    if (!ctx) {
+      console.error('Failed to get canvas context');
+      return null;
+    }
 
     const img = new Image();
     
     return new Promise((resolve) => {
       img.onload = () => {
-        // Calculate scale factors between displayed image and original
-        const displayedRect = imageRef.current!.getBoundingClientRect();
-        const scaleX = img.naturalWidth / displayedRect.width;
-        const scaleY = img.naturalHeight / displayedRect.height;
+        try {
+          console.log('Image loaded, processing crop...', {
+            naturalWidth: img.naturalWidth,
+            naturalHeight: img.naturalHeight,
+            cropArea
+          });
 
-        // Apply crop area to original image dimensions
-        const cropX = cropArea.x * scaleX;
-        const cropY = cropArea.y * scaleY;
-        const cropWidth = cropArea.width * scaleX;
-        const cropHeight = cropArea.height * scaleY;
+          // Calculate scale factors between displayed image and original
+          const displayedRect = imageRef.current!.getBoundingClientRect();
+          const scaleX = img.naturalWidth / displayedRect.width;
+          const scaleY = img.naturalHeight / displayedRect.height;
 
-        // Set canvas size to crop dimensions
-        canvas.width = cropWidth;
-        canvas.height = cropHeight;
+          console.log('Scale factors:', { scaleX, scaleY });
 
-        // Draw cropped portion
-        ctx.drawImage(
-          img,
-          cropX, cropY, cropWidth, cropHeight,
-          0, 0, cropWidth, cropHeight
-        );
+          // Apply crop area to original image dimensions
+          const cropX = cropArea.x * scaleX;
+          const cropY = cropArea.y * scaleY;
+          const cropWidth = cropArea.width * scaleX;
+          const cropHeight = cropArea.height * scaleY;
 
-        // Convert to blob and create new file
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const croppedFile = new File([blob], selectedFile.name, {
-              type: selectedFile.type,
-              lastModified: Date.now(),
-            });
-            resolve(croppedFile);
-          } else {
-            resolve(null);
-          }
-        }, selectedFile.type, 0.9);
+          console.log('Crop dimensions:', { cropX, cropY, cropWidth, cropHeight });
+
+          // Set canvas size to crop dimensions
+          canvas.width = cropWidth;
+          canvas.height = cropHeight;
+
+          // Draw cropped portion
+          ctx.drawImage(
+            img,
+            cropX, cropY, cropWidth, cropHeight,
+            0, 0, cropWidth, cropHeight
+          );
+
+          console.log('Image drawn to canvas, creating blob...');
+
+          // Convert to blob and create new file
+          canvas.toBlob((blob) => {
+            if (blob) {
+              console.log('Blob created successfully, size:', blob.size);
+              const croppedFile = new File([blob], selectedFile.name, {
+                type: selectedFile.type,
+                lastModified: Date.now(),
+              });
+              console.log('Cropped file created:', croppedFile);
+              resolve(croppedFile);
+            } else {
+              console.error('Failed to create blob from canvas');
+              resolve(null);
+            }
+          }, selectedFile.type, 0.9);
+        } catch (error) {
+          console.error('Error during crop processing:', error);
+          resolve(null);
+        }
       };
 
+      img.onerror = () => {
+        console.error('Failed to load image for cropping');
+        resolve(null);
+      };
+
+      console.log('Loading image for crop:', previewImage.substring(0, 50) + '...');
       img.src = previewImage;
     });
   }, [selectedFile, previewImage, cropArea]);
 
   const handleConfirmCrop = useCallback(async () => {
+    console.log('Starting crop confirmation...');
     const croppedFile = await cropImage();
+    console.log('Cropped file:', croppedFile);
+    
     if (croppedFile) {
-      onImageSelect(croppedFile);
+      console.log('Calling onImageSelect with cropped file');
+      await onImageSelect(croppedFile);
       setShowCropDialog(false);
       setPreviewImage(null);
       setSelectedFile(null);
+      
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    } else {
+      console.error('Failed to create cropped file');
+      alert('Error al procesar la imagen recortada');
     }
   }, [cropImage, onImageSelect]);
 
