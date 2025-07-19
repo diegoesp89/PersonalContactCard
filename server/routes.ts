@@ -1,12 +1,14 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertContactSchema } from "@shared/schema";
+import { insertContactSchema, analytics, insertAnalyticsSchema } from "@shared/schema";
 import { z } from "zod";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
 import QRCode from "qrcode";
+import { db } from "./db";
+import { eq, desc, sql, count, and, gte, lte } from "drizzle-orm";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Ensure uploads directory exists
@@ -327,6 +329,123 @@ END:VCARD`;
     } catch (error) {
       console.error("Error generating QR code:", error);
       res.status(500).json({ error: "Error generating QR code" });
+    }
+  });
+
+  // Analytics endpoints
+  
+  // Track event (used by frontend to log interactions)
+  app.post("/api/analytics/track", async (req, res) => {
+    try {
+      const { contactId, event, userAgent, referrer } = req.body;
+      
+      // Get IP address from request
+      const ipAddress = req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 
+        (req.connection.socket ? req.connection.socket.remoteAddress : null) || 'unknown';
+      
+      const analyticsData = {
+        contactId: parseInt(contactId),
+        event,
+        userAgent: userAgent || req.get('User-Agent') || null,
+        ipAddress,
+        referrer: referrer || req.get('Referer') || null,
+      };
+      
+      console.log('Tracking event:', analyticsData);
+      
+      await db.insert(analytics).values(analyticsData);
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Analytics tracking error:', error);
+      res.status(500).json({ error: "Failed to track event" });
+    }
+  });
+
+  // Get analytics stats for a contact (admin only)
+  app.post("/api/analytics/:ruta", authenticateAdmin, async (req, res) => {
+    try {
+      const { ruta } = req.params;
+      const { days = 30 } = req.query; // Default to last 30 days
+      
+      // First get the contact to find its ID
+      const contact = await storage.getContactByRuta(ruta);
+      if (!contact) {
+        return res.status(404).json({ error: "Contact not found" });
+      }
+      
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - parseInt(days as string));
+      
+      // Get total counts by event type
+      const eventCounts = await db
+        .select({
+          event: analytics.event,
+          count: count(analytics.id)
+        })
+        .from(analytics)
+        .where(
+          and(
+            eq(analytics.contactId, contact.id),
+            gte(analytics.timestamp, startDate)
+          )
+        )
+        .groupBy(analytics.event);
+      
+      // Get daily visits for the last 30 days
+      const dailyVisits = await db
+        .select({
+          date: sql<string>`DATE(${analytics.timestamp})`,
+          views: count(analytics.id)
+        })
+        .from(analytics)
+        .where(
+          and(
+            eq(analytics.contactId, contact.id),
+            eq(analytics.event, 'view'),
+            gte(analytics.timestamp, startDate)
+          )
+        )
+        .groupBy(sql`DATE(${analytics.timestamp})`)
+        .orderBy(sql`DATE(${analytics.timestamp})`);
+      
+      // Get hourly distribution (last 7 days)
+      const hourlyDistribution = await db
+        .select({
+          hour: sql<number>`EXTRACT(HOUR FROM ${analytics.timestamp})`,
+          views: count(analytics.id)
+        })
+        .from(analytics)
+        .where(
+          and(
+            eq(analytics.contactId, contact.id),
+            eq(analytics.event, 'view'),
+            gte(analytics.timestamp, new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
+          )
+        )
+        .groupBy(sql`EXTRACT(HOUR FROM ${analytics.timestamp})`)
+        .orderBy(sql`EXTRACT(HOUR FROM ${analytics.timestamp})`);
+      
+      // Get recent events (last 100)
+      const recentEvents = await db
+        .select()
+        .from(analytics)
+        .where(eq(analytics.contactId, contact.id))
+        .orderBy(desc(analytics.timestamp))
+        .limit(100);
+      
+      const stats = {
+        contact,
+        eventCounts,
+        dailyVisits,
+        hourlyDistribution,
+        recentEvents,
+        period: `Last ${days} days`
+      };
+      
+      res.json(stats);
+    } catch (error) {
+      console.error('Analytics error:', error);
+      res.status(500).json({ error: "Failed to get analytics" });
     }
   });
 

@@ -153,6 +153,41 @@ export default function ContactPage() {
         })
   });
 
+  // Track page view when contact loads
+  useEffect(() => {
+    if (contact) {
+      fetch('/api/analytics/track', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contactId: contact.id,
+          event: 'view',
+          userAgent: navigator.userAgent,
+          referrer: document.referrer,
+        }),
+      }).catch(error => console.error('Analytics tracking failed:', error));
+    }
+  }, [contact]);
+
+  const trackEvent = (event: string) => {
+    if (contact) {
+      fetch('/api/analytics/track', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contactId: contact.id,
+          event,
+          userAgent: navigator.userAgent,
+          referrer: document.referrer,
+        }),
+      }).catch(error => console.error('Analytics tracking failed:', error));
+    }
+  };
+
   const handleSaveContact = async () => {
     try {
       if (!contact) {
@@ -162,6 +197,8 @@ export default function ContactPage() {
       const endpoint = routeParam 
         ? `/api/contact/${routeParam}/vcard` 
         : "/api/contact/vcard";
+      
+      trackEvent('vcard_download');
       
       const response = await fetch(endpoint);
       if (!response.ok) throw new Error("Failed to generate vCard");
@@ -190,6 +227,7 @@ export default function ContactPage() {
   };
 
   const handleShareContact = () => {
+    trackEvent('share_click');
     setShowShareModal(true);
     setShowQRView(false);
   };
@@ -197,6 +235,7 @@ export default function ContactPage() {
   const handleShowQR = async () => {
     if (!contact) return;
     
+    trackEvent('qr_view');
     setLoadingQR(true);
     setShowQRView(true);
     
@@ -566,6 +605,7 @@ Correo: ${bank.email}`;
                   href={getWhatsAppUrl(contact.whatsapp)}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackEvent('whatsapp_click')}
                   className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-green-500/10 hover:border-green-500/30"
                 >
                   <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mr-4 shadow-md">
@@ -583,6 +623,7 @@ Correo: ${bank.email}`;
               {contact.phone && (
                 <a
                   href={getTelUrl(contact.phone)}
+                  onClick={() => trackEvent('phone_click')}
                   className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
                 >
                   <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mr-4 shadow-md">
@@ -599,6 +640,7 @@ Correo: ${bank.email}`;
               {/* Email */}
               <a
                 href={getEmailUrl(contact.email)}
+                onClick={() => trackEvent('email_click')}
                 className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
               >
                 <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mr-4 shadow-md">
@@ -617,6 +659,7 @@ Correo: ${bank.email}`;
                   href={getInstagramUrl(contact.instagram)}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackEvent('instagram_click')}
                   className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
                 >
                   <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mr-4 shadow-md">
@@ -636,6 +679,7 @@ Correo: ${bank.email}`;
                   href={getTikTokUrl(contact.tiktok)}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackEvent('tiktok_click')}
                   className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
                 >
                   <div className="w-12 h-12 bg-gradient-to-br from-black to-gray-800 rounded-xl flex items-center justify-center mr-4 shadow-md">
@@ -655,6 +699,7 @@ Correo: ${bank.email}`;
                   href={getLinkedInUrl(contact.linkedin)}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackEvent('linkedin_click')}
                   className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
                 >
                   <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center mr-4 shadow-md">
@@ -674,6 +719,7 @@ Correo: ${bank.email}`;
                   href={getTelegramUrl(contact.telegram)}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackEvent('telegram_click')}
                   className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
                 >
                   <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center mr-4 shadow-md">
@@ -693,6 +739,7 @@ Correo: ${bank.email}`;
                   href={contact.website}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackEvent('website_click')}
                   className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
                 >
                   <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-xl flex items-center justify-center mr-4 shadow-md">
