@@ -56,6 +56,10 @@ Preferred communication style: Simple, everyday language.
 - **Julio 19, 2025**: Implementado Replit Object Storage para persistencia de imágenes en producción
 - **Julio 19, 2025**: Sistema híbrido: Object Storage en producción, archivos locales como fallback en desarrollo
 - **Julio 19, 2025**: Nuevo endpoint /api/image/:filename para servir imágenes desde almacenamiento persistente
+- **Julio 19, 2025**: Implementado sistema completo de logging con ruta /logs
+- **Julio 19, 2025**: Tracking detallado de todas las operaciones: visualizaciones, creación/edición/eliminación de contactos, subida/eliminación de imágenes
+- **Julio 19, 2025**: Página de logs con interfaz web estilo terminal, auto-refresh cada 30 segundos, filtros de cantidad
+- **Julio 19, 2025**: Logger con persistencia en archivos, información de IP y User Agent para auditoría completa
 - **Julio 16, 2025**: Implementado sistema completo de administración con panel de admin en /edit
 - **Julio 16, 2025**: Añadido sistema de autenticación con contraseña "CamisasWenas.!" para admin básico
 - **Julio 16, 2025**: Creado sistema de rutas dinámicas - cada contacto tiene campo "ruta" para generar URLs personalizadas

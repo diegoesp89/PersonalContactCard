@@ -10,6 +10,7 @@ import QRCode from "qrcode";
 import { Client } from "@replit/object-storage";
 import { db } from "./db";
 import { eq, desc, sql, count, and, gte, lte } from "drizzle-orm";
+import { logger } from "./logger";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize Replit Object Storage client (only in production or if configured)
@@ -84,10 +85,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { ruta } = req.params;
       const contact = await storage.getContactByRuta(ruta);
       if (!contact) {
+        logger.log('CONTACT_NOT_FOUND', { ruta }, req);
         return res.status(404).json({ error: "Contact not found" });
       }
+      logger.log('CONTACT_VIEW', { 
+        ruta, 
+        contactName: contact.name,
+        contactId: contact.id 
+      }, req);
       res.json(contact);
     } catch (error) {
+      logger.log('CONTACT_VIEW_ERROR', { ruta, error: error.message }, req);
       res.status(500).json({ error: "Failed to get contact" });
     }
   });
@@ -137,6 +145,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const contact = await storage.createContact(result.data);
+      logger.log('CONTACT_CREATED', { 
+        contactId: contact.id,
+        contactName: contact.name,
+        ruta: contact.ruta,
+        adminAction: true 
+      }, req);
       res.json(contact);
     } catch (error) {
       res.status(500).json({ error: "Failed to create contact" });
@@ -155,6 +169,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const contact = await storage.updateContact(parseInt(id), updateData);
+      logger.log('CONTACT_UPDATED', { 
+        contactId: parseInt(id),
+        contactName: contact.name,
+        updatedFields: Object.keys(updateData),
+        adminAction: true 
+      }, req);
       res.json(contact);
     } catch (error) {
       res.status(500).json({ error: "Failed to update contact" });
@@ -172,6 +192,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       await storage.deleteContact(parseInt(id));
+      logger.log('CONTACT_DELETED', { 
+        contactId: parseInt(id),
+        adminAction: true 
+      }, req);
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ error: "Failed to delete contact" });
@@ -264,6 +288,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       console.log('Upload successful:', { filename, imageUrl });
+      logger.log('IMAGE_UPLOADED', { 
+        filename, 
+        originalName: req.file.originalname,
+        size: req.file.size,
+        mimetype: req.file.mimetype,
+        imageUrl 
+      }, req);
       res.json({ imageUrl });
     } catch (error) {
       console.error('Upload error:', error);
@@ -400,6 +431,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log('Local image deleted:', filename);
       }
       
+      logger.log('IMAGE_DELETED', { 
+        filename,
+        adminAction: true 
+      }, req);
       res.json({ success: true, message: "Image deleted successfully" });
     } catch (error) {
       console.error('Delete image error:', error);
@@ -616,6 +651,128 @@ END:VCARD`;
     } catch (error) {
       console.error('Analytics error:', error);
       res.status(500).json({ error: "Failed to get analytics" });
+    }
+  });
+
+  // Logs endpoint (admin only)
+  app.get("/logs", async (req, res) => {
+    try {
+      // Simple password check in query parameter
+      const { password } = req.query;
+      
+      if (password !== "CamisasWenas.!" && password !== "Mafatanga2025") {
+        return res.status(401).send(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>System Logs - Access Required</title>
+            <style>
+              body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+              .form { background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0; }
+              input[type="password"], input[type="submit"] { padding: 10px; margin: 5px; }
+              input[type="submit"] { background: #007cba; color: white; border: none; border-radius: 4px; }
+            </style>
+          </head>
+          <body>
+            <h1>🔐 System Logs Access</h1>
+            <div class="form">
+              <form method="GET">
+                <label>Password: </label>
+                <input type="password" name="password" required>
+                <input type="submit" value="Access Logs">
+              </form>
+            </div>
+          </body>
+          </html>
+        `);
+      }
+
+      const limit = parseInt(req.query.limit as string) || 100;
+      const logs = logger.getLogs(limit);
+      
+      logger.log('LOGS_ACCESSED', { 
+        logCount: logs.length,
+        limit,
+        adminAction: true 
+      }, req);
+
+      // Return HTML formatted logs
+      const html = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>System Logs</title>
+          <style>
+            body { 
+              font-family: 'Courier New', monospace; 
+              margin: 20px; 
+              background: #1a1a1a; 
+              color: #00ff00; 
+            }
+            h1 { color: #ffffff; text-align: center; }
+            .log-entry { 
+              background: #2a2a2a; 
+              margin: 10px 0; 
+              padding: 10px; 
+              border-radius: 4px; 
+              border-left: 4px solid #00ff00; 
+            }
+            .timestamp { color: #888; }
+            .action { color: #00ccff; font-weight: bold; }
+            .details { color: #ffff88; }
+            .ip { color: #ff8888; }
+            .controls { 
+              text-align: center; 
+              margin: 20px 0; 
+              background: #333; 
+              padding: 15px; 
+              border-radius: 8px; 
+            }
+            .controls a { 
+              color: #00ccff; 
+              text-decoration: none; 
+              margin: 0 10px; 
+              padding: 8px 15px; 
+              background: #555; 
+              border-radius: 4px; 
+            }
+            .controls a:hover { background: #777; }
+          </style>
+          <script>
+            function refreshLogs() {
+              window.location.reload();
+            }
+            setInterval(refreshLogs, 30000); // Auto refresh every 30 seconds
+          </script>
+        </head>
+        <body>
+          <h1>📋 System Logs - Last ${logs.length} entries</h1>
+          
+          <div class="controls">
+            <a href="?password=${encodeURIComponent(password as string)}&limit=50">Show 50</a>
+            <a href="?password=${encodeURIComponent(password as string)}&limit=100">Show 100</a>
+            <a href="?password=${encodeURIComponent(password as string)}&limit=500">Show 500</a>
+            <a href="javascript:refreshLogs()">🔄 Refresh</a>
+          </div>
+
+          ${logs.reverse().map(log => `
+            <div class="log-entry">
+              <div>
+                <span class="timestamp">[${new Date(log.timestamp).toLocaleString()}]</span>
+                <span class="action">${log.action}</span>
+                ${log.ipAddress ? `<span class="ip">(${log.ipAddress})</span>` : ''}
+              </div>
+              <div class="details">${JSON.stringify(log.details, null, 2)}</div>
+            </div>
+          `).join('')}
+        </body>
+        </html>
+      `;
+
+      res.send(html);
+    } catch (error) {
+      logger.log('LOGS_ACCESS_ERROR', { error: error.message }, req);
+      res.status(500).send('Error loading logs: ' + error.message);
     }
   });
 
