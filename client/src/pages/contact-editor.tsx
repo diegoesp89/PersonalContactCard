@@ -19,7 +19,6 @@ import {
 } from "lucide-react";
 import { z } from "zod";
 import ImageGalleryModal from "@/components/ImageGalleryModal";
-import { ImageCropUpload } from "@/components/ImageCropUpload";
 
 interface Contact {
   id?: number;
@@ -117,12 +116,12 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  // Image upload function with crop support
-  const handleImageUpload = async (file: File) => {
-    console.log('handleImageUpload called with file:', file);
-    
+  // Image upload function
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
     if (!file.type.startsWith('image/')) {
-      console.error('Invalid file type:', file.type);
       toast({
         title: "Error",
         description: "Solo se permiten archivos de imagen",
@@ -132,7 +131,6 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      console.error('File too large:', file.size);
       toast({
         title: "Error", 
         description: "La imagen debe ser menor a 5MB",
@@ -141,47 +139,35 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
       return;
     }
 
-    console.log('Starting upload process...');
     setUploading(true);
-    const uploadFormData = new FormData();
-    uploadFormData.append('profileImage', file);
-
-    console.log('FormData created, making request to /api/upload');
+    const formData = new FormData();
+    formData.append('profileImage', file);
 
     try {
       const response = await fetch('/api/upload', {
         method: 'POST',
-        body: uploadFormData,
+        body: formData,
       });
 
-      console.log('Upload response received:', response.status, response.statusText);
-
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Upload failed:', response.status, errorText);
-        throw new Error(`Upload failed: ${response.status} ${errorText}`);
+        throw new Error('Failed to upload image');
       }
 
       const data = await response.json();
-      console.log('Upload successful, received data:', data);
-      
       updateField('profileImage', data.imageUrl);
-      console.log('Updated profileImage field to:', data.imageUrl);
       
       toast({
         title: "¡Imagen subida!",
-        description: "La imagen de perfil se ha guardado y recortada correctamente",
+        description: "La imagen de perfil se ha guardado correctamente",
       });
     } catch (error) {
-      console.error('Upload error:', error);
       toast({
         title: "Error",
-        description: `No se pudo subir la imagen: ${error.message}`,
+        description: "No se pudo subir la imagen",
         variant: "destructive",
       });
     } finally {
       setUploading(false);
-      console.log('Upload process finished');
     }
   };
 
@@ -290,14 +276,50 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
               <CardTitle className="text-slate-100">Imagen de Perfil</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <ImageCropUpload
-                  onImageSelect={handleImageUpload}
-                  isUploading={uploading}
-                  currentImage={formData.profileImage || "/default-avatar.svg"}
-                />
-                
-                <div className="flex justify-center">
+              <div className="flex items-center gap-6">
+                <div className="flex-shrink-0">
+                  <div 
+                    className="relative cursor-pointer group"
+                    onClick={() => setShowGalleryModal(true)}
+                  >
+                    {formData.profileImage ? (
+                      <>
+                        <img
+                          src={formData.profileImage}
+                          alt="Imagen de perfil"
+                          className="w-24 h-24 rounded-full object-cover border-2 border-slate-600 group-hover:opacity-80 transition-opacity"
+                        />
+                        <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <Upload className="w-6 h-6 text-white" />
+                        </div>
+                      </>
+                    ) : (
+                      <div className="w-24 h-24 rounded-full bg-slate-700 flex items-center justify-center border-2 border-slate-600 group-hover:bg-slate-600 transition-colors overflow-hidden">
+                        <img
+                          src="/default-avatar.svg"
+                          alt="Avatar por defecto"
+                          className="w-16 h-16 opacity-60 group-hover:opacity-80 transition-opacity"
+                        />
+                      </div>
+                    )}
+                    {formData.profileImage && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateField('profileImage', '');
+                        }}
+                        className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-white text-xs hover:bg-red-600 transition-colors"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <Label className="text-slate-200 block mb-2">
+                    Imagen de Perfil
+                  </Label>
                   <Button
                     type="button"
                     variant="outline"
@@ -305,23 +327,12 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                     className="bg-slate-800/50 border-slate-600 text-slate-100 hover:bg-slate-700/50"
                   >
                     <Upload className="w-4 h-4 mr-2" />
-                    Seleccionar de Galería
+                    {formData.profileImage ? "Cambiar Imagen" : "Seleccionar de Galería"}
                   </Button>
+                  <p className="text-xs text-slate-400 mt-2">
+                    Haz clic para abrir la galería de imágenes
+                  </p>
                 </div>
-                
-                {formData.profileImage && (
-                  <div className="flex justify-center">
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => updateField('profileImage', '')}
-                    >
-                      <X className="w-3 h-3 mr-2" />
-                      Eliminar Imagen
-                    </Button>
-                  </div>
-                )}
               </div>
             </CardContent>
           </Card>
