@@ -12,7 +12,8 @@ import {
   Trash2,
   AlertTriangle,
   QrCode,
-  LogOut
+  LogOut,
+  BarChart3
 } from "lucide-react";
 
 interface Contact {
@@ -294,6 +295,16 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
                   >
                     <Edit className="w-3 h-3 mr-1" />
                     Editar
+                  </Button>
+                  
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => window.open(`/${contact.ruta}/stats`, '_blank')}
+                    className="border-blue-500 text-blue-400 hover:bg-blue-500/10"
+                    title="Ver estadísticas"
+                  >
+                    <BarChart3 className="w-3 h-3" />
                   </Button>
                   
                   <Button
