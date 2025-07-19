@@ -42,12 +42,15 @@ export default function ImageGalleryModal({ isOpen, currentImage, onSelectImage,
       });
       
       if (!response.ok) {
-        throw new Error('Failed to upload image');
+        const errorData = await response.text();
+        console.error('Upload error:', errorData);
+        throw new Error(`Failed to upload image: ${response.status} ${response.statusText}`);
       }
       
       return response.json();
     },
     onSuccess: (data) => {
+      console.log('Upload success:', data);
       toast({
         title: "Imagen subida",
         description: "La imagen se subió correctamente",
@@ -55,10 +58,11 @@ export default function ImageGalleryModal({ isOpen, currentImage, onSelectImage,
       queryClient.invalidateQueries({ queryKey: ['/api/gallery'] });
       setSelectedImage(data.imageUrl);
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error('Upload mutation error:', error);
       toast({
         title: "Error",
-        description: "No se pudo subir la imagen",
+        description: error.message || "No se pudo subir la imagen",
         variant: "destructive",
       });
     },
@@ -70,6 +74,13 @@ export default function ImageGalleryModal({ isOpen, currentImage, onSelectImage,
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    console.log('File selected:', {
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      lastModified: file.lastModified
+    });
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
@@ -93,6 +104,9 @@ export default function ImageGalleryModal({ isOpen, currentImage, onSelectImage,
 
     setUploading(true);
     uploadMutation.mutate(file);
+    
+    // Clear the input so same file can be selected again
+    event.target.value = '';
   };
 
   const handleSelectImage = () => {

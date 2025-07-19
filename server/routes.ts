@@ -153,6 +153,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Upload profile image
   app.post("/api/upload", upload.single('profileImage'), (req, res) => {
     try {
+      console.log('Upload request received:', {
+        file: req.file ? {
+          filename: req.file.filename,
+          originalname: req.file.originalname,
+          mimetype: req.file.mimetype,
+          size: req.file.size
+        } : 'No file'
+      });
+      
       if (!req.file) {
         return res.status(400).json({ error: "No file uploaded" });
       }
@@ -160,8 +169,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const filename = req.file.filename;
       const imageUrl = `/uploads/${filename}`;
       
+      console.log('Upload successful:', { filename, imageUrl });
       res.json({ imageUrl });
     } catch (error) {
+      console.error('Upload error:', error);
       res.status(500).json({ error: "Failed to upload image" });
     }
   });
