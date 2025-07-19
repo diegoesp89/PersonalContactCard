@@ -15,6 +15,7 @@ import {
   LogOut,
   BarChart3
 } from "lucide-react";
+import { ImageCropUpload } from "@/components/ImageCropUpload";
 
 interface Contact {
   id: number;

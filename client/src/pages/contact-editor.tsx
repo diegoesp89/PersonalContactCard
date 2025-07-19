@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { z } from "zod";
 import ImageGalleryModal from "@/components/ImageGalleryModal";
+import { ImageCropUpload } from "@/components/ImageCropUpload";
 
 interface Contact {
   id?: number;
@@ -116,11 +117,8 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  // Image upload function
-  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
+  // Image upload function with crop support
+  const handleImageUpload = async (file: File) => {
     if (!file.type.startsWith('image/')) {
       toast({
         title: "Error",
@@ -140,13 +138,13 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
     }
 
     setUploading(true);
-    const formData = new FormData();
-    formData.append('profileImage', file);
+    const uploadFormData = new FormData();
+    uploadFormData.append('profileImage', file);
 
     try {
       const response = await fetch('/api/upload', {
         method: 'POST',
-        body: formData,
+        body: uploadFormData,
       });
 
       if (!response.ok) {
@@ -158,7 +156,7 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
       
       toast({
         title: "¡Imagen subida!",
-        description: "La imagen de perfil se ha guardado correctamente",
+        description: "La imagen de perfil se ha guardado y recortada correctamente",
       });
     } catch (error) {
       toast({
@@ -276,50 +274,14 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
               <CardTitle className="text-slate-100">Imagen de Perfil</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-6">
-                <div className="flex-shrink-0">
-                  <div 
-                    className="relative cursor-pointer group"
-                    onClick={() => setShowGalleryModal(true)}
-                  >
-                    {formData.profileImage ? (
-                      <>
-                        <img
-                          src={formData.profileImage}
-                          alt="Imagen de perfil"
-                          className="w-24 h-24 rounded-full object-cover border-2 border-slate-600 group-hover:opacity-80 transition-opacity"
-                        />
-                        <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <Upload className="w-6 h-6 text-white" />
-                        </div>
-                      </>
-                    ) : (
-                      <div className="w-24 h-24 rounded-full bg-slate-700 flex items-center justify-center border-2 border-slate-600 group-hover:bg-slate-600 transition-colors overflow-hidden">
-                        <img
-                          src="/default-avatar.svg"
-                          alt="Avatar por defecto"
-                          className="w-16 h-16 opacity-60 group-hover:opacity-80 transition-opacity"
-                        />
-                      </div>
-                    )}
-                    {formData.profileImage && (
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          updateField('profileImage', '');
-                        }}
-                        className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-white text-xs hover:bg-red-600 transition-colors"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    )}
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <Label className="text-slate-200 block mb-2">
-                    Imagen de Perfil
-                  </Label>
+              <div className="space-y-4">
+                <ImageCropUpload
+                  onImageSelect={handleImageUpload}
+                  isUploading={uploading}
+                  currentImage={formData.profileImage || "/default-avatar.svg"}
+                />
+                
+                <div className="flex justify-center">
                   <Button
                     type="button"
                     variant="outline"
@@ -327,12 +289,23 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                     className="bg-slate-800/50 border-slate-600 text-slate-100 hover:bg-slate-700/50"
                   >
                     <Upload className="w-4 h-4 mr-2" />
-                    {formData.profileImage ? "Cambiar Imagen" : "Seleccionar de Galería"}
+                    Seleccionar de Galería
                   </Button>
-                  <p className="text-xs text-slate-400 mt-2">
-                    Haz clic para abrir la galería de imágenes
-                  </p>
                 </div>
+                
+                {formData.profileImage && (
+                  <div className="flex justify-center">
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => updateField('profileImage', '')}
+                    >
+                      <X className="w-3 h-3 mr-2" />
+                      Eliminar Imagen
+                    </Button>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
