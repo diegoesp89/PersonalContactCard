@@ -45,10 +45,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       fileSize: 5 * 1024 * 1024, // 5MB limit
     },
     fileFilter: function (req, file, cb) {
-      if (file.mimetype.startsWith('image/')) {
+      console.log('File filter check:', {
+        originalname: file.originalname,
+        mimetype: file.mimetype,
+        fieldname: file.fieldname
+      });
+      
+      const allowedMimes = [
+        'image/jpeg',
+        'image/jpg', 
+        'image/png',
+        'image/gif',
+        'image/webp'
+      ];
+      
+      if (allowedMimes.includes(file.mimetype)) {
         cb(null, true);
       } else {
-        cb(new Error('Only image files are allowed!'));
+        console.log('File rejected, mimetype not allowed:', file.mimetype);
+        cb(new Error(`File type ${file.mimetype} not allowed. Allowed types: ${allowedMimes.join(', ')}`));
       }
     }
   });
@@ -164,7 +179,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Upload profile image with Object Storage
-  app.post("/api/upload", upload.single('profileImage'), async (req, res) => {
+  app.post("/api/upload", (req, res) => {
+    upload.single('profileImage')(req, res, async (err) => {
+      if (err) {
+        console.error('Multer error:', err);
+        return res.status(400).json({ 
+          error: err.message,
+          details: 'File upload failed at multer level'
+        });
+      }
+      
+      await handleImageUpload(req, res);
+    });
+  });
+  
+  async function handleImageUpload(req: any, res: any) {
     try {
       console.log('Upload request received:', {
         file: req.file ? {
@@ -178,9 +207,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "No file uploaded" });
       }
       
-      // Generate unique filename
+      // Generate unique filename with proper extension handling
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-      const filename = 'profile-' + uniqueSuffix + path.extname(req.file.originalname);
+      let fileExtension = path.extname(req.file.originalname).toLowerCase();
+      
+      // Handle JPG vs JPEG extension consistency
+      if (req.file.mimetype === 'image/jpeg' && !fileExtension) {
+        fileExtension = '.jpg';
+      } else if (req.file.mimetype === 'image/jpeg' && fileExtension === '.jpeg') {
+        fileExtension = '.jpg'; // Normalize to .jpg for consistency
+      }
+      
+      const filename = 'profile-' + uniqueSuffix + fileExtension;
+      
+      console.log('Processing file:', {
+        originalname: req.file.originalname,
+        mimetype: req.file.mimetype,
+        size: req.file.size,
+        generatedFilename: filename
+      });
       
       // Try Object Storage first, fallback to local
       let imageUrl = `/uploads/${filename}`;
@@ -197,15 +242,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Always save locally as backup/fallback
       const localPath = path.join(uploadsDir, filename);
-      fs.writeFileSync(localPath, req.file.buffer);
+      
+      try {
+        fs.writeFileSync(localPath, req.file.buffer);
+        console.log('File saved locally:', localPath);
+        
+        // Verify the file was written correctly
+        const stats = fs.statSync(localPath);
+        console.log('File verification:', {
+          exists: fs.existsSync(localPath),
+          size: stats.size,
+          expectedSize: req.file.buffer.length
+        });
+        
+        if (stats.size !== req.file.buffer.length) {
+          throw new Error(`File size mismatch: expected ${req.file.buffer.length}, got ${stats.size}`);
+        }
+      } catch (writeError) {
+        console.error('Error writing file locally:', writeError);
+        throw writeError;
+      }
       
       console.log('Upload successful:', { filename, imageUrl });
       res.json({ imageUrl });
     } catch (error) {
       console.error('Upload error:', error);
-      res.status(500).json({ error: "Failed to upload image" });
+      res.status(500).json({ 
+        error: "Failed to upload image", 
+        details: error.message,
+        stack: error.stack 
+      });
     }
-  });
+  }
 
   // Serve images from Object Storage or local fallback
   app.get("/api/image/:filename", async (req, res) => {
@@ -217,15 +285,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Try to get from Object Storage first
           const imageBuffer = await objectStorage.downloadAsBytes(filename);
           
-          // Set appropriate headers
+          // Set appropriate headers with better MIME type detection
           const ext = path.extname(filename).toLowerCase();
           const contentType = {
             '.jpg': 'image/jpeg',
-            '.jpeg': 'image/jpeg',
+            '.jpeg': 'image/jpeg', 
             '.png': 'image/png',
             '.gif': 'image/gif',
             '.webp': 'image/webp'
           }[ext] || 'image/jpeg';
+          
+          console.log('Serving image from Object Storage:', {
+            filename,
+            extension: ext,
+            contentType,
+            size: imageBuffer.length
+          });
           
           res.setHeader('Content-Type', contentType);
           res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 year cache
