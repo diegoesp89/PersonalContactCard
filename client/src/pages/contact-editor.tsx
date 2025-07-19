@@ -41,6 +41,7 @@ interface Contact {
   inDev: string;
   ruta: string;
   backgroundColor: string;
+  statsPassword: string;
 
   banks: string;
 }
@@ -94,6 +95,7 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
     inDev: contact?.inDev || "true", // Always default to true for new contacts
     ruta: contact?.ruta || "",
     backgroundColor: contact?.backgroundColor || "#1e293b", // Default slate-800
+    statsPassword: contact?.statsPassword || "",
 
     banks: contact?.banks || "[]"
   });
@@ -492,6 +494,22 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                 </div>
                 <p className="text-xs text-slate-400">
                   Color de fondo para la tarjeta de contacto
+                </p>
+              </div>
+
+              {/* Stats Password */}
+              <div className="space-y-2">
+                <Label htmlFor="statsPassword" className="text-slate-200">Contraseña de Estadísticas</Label>
+                <Input
+                  id="statsPassword"
+                  type="password"
+                  value={formData.statsPassword}
+                  onChange={(e) => updateField("statsPassword", e.target.value)}
+                  className="bg-slate-800/50 border-slate-600 text-slate-100"
+                  placeholder="Contraseña para que el contacto vea sus stats"
+                />
+                <p className="text-xs text-slate-400">
+                  El contacto podrá ver sus estadísticas usando esta contraseña
                 </p>
               </div>
 

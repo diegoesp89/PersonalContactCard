@@ -37,6 +37,7 @@ interface Contact {
   inDev: string;
   ruta: string;
   backgroundColor: string;
+  statsPassword: string;
 
   banks: string;
 }

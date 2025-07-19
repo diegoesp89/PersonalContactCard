@@ -361,9 +361,10 @@ END:VCARD`;
     }
   });
 
-  // Get analytics stats for a contact (admin only)
-  app.post("/api/analytics/:ruta", authenticateAdmin, async (req, res) => {
+  // Get analytics stats for a contact (admin or contact password)
+  app.post("/api/analytics/:ruta", async (req, res) => {
     try {
+      const { password } = req.body;
       const { ruta } = req.params;
       const { days = 30 } = req.query; // Default to last 30 days
       
@@ -371,6 +372,14 @@ END:VCARD`;
       const contact = await storage.getContactByRuta(ruta);
       if (!contact) {
         return res.status(404).json({ error: "Contact not found" });
+      }
+      
+      // Check if password is correct - admin passwords OR contact-specific password
+      const isAdmin = password === "CamisasWenas.!" || password === "Mafatanga2025";
+      const isContactPassword = contact.statsPassword && password === contact.statsPassword;
+      
+      if (!isAdmin && !isContactPassword) {
+        return res.status(401).json({ error: "Unauthorized" });
       }
       
       const startDate = new Date();

@@ -50,6 +50,9 @@ Preferred communication style: Simple, everyday language.
 - **Julio 19, 2025**: Creada página de estadísticas accesible en /contacto/stats con gráficos interactivos
 - **Julio 19, 2025**: Implementado tracking automático en todos los enlaces (WhatsApp, Instagram, teléfono, email, etc.)
 - **Julio 19, 2025**: Agregado botón de acceso directo a analytics en cada tarjeta de contacto del panel de administración
+- **Julio 19, 2025**: Implementado sistema de contraseñas específicas por contacto para acceso a estadísticas
+- **Julio 19, 2025**: Campo "statsPassword" agregado al editor de contactos - cada contacto puede tener su propia contraseña de stats
+- **Julio 19, 2025**: Página de analytics acepta tanto contraseñas de admin como contraseñas específicas del contacto
 - **Julio 16, 2025**: Implementado sistema completo de administración con panel de admin en /edit
 - **Julio 16, 2025**: Añadido sistema de autenticación con contraseña "CamisasWenas.!" para admin básico
 - **Julio 16, 2025**: Creado sistema de rutas dinámicas - cada contacto tiene campo "ruta" para generar URLs personalizadas

@@ -104,7 +104,8 @@ export default function AnalyticsPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/admin/login', {
+      // Try to fetch analytics directly - this will check both admin and contact passwords
+      const response = await fetch(`/api/analytics/${ruta}?days=${days}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -184,7 +185,7 @@ export default function AnalyticsPage() {
         <Card className="w-full max-w-md bg-slate-800 border-slate-700">
           <CardHeader>
             <CardTitle className="text-slate-100">Acceso a Estadísticas</CardTitle>
-            <p className="text-slate-400">Ingresa la contraseña de administrador</p>
+            <p className="text-slate-400">Ingresa la contraseña de administrador o la contraseña del contacto</p>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
