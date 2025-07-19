@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { X, Upload, Check } from "lucide-react";
+import { X, Upload, Check, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -9,6 +9,7 @@ interface ImageGalleryModalProps {
   currentImage?: string;
   onSelectImage: (imageUrl: string) => void;
   onClose: () => void;
+  password: string;
 }
 
 interface GalleryImage {
@@ -17,9 +18,10 @@ interface GalleryImage {
   uploadDate: string;
 }
 
-export default function ImageGalleryModal({ isOpen, currentImage, onSelectImage, onClose }: ImageGalleryModalProps) {
+export default function ImageGalleryModal({ isOpen, currentImage, onSelectImage, onClose, password }: ImageGalleryModalProps) {
   const [selectedImage, setSelectedImage] = useState<string>(currentImage || '');
   const [uploading, setUploading] = useState(false);
+  const [deletingImages, setDeletingImages] = useState<Set<string>>(new Set());
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -70,6 +72,64 @@ export default function ImageGalleryModal({ isOpen, currentImage, onSelectImage,
       setUploading(false);
     }
   });
+
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (filename: string) => {
+      const response = await fetch(`/api/gallery/${filename}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to delete image');
+      }
+      
+      return response.json();
+    },
+    onSuccess: (_, filename) => {
+      toast({
+        title: "Imagen eliminada",
+        description: "La imagen se eliminó correctamente",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/gallery'] });
+      
+      // If the deleted image was selected, clear selection
+      if (selectedImage.includes(filename)) {
+        setSelectedImage('');
+      }
+      
+      setDeletingImages(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(filename);
+        return newSet;
+      });
+    },
+    onError: (error: any) => {
+      console.error('Delete mutation error:', error);
+      toast({
+        title: "Error",
+        description: error.message || "No se pudo eliminar la imagen",
+        variant: "destructive",
+      });
+      
+      setDeletingImages(prev => {
+        const newSet = new Set(prev);
+        newSet.delete('current');
+        return newSet;
+      });
+    }
+  });
+
+  const handleDeleteImage = (filename: string, event: React.MouseEvent) => {
+    event.stopPropagation();
+    setDeletingImages(prev => new Set(prev).add(filename));
+    deleteMutation.mutate(filename);
+  };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -201,15 +261,44 @@ export default function ImageGalleryModal({ isOpen, currentImage, onSelectImage,
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {/* Default Avatar Option */}
+              <div
+                className={`relative aspect-square rounded-lg overflow-hidden cursor-pointer transition-all duration-200 border-2 border-dashed border-slate-600 ${
+                  selectedImage === '/default-avatar.svg'
+                    ? 'ring-2 ring-blue-500 transform scale-105'
+                    : 'hover:scale-105 hover:shadow-lg'
+                }`}
+                onClick={() => setSelectedImage('/default-avatar.svg')}
+              >
+                <div className="w-full h-full bg-slate-700 flex items-center justify-center">
+                  <img
+                    src="/default-avatar.svg"
+                    alt="Avatar por defecto"
+                    className="w-16 h-16 opacity-60"
+                  />
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs p-1 text-center">
+                  Por defecto
+                </div>
+                {selectedImage === '/default-avatar.svg' && (
+                  <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
+                    <div className="bg-blue-500 rounded-full p-2">
+                      <Check className="w-4 h-4 text-white" />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Uploaded Images */}
               {galleryImages.map((image: GalleryImage) => (
                 <div
                   key={image.filename}
-                  className={`relative aspect-square rounded-lg overflow-hidden cursor-pointer transition-all duration-200 ${
+                  className={`group relative aspect-square rounded-lg overflow-hidden cursor-pointer transition-all duration-200 ${
                     selectedImage === image.url
                       ? 'ring-2 ring-blue-500 transform scale-105'
                       : 'hover:scale-105 hover:shadow-lg'
-                  }`}
-                  onClick={() => setSelectedImage(image.url)}
+                  } ${deletingImages.has(image.filename) ? 'opacity-50' : ''}`}
+                  onClick={() => !deletingImages.has(image.filename) && setSelectedImage(image.url)}
                 >
                   <img
                     src={image.url}
@@ -217,11 +306,27 @@ export default function ImageGalleryModal({ isOpen, currentImage, onSelectImage,
                     className="w-full h-full object-cover"
                     loading="lazy"
                   />
+                  
+                  {/* Delete button */}
+                  <button
+                    onClick={(e) => handleDeleteImage(image.filename, e)}
+                    disabled={deletingImages.has(image.filename)}
+                    className="absolute top-2 right-2 p-1.5 bg-red-500 rounded-full text-white hover:bg-red-600 transition-all opacity-0 group-hover:opacity-100 z-10"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </button>
+
                   {selectedImage === image.url && (
                     <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
                       <div className="bg-blue-500 rounded-full p-2">
                         <Check className="w-4 h-4 text-white" />
                       </div>
+                    </div>
+                  )}
+
+                  {deletingImages.has(image.filename) && (
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                      <div className="text-white text-sm">Eliminando...</div>
                     </div>
                   )}
                 </div>

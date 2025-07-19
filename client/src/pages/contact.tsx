@@ -407,11 +407,11 @@ Correo: ${bank.email}`;
                     />
                   </>
                 ) : (
-                  <div 
-                    className="w-full h-full bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center text-white text-xl font-bold"
-                  >
-                    {contact.name.split(' ').map(n => n[0]).join('').toUpperCase()}
-                  </div>
+                  <img
+                    src="/default-avatar.svg"
+                    alt="Avatar por defecto"
+                    className="w-full h-full object-cover"
+                  />
                 )}
               </div>
               

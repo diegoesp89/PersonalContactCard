@@ -215,6 +215,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Delete image from gallery (admin only)
+  app.delete("/api/gallery/:filename", (req, res) => {
+    try {
+      const { filename } = req.params;
+      const { password } = req.body;
+      
+      // Authenticate admin
+      if (password !== "CamisasWenas.!" && password !== "Mafatanga2025") {
+        return res.status(401).json({ error: "Invalid password" });
+      }
+      
+      const filePath = path.join(uploadsDir, filename);
+      
+      // Check if file exists
+      if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ error: "Image not found" });
+      }
+      
+      // Delete the file
+      fs.unlinkSync(filePath);
+      console.log('Image deleted:', filename);
+      
+      res.json({ success: true, message: "Image deleted successfully" });
+    } catch (error) {
+      console.error('Delete image error:', error);
+      res.status(500).json({ error: "Failed to delete image" });
+    }
+  });
+
   // Generate and download vCard by route
   app.get("/api/contact/:ruta/vcard", async (req, res) => {
     try {

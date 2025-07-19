@@ -292,8 +292,12 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                         </div>
                       </>
                     ) : (
-                      <div className="w-24 h-24 rounded-full bg-slate-700 flex items-center justify-center border-2 border-slate-600 group-hover:bg-slate-600 transition-colors">
-                        <Upload className="w-8 h-8 text-slate-400" />
+                      <div className="w-24 h-24 rounded-full bg-slate-700 flex items-center justify-center border-2 border-slate-600 group-hover:bg-slate-600 transition-colors overflow-hidden">
+                        <img
+                          src="/default-avatar.svg"
+                          alt="Avatar por defecto"
+                          className="w-16 h-16 opacity-60 group-hover:opacity-80 transition-opacity"
+                        />
                       </div>
                     )}
                     {formData.profileImage && (
@@ -628,6 +632,7 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
         currentImage={formData.profileImage}
         onSelectImage={(imageUrl) => updateField('profileImage', imageUrl)}
         onClose={() => setShowGalleryModal(false)}
+        password={password}
       />
     </div>
   );
