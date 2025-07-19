@@ -53,6 +53,9 @@ Preferred communication style: Simple, everyday language.
 - **Julio 19, 2025**: Implementado sistema de contraseñas específicas por contacto para acceso a estadísticas
 - **Julio 19, 2025**: Campo "statsPassword" agregado al editor de contactos - cada contacto puede tener su propia contraseña de stats
 - **Julio 19, 2025**: Página de analytics acepta tanto contraseñas de admin como contraseñas específicas del contacto
+- **Julio 19, 2025**: Implementado Replit Object Storage para persistencia de imágenes en producción
+- **Julio 19, 2025**: Sistema híbrido: Object Storage en producción, archivos locales como fallback en desarrollo
+- **Julio 19, 2025**: Nuevo endpoint /api/image/:filename para servir imágenes desde almacenamiento persistente
 - **Julio 16, 2025**: Implementado sistema completo de administración con panel de admin en /edit
 - **Julio 16, 2025**: Añadido sistema de autenticación con contraseña "CamisasWenas.!" para admin básico
 - **Julio 16, 2025**: Creado sistema de rutas dinámicas - cada contacto tiene campo "ruta" para generar URLs personalizadas

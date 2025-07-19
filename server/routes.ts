@@ -7,29 +7,40 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import QRCode from "qrcode";
+import { Client } from "@replit/object-storage";
 import { db } from "./db";
 import { eq, desc, sql, count, and, gte, lte } from "drizzle-orm";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Ensure uploads directory exists
+  // Initialize Replit Object Storage client (only in production or if configured)
+  let objectStorage: Client | null = null;
+  
+  // Temporarily disable Object Storage until properly configured
+  console.log('Using local file storage (Object Storage will be configured for production)');
+  
+  // TODO: Enable Object Storage for production deployments:
+  // 1. Create bucket in Replit Object Storage
+  // 2. Uncomment the following code
+  /*
+  if (process.env.NODE_ENV === 'production') {
+    try {
+      objectStorage = new Client();
+      console.log('Object Storage initialized successfully');
+    } catch (error) {
+      console.log('Object Storage not available, falling back to local storage:', error.message);
+    }
+  }
+  */
+
+  // Ensure uploads directory exists (fallback for dev)
   const uploadsDir = path.join(process.cwd(), "client", "public", "uploads");
   if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
   }
 
-  // Configure multer for file uploads
-  const storage_multer = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, uploadsDir);
-    },
-    filename: function (req, file, cb) {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-      cb(null, 'profile-' + uniqueSuffix + path.extname(file.originalname));
-    }
-  });
-
+  // Configure multer for memory storage (we'll handle file storage ourselves)
   const upload = multer({
-    storage: storage_multer,
+    storage: multer.memoryStorage(),
     limits: {
       fileSize: 5 * 1024 * 1024, // 5MB limit
     },
@@ -152,12 +163,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Upload profile image
-  app.post("/api/upload", upload.single('profileImage'), (req, res) => {
+  // Upload profile image with Object Storage
+  app.post("/api/upload", upload.single('profileImage'), async (req, res) => {
     try {
       console.log('Upload request received:', {
         file: req.file ? {
-          filename: req.file.filename,
           originalname: req.file.originalname,
           mimetype: req.file.mimetype,
           size: req.file.size
@@ -168,8 +178,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "No file uploaded" });
       }
       
-      const filename = req.file.filename;
-      const imageUrl = `/uploads/${filename}`;
+      // Generate unique filename
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      const filename = 'profile-' + uniqueSuffix + path.extname(req.file.originalname);
+      
+      // Try Object Storage first, fallback to local
+      let imageUrl = `/uploads/${filename}`;
+      
+      if (objectStorage) {
+        try {
+          await objectStorage.uploadFromBytes(filename, req.file.buffer);
+          console.log('Uploaded to Object Storage:', filename);
+          imageUrl = `/api/image/${filename}`;
+        } catch (storageError) {
+          console.log('Object Storage upload failed, using local:', storageError.message);
+        }
+      }
+      
+      // Always save locally as backup/fallback
+      const localPath = path.join(uploadsDir, filename);
+      fs.writeFileSync(localPath, req.file.buffer);
       
       console.log('Upload successful:', { filename, imageUrl });
       res.json({ imageUrl });
@@ -179,46 +207,98 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Upload profile image (admin alternative endpoint)
-  app.post("/api/admin/upload-image", upload.single('profileImage'), (req, res) => {
+  // Serve images from Object Storage or local fallback
+  app.get("/api/image/:filename", async (req, res) => {
     try {
-      if (!req.file) {
-        return res.status(400).json({ error: "No file uploaded" });
+      const { filename } = req.params;
+      
+      if (objectStorage) {
+        try {
+          // Try to get from Object Storage first
+          const imageBuffer = await objectStorage.downloadAsBytes(filename);
+          
+          // Set appropriate headers
+          const ext = path.extname(filename).toLowerCase();
+          const contentType = {
+            '.jpg': 'image/jpeg',
+            '.jpeg': 'image/jpeg',
+            '.png': 'image/png',
+            '.gif': 'image/gif',
+            '.webp': 'image/webp'
+          }[ext] || 'image/jpeg';
+          
+          res.setHeader('Content-Type', contentType);
+          res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 year cache
+          res.send(imageBuffer);
+          return;
+        } catch (objectStorageError) {
+          console.log('Object Storage download failed, trying local:', objectStorageError.message);
+        }
       }
       
-      const filename = req.file.filename;
-      const imageUrl = `/uploads/${filename}`;
-      
-      res.json({ imageUrl });
+      // Fallback to local file
+      const localPath = path.join(uploadsDir, filename);
+      if (fs.existsSync(localPath)) {
+        res.sendFile(localPath);
+      } else {
+        res.status(404).json({ error: "Image not found" });
+      }
     } catch (error) {
-      res.status(500).json({ error: "Failed to upload image" });
+      console.error('Error serving image:', error);
+      res.status(500).json({ error: "Failed to serve image" });
     }
   });
 
-  // Get gallery images
-  app.get("/api/gallery", (req, res) => {
+  // Get gallery images from Object Storage
+  app.get("/api/gallery", async (req, res) => {
     try {
-      const files = fs.readdirSync(uploadsDir);
-      const imageFiles = files
-        .filter(file => {
-          const ext = path.extname(file).toLowerCase();
-          return ['.jpg', '.jpeg', '.png', '.gif', '.webp'].includes(ext);
-        })
-        .map(file => ({
-          filename: file,
-          url: `/uploads/${file}`,
-          uploadDate: fs.statSync(path.join(uploadsDir, file)).mtime
-        }))
-        .sort((a, b) => b.uploadDate.getTime() - a.uploadDate.getTime()); // Most recent first
+      let imageFiles = [];
+      
+      if (objectStorage) {
+        try {
+          // Get from Object Storage
+          const objects = await objectStorage.list();
+          imageFiles = objects
+            .filter(obj => {
+              const ext = path.extname(obj.name).toLowerCase();
+              return ['.jpg', '.jpeg', '.png', '.gif', '.webp'].includes(ext);
+            })
+            .map(obj => ({
+              filename: obj.name,
+              url: `/api/image/${obj.name}`,
+              uploadDate: new Date(obj.createdAt)
+            }))
+            .sort((a, b) => b.uploadDate.getTime() - a.uploadDate.getTime());
+        } catch (objectStorageError) {
+          console.log('Object Storage list failed, using local files:', objectStorageError.message);
+        }
+      }
+      
+      // If Object Storage failed or not available, use local files
+      if (imageFiles.length === 0 && fs.existsSync(uploadsDir)) {
+        const files = fs.readdirSync(uploadsDir);
+        imageFiles = files
+          .filter(file => {
+            const ext = path.extname(file).toLowerCase();
+            return ['.jpg', '.jpeg', '.png', '.gif', '.webp'].includes(ext);
+          })
+          .map(file => ({
+            filename: file,
+            url: `/uploads/${file}`,
+            uploadDate: fs.statSync(path.join(uploadsDir, file)).mtime
+          }))
+          .sort((a, b) => b.uploadDate.getTime() - a.uploadDate.getTime());
+      }
       
       res.json(imageFiles);
     } catch (error) {
+      console.error('Gallery error:', error);
       res.status(500).json({ error: "Failed to get gallery images" });
     }
   });
 
   // Delete image from gallery (admin only)
-  app.delete("/api/gallery/:filename", (req, res) => {
+  app.delete("/api/gallery/:filename", async (req, res) => {
     try {
       const { filename } = req.params;
       const { password } = req.body;
@@ -228,16 +308,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ error: "Invalid password" });
       }
       
-      const filePath = path.join(uploadsDir, filename);
-      
-      // Check if file exists
-      if (!fs.existsSync(filePath)) {
-        return res.status(404).json({ error: "Image not found" });
+      // Delete from Object Storage if available
+      if (objectStorage) {
+        try {
+          await objectStorage.delete(filename);
+          console.log('Image deleted from Object Storage:', filename);
+        } catch (objectStorageError) {
+          console.log('Failed to delete from Object Storage:', objectStorageError.message);
+        }
       }
       
-      // Delete the file
-      fs.unlinkSync(filePath);
-      console.log('Image deleted:', filename);
+      // Also delete local file if it exists
+      const filePath = path.join(uploadsDir, filename);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+        console.log('Local image deleted:', filename);
+      }
       
       res.json({ success: true, message: "Image deleted successfully" });
     } catch (error) {
