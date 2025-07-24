@@ -69,6 +69,9 @@ Preferred communication style: Simple, everyday language.
 - **Julio 24, 2025**: Agregado try-catch wrapping en inicialización Object Storage para prevenir fallos de deployment
 - **Julio 24, 2025**: Corregidos todos los tipos de error "unknown" - implementado error casting seguro con instanceof Error
 - **Julio 24, 2025**: Manejo correcto del tipo Result de Object Storage API en upload, download, list y delete operations
+- **Julio 24, 2025**: Implementada barra de búsqueda en panel de administración - búsqueda por nombre y ruta (/profile-name)
+- **Julio 24, 2025**: Agregado ordenamiento alfabético automático de contactos en vista de administración
+- **Julio 24, 2025**: Filtrado en tiempo real de contactos con contador de resultados y estados vacíos inteligentes
 - **Julio 16, 2025**: Implementado sistema completo de administración con panel de admin en /edit
 - **Julio 16, 2025**: Añadido sistema de autenticación con contraseña "CamisasWenas.!" para admin básico
 - **Julio 16, 2025**: Creado sistema de rutas dinámicas - cada contacto tiene campo "ruta" para generar URLs personalizadas

@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { 
@@ -13,7 +14,8 @@ import {
   AlertTriangle,
   QrCode,
   LogOut,
-  BarChart3
+  BarChart3,
+  Search
 } from "lucide-react";
 
 interface Contact {
@@ -51,6 +53,7 @@ interface AdminDashboardProps {
 export default function AdminDashboard({ onLogout, onEditContact, password }: AdminDashboardProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [searchTerm, setSearchTerm] = useState("");
   
   // Check if user is superadmin
   const isSuperAdmin = password === "Mafatanga2025";
@@ -76,7 +79,23 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
     retry: 1
   });
 
-
+  // Filter and sort contacts alphabetically
+  const filteredAndSortedContacts = useMemo(() => {
+    let filtered = contacts;
+    
+    // Filter by search term
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase();
+      filtered = contacts.filter(contact => {
+        const fullName = `${contact.name}`.toLowerCase();
+        const route = `/${contact.ruta}`.toLowerCase();
+        return fullName.includes(term) || route.includes(term);
+      });
+    }
+    
+    // Sort alphabetically by name
+    return filtered.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+  }, [contacts, searchTerm]);
 
   const deleteContactMutation = useMutation({
     mutationFn: async (id: number) => {
@@ -231,9 +250,29 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
           </div>
         </div>
 
+        {/* Search Bar */}
+        <div className="mb-6">
+          <div className="relative max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Input
+              type="text"
+              placeholder="Buscar por nombre o ruta (ej: Juan, /juan-perez)"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 bg-slate-800/50 border-slate-700 text-slate-100 placeholder-slate-400 focus:border-blue-400"
+            />
+          </div>
+          {searchTerm && (
+            <p className="text-sm text-slate-400 mt-2">
+              {filteredAndSortedContacts.length} contacto{filteredAndSortedContacts.length !== 1 ? 's' : ''} encontrado{filteredAndSortedContacts.length !== 1 ? 's' : ''}
+            </p>
+          )}
+        </div>
+
         {/* Contacts Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {contacts.map((contact) => (
+          {filteredAndSortedContacts.length > 0 ? (
+            filteredAndSortedContacts.map((contact) => (
             <Card key={contact.id} className="glass-effect border-slate-700">
               <CardHeader className="pb-3">
                 <div className="flex justify-between items-start">
@@ -348,21 +387,28 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
                 </div>
               </CardContent>
             </Card>
-          ))}
-        </div>
-
-        {contacts.length === 0 && (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 mx-auto mb-4 bg-slate-700/50 rounded-full flex items-center justify-center">
-              <Users className="w-8 h-8 text-slate-500" />
+            ))
+          ) : (
+            <div className="col-span-full text-center py-12">
+              <div className="w-16 h-16 mx-auto mb-4 bg-slate-700/50 rounded-full flex items-center justify-center">
+                <Search className="w-8 h-8 text-slate-500" />
+              </div>
+              <p className="text-slate-400 mb-2">No se encontraron contactos</p>
+              <p className="text-slate-500 text-sm">
+                {searchTerm ? `No hay contactos que coincidan con "${searchTerm}"` : "No hay contactos creados"}
+              </p>
+              {!searchTerm && (
+                <Button 
+                  onClick={() => onEditContact({} as Contact)}
+                  className="mt-4"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Crear primer contacto
+                </Button>
+              )}
             </div>
-            <p className="text-slate-400 mb-4">No hay contactos creados</p>
-            <Button onClick={() => onEditContact({} as Contact)}>
-              <Plus className="w-4 h-4 mr-2" />
-              Crear primer contacto
-            </Button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
