@@ -13,31 +13,36 @@ import { eq, desc, sql, count, and, gte, lte } from "drizzle-orm";
 import { logger } from "./logger";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Initialize Replit Object Storage client (only in production or if configured)
+  // Determine environment and storage configuration
+  const isProduction = process.env.NODE_ENV === 'production' || process.env.REPLIT_DEPLOYMENT === '1';
   let objectStorage: Client | null = null;
   
-  // Temporarily disable Object Storage until properly configured
-  console.log('Using local file storage (Object Storage will be configured for production)');
-  
-  // TODO: Enable Object Storage for production deployments:
-  // 1. Create bucket in Replit Object Storage
-  // 2. Uncomment the following code
-  /*
-  if (process.env.NODE_ENV === 'production') {
+  // Initialize Object Storage for production
+  if (isProduction) {
     try {
       objectStorage = new Client();
-      console.log('Object Storage initialized successfully');
+      console.log('Production mode: Object Storage initialized successfully');
     } catch (error) {
-      console.log('Object Storage not available, falling back to local storage:', error.message);
+      console.log('Production mode: Object Storage not available, falling back to local storage:', error.message);
     }
+  } else {
+    console.log('Development mode: Using local file storage');
   }
-  */
 
-  // Ensure uploads directory exists (fallback for dev)
-  const uploadsDir = path.join(process.cwd(), "client", "public", "uploads");
+  // Configure uploads directory based on environment
+  const uploadsDir = isProduction 
+    ? path.join(process.cwd(), "uploads") // Production: isolated directory
+    : path.join(process.cwd(), "client", "public", "uploads"); // Development: accessible via Vite
+    
   if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
   }
+
+  console.log(`File storage configuration:
+  - Environment: ${isProduction ? 'Production' : 'Development'}
+  - Object Storage: ${objectStorage ? 'Available' : 'Not available'}
+  - Local directory: ${uploadsDir}
+  - Serving via: ${isProduction ? '/api/image/' : '/uploads/'}`);
 
   // Serve static files from uploads directory BEFORE other routes
   app.use('/uploads', (req, res, next) => {
@@ -335,7 +340,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       // Try Object Storage first, fallback to local
-      let imageUrl = `/uploads/${filename}`;
+      let imageUrl = isProduction ? `/api/image/${filename}` : `/uploads/${filename}`;
       
       if (objectStorage) {
         try {
@@ -394,7 +399,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         originalName: req.file.originalname,
         size: req.file.size,
         mimetype: req.file.mimetype,
-        imageUrl 
+        imageUrl,
+        environment: isProduction ? 'production' : 'development'
       }, req);
       res.json({ imageUrl });
     } catch (error) {
@@ -525,7 +531,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           })
           .map(file => ({
             filename: file,
-            url: `/uploads/${file}`,
+            url: isProduction ? `/api/image/${file}` : `/uploads/${file}`,
             uploadDate: fs.statSync(path.join(uploadsDir, file)).mtime
           }))
           .sort((a, b) => b.uploadDate.getTime() - a.uploadDate.getTime());

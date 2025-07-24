@@ -60,6 +60,10 @@ Preferred communication style: Simple, everyday language.
 - **Julio 19, 2025**: Tracking detallado de todas las operaciones: visualizaciones, creación/edición/eliminación de contactos, subida/eliminación de imágenes
 - **Julio 19, 2025**: Página de logs con interfaz web estilo terminal, auto-refresh cada 30 segundos, filtros de cantidad
 - **Julio 19, 2025**: Logger con persistencia en archivos, información de IP y User Agent para auditoría completa
+- **Julio 24, 2025**: Separación completa de almacenamiento dev/prod - desarrollo usa /client/public/uploads/, producción usa /uploads/ con Object Storage
+- **Julio 24, 2025**: Configuración automática de entorno basada en NODE_ENV y REPLIT_DEPLOYMENT 
+- **Julio 24, 2025**: Doble botón de subida móvil: "Galería" para fotos existentes, "Cámara" para tomar nueva
+- **Julio 24, 2025**: Soporte completo HEIC/HEIF para dispositivos iOS, timeout optimizado para conexiones móviles
 - **Julio 16, 2025**: Implementado sistema completo de administración con panel de admin en /edit
 - **Julio 16, 2025**: Añadido sistema de autenticación con contraseña "CamisasWenas.!" para admin básico
 - **Julio 16, 2025**: Creado sistema de rutas dinámicas - cada contacto tiene campo "ruta" para generar URLs personalizadas
