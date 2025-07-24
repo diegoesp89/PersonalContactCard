@@ -23,6 +23,7 @@ export default function ImageGalleryModal({ isOpen, currentImage, onSelectImage,
   const [uploading, setUploading] = useState(false);
   const [deletingImages, setDeletingImages] = useState<Set<string>>(new Set());
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -223,8 +224,10 @@ export default function ImageGalleryModal({ isOpen, currentImage, onSelectImage,
     setUploading(true);
     uploadMutation.mutate(file);
     
-    // Clear the input so same file can be selected again
+    // Clear both inputs so same file can be selected again
     event.target.value = '';
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    if (cameraInputRef.current) cameraInputRef.current.value = '';
   };
 
   const handleSelectImage = () => {
@@ -282,44 +285,66 @@ export default function ImageGalleryModal({ isOpen, currentImage, onSelectImage,
 
         {/* Upload Section */}
         <div className="p-6 border-b border-slate-700">
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col gap-4">
+            <input
+              type="file"
+              accept="image/*,.heic,.heif"
+              onChange={handleFileUpload}
+              ref={fileInputRef}
+              className="hidden"
+            />
             <input
               type="file"
               accept="image/*,.heic,.heif"
               capture="environment"
               onChange={handleFileUpload}
-              ref={fileInputRef}
+              ref={cameraInputRef}
               className="hidden"
             />
-            <Button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploading}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              <Upload className="w-4 h-4 mr-2" />
-              {uploading ? "Subiendo..." : "Subir Nueva Imagen"}
-            </Button>
-            <p className="text-slate-400 text-sm">
-              Máximo 5MB - JPG, PNG, GIF, WebP, HEIC
+            <div className="flex items-center gap-4">
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  {uploading ? "Subiendo..." : "Galería"}
+                </Button>
+                <Button
+                  onClick={() => cameraInputRef.current?.click()}
+                  disabled={uploading}
+                  variant="outline"
+                  className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                >
+                  📷 Cámara
+                </Button>
+              </div>
+              <p className="text-slate-400 text-sm">
+                Máximo 5MB - JPG, PNG, GIF, WebP, HEIC
+              </p>
+              <Button
+                onClick={() => {
+                  console.log('Debug mobile upload:', {
+                    userAgent: navigator.userAgent,
+                    isMobile: /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
+                    supportedFeatures: {
+                      FormData: typeof FormData !== 'undefined',
+                      fetch: typeof fetch !== 'undefined',
+                      FileReader: typeof FileReader !== 'undefined'
+                    }
+                  });
+                }}
+                variant="outline"
+                size="sm"
+                className="text-xs"
+              >
+                Debug Info
+              </Button>
+            </div>
+            <p className="text-slate-400 text-xs">
+              📱 En móviles: "Galería" para elegir foto existente, "Cámara" para tomar nueva foto
             </p>
-            <Button
-              onClick={() => {
-                console.log('Debug mobile upload:', {
-                  userAgent: navigator.userAgent,
-                  isMobile: /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
-                  supportedFeatures: {
-                    FormData: typeof FormData !== 'undefined',
-                    fetch: typeof fetch !== 'undefined',
-                    FileReader: typeof FileReader !== 'undefined'
-                  }
-                });
-              }}
-              variant="outline"
-              size="sm"
-              className="text-xs"
-            >
-              Debug Info
-            </Button>
           </div>
         </div>
 
