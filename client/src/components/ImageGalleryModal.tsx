@@ -35,21 +35,52 @@ export default function ImageGalleryModal({ isOpen, currentImage, onSelectImage,
   // Upload mutation
   const uploadMutation = useMutation({
     mutationFn: async (file: File) => {
+      console.log('Starting upload mutation for file:', {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        isMobile: /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+      });
+
       const formData = new FormData();
       formData.append('profileImage', file);
       
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
+      // Add timeout for mobile connections
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
       
-      if (!response.ok) {
-        const errorData = await response.text();
-        console.error('Upload error:', errorData);
-        throw new Error(`Failed to upload image: ${response.status} ${response.statusText}`);
+      try {
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+          signal: controller.signal,
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          const errorData = await response.text();
+          console.error('Upload error response:', {
+            status: response.status,
+            statusText: response.statusText,
+            errorData
+          });
+          throw new Error(`Error ${response.status}: ${errorData || response.statusText}`);
+        }
+        
+        const result = await response.json();
+        console.log('Upload successful:', result);
+        return result;
+      } catch (error) {
+        clearTimeout(timeoutId);
+        console.error('Upload fetch error:', error);
+        
+        if (error.name === 'AbortError') {
+          throw new Error('La subida tardó demasiado. Intenta con una imagen más pequeña.');
+        }
+        
+        throw error;
       }
-      
-      return response.json();
     },
     onSuccess: (data) => {
       console.log('Upload success:', data);
@@ -139,14 +170,31 @@ export default function ImageGalleryModal({ isOpen, currentImage, onSelectImage,
       name: file.name,
       type: file.type,
       size: file.size,
-      lastModified: file.lastModified
+      lastModified: file.lastModified,
+      isMobile: /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
     });
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
+    // More specific validation for mobile devices
+    const validImageTypes = [
+      'image/jpeg',
+      'image/jpg', 
+      'image/png',
+      'image/gif',
+      'image/webp',
+      'image/heic', // iOS photos
+      'image/heif'  // iOS photos
+    ];
+
+    // Check if it's an image by extension if MIME type is missing (mobile issue)
+    const fileName = file.name.toLowerCase();
+    const hasValidExtension = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.heic', '.heif'].some(ext => 
+      fileName.endsWith(ext)
+    );
+
+    if (!file.type.startsWith('image/') && !hasValidExtension) {
       toast({
         title: "Error",
-        description: "Solo se permiten archivos de imagen",
+        description: "Solo se permiten archivos de imagen (JPG, PNG, GIF, WebP)",
         variant: "destructive",
       });
       return;
@@ -156,7 +204,17 @@ export default function ImageGalleryModal({ isOpen, currentImage, onSelectImage,
     if (file.size > 5 * 1024 * 1024) {
       toast({
         title: "Error",
-        description: "La imagen debe ser menor a 5MB",
+        description: `La imagen debe ser menor a 5MB (actual: ${(file.size / 1024 / 1024).toFixed(1)}MB)`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check if file is empty (mobile issue)
+    if (file.size === 0) {
+      toast({
+        title: "Error",
+        description: "El archivo está vacío. Intenta seleccionar otra imagen.",
         variant: "destructive",
       });
       return;
@@ -227,7 +285,8 @@ export default function ImageGalleryModal({ isOpen, currentImage, onSelectImage,
           <div className="flex items-center gap-4">
             <input
               type="file"
-              accept="image/*"
+              accept="image/*,.heic,.heif"
+              capture="environment"
               onChange={handleFileUpload}
               ref={fileInputRef}
               className="hidden"
@@ -241,8 +300,26 @@ export default function ImageGalleryModal({ isOpen, currentImage, onSelectImage,
               {uploading ? "Subiendo..." : "Subir Nueva Imagen"}
             </Button>
             <p className="text-slate-400 text-sm">
-              Máximo 5MB - JPG, PNG, GIF, WebP
+              Máximo 5MB - JPG, PNG, GIF, WebP, HEIC
             </p>
+            <Button
+              onClick={() => {
+                console.log('Debug mobile upload:', {
+                  userAgent: navigator.userAgent,
+                  isMobile: /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
+                  supportedFeatures: {
+                    FormData: typeof FormData !== 'undefined',
+                    fetch: typeof fetch !== 'undefined',
+                    FileReader: typeof FileReader !== 'undefined'
+                  }
+                });
+              }}
+              variant="outline"
+              size="sm"
+              className="text-xs"
+            >
+              Debug Info
+            </Button>
           </div>
         </div>
 

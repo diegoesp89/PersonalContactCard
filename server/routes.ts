@@ -86,7 +86,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         'image/jpg', 
         'image/png',
         'image/gif',
-        'image/webp'
+        'image/webp',
+        'image/heic',
+        'image/heif'
       ];
       
       if (allowedMimes.includes(file.mimetype)) {
@@ -241,9 +243,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     logger.log('UPLOAD_ENDPOINT_HIT', {
       contentType: req.get('content-type'),
       contentLength: req.get('content-length'),
+      userAgent: req.get('user-agent'),
+      isMobile: /Mobile|Android|iPhone|iPad/i.test(req.get('user-agent') || ''),
       hasFiles: !!req.files,
-      bodySize: JSON.stringify(req.body || {}).length
+      bodySize: JSON.stringify(req.body || {}).length,
+      rawHeaders: req.rawHeaders
     }, req);
+
+    // Handle mobile upload issues
+    if (!req.get('content-type') || !req.get('content-type').includes('multipart/form-data')) {
+      logger.log('UPLOAD_CONTENT_TYPE_ISSUE', {
+        contentType: req.get('content-type'),
+        userAgent: req.get('user-agent'),
+        bodyKeys: Object.keys(req.body || {}),
+        hasRawBody: !!req.body
+      }, req);
+    }
 
     upload.single('profileImage')(req, res, async (err) => {
       if (err) {
@@ -251,7 +266,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           error: err.message,
           code: err.code,
           field: err.field,
-          stack: err.stack
+          stack: err.stack,
+          isMobile: /Mobile|Android|iPhone|iPad/i.test(req.get('user-agent') || '')
         }, req);
         console.error('Multer error:', err);
         return res.status(400).json({ 
