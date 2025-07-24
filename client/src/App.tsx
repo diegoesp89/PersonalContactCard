@@ -7,6 +7,7 @@ import HomePage from "@/pages/home";
 import ContactPage from "@/pages/contact";
 import AdminPage from "@/pages/admin";
 import AnalyticsPage from "@/pages/analytics";
+import GalleryPage from "@/pages/GalleryPage";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -14,6 +15,7 @@ function Router() {
     <Switch>
       <Route path="/" component={HomePage} />
       <Route path="/edit" component={AdminPage} />
+      <Route path="/gallery" component={GalleryPage} />
       <Route path="/:ruta/stats" component={AnalyticsPage} />
       <Route path="/:ruta" component={ContactPage} />
       <Route component={NotFound} />
