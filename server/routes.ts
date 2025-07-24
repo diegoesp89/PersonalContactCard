@@ -17,13 +17,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const isProduction = process.env.NODE_ENV === 'production' || process.env.REPLIT_DEPLOYMENT === '1';
   let objectStorage: Client | null = null;
   
-  // Initialize Object Storage for production
+  // Initialize Object Storage for production with enhanced error handling
   if (isProduction) {
     try {
+      // Add startup delay to allow Object Storage services to be available
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
       objectStorage = new Client();
       console.log('Production mode: Object Storage initialized successfully');
+      
+      // Test Object Storage connectivity with a non-blocking test
+      try {
+        await objectStorage.list();
+        console.log('Object Storage connectivity verified');
+      } catch (testError) {
+        console.warn('Object Storage test failed, but client initialized:', testError instanceof Error ? testError.message : 'Unknown error');
+        // Don't fail - just log the warning and continue with the client
+      }
     } catch (error) {
-      console.log('Production mode: Object Storage not available, falling back to local storage:', error.message);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown initialization error';
+      console.warn('Production mode: Object Storage initialization failed, falling back to local storage:', errorMessage);
+      objectStorage = null; // Ensure it's explicitly null on failure
     }
   } else {
     console.log('Development mode: Using local file storage');
@@ -136,7 +150,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }, req);
       res.json(contact);
     } catch (error) {
-      logger.log('CONTACT_VIEW_ERROR', { ruta, error: error.message }, req);
+      const { ruta } = req.params;
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      logger.log('CONTACT_VIEW_ERROR', { ruta, error: errorMessage }, req);
       res.status(500).json({ error: "Failed to get contact" });
     }
   });
@@ -256,7 +272,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }, req);
 
     // Handle mobile upload issues
-    if (!req.get('content-type') || !req.get('content-type').includes('multipart/form-data')) {
+    const contentType = req.get('content-type');
+    if (!contentType || !contentType.includes('multipart/form-data')) {
       logger.log('UPLOAD_CONTENT_TYPE_ISSUE', {
         contentType: req.get('content-type'),
         userAgent: req.get('user-agent'),
@@ -344,11 +361,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (objectStorage) {
         try {
-          await objectStorage.uploadFromBytes(filename, req.file.buffer);
+          const uploadResult = await objectStorage.uploadFromBytes(filename, req.file.buffer);
+          
+          // Handle the Result type from Object Storage
+          if (uploadResult.error) {
+            throw new Error(`Object Storage upload failed: ${uploadResult.error.message}`);
+          }
+          
           console.log('Uploaded to Object Storage:', filename);
           imageUrl = `/api/image/${filename}`;
         } catch (storageError) {
-          console.log('Object Storage upload failed, using local:', storageError.message);
+          const errorMessage = storageError instanceof Error ? storageError.message : 'Unknown Object Storage error';
+          console.log('Object Storage upload failed, using local:', errorMessage);
         }
       }
       
@@ -382,9 +406,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           throw new Error(`File size mismatch: expected ${req.file.buffer.length}, got ${stats.size}`);
         }
       } catch (writeError) {
+        const errorMessage = writeError instanceof Error ? writeError.message : 'Unknown file write error';
+        const errorStack = writeError instanceof Error ? writeError.stack : undefined;
         logger.log('FILE_SAVE_ERROR', {
-          error: writeError.message,
-          stack: writeError.stack,
+          error: errorMessage,
+          stack: errorStack,
           localPath,
           uploadsDir,
           dirExists: fs.existsSync(uploadsDir)
@@ -404,11 +430,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }, req);
       res.json({ imageUrl });
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown upload error';
+      const errorStack = error instanceof Error ? error.stack : undefined;
       console.error('Upload error:', error);
       res.status(500).json({ 
         error: "Failed to upload image", 
-        details: error.message,
-        stack: error.stack 
+        details: errorMessage,
+        stack: errorStack 
       });
     }
   }
@@ -427,7 +455,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (objectStorage) {
         try {
           // Try to get from Object Storage first
-          const imageBuffer = await objectStorage.downloadAsBytes(filename);
+          const downloadResult = await objectStorage.downloadAsBytes(filename);
+          
+          // Handle the Result type from Object Storage
+          if (downloadResult.error) {
+            throw new Error(`Object Storage download failed: ${downloadResult.error.message}`);
+          }
+          
+          const imageBuffer = downloadResult.value;
           
           // Set appropriate headers with better MIME type detection
           const ext = path.extname(filename).toLowerCase();
@@ -451,7 +486,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           res.send(imageBuffer);
           return;
         } catch (objectStorageError) {
-          console.log('Object Storage download failed, trying local:', objectStorageError.message);
+          const errorMessage = objectStorageError instanceof Error ? objectStorageError.message : 'Unknown Object Storage error';
+          console.log('Object Storage download failed, trying local:', errorMessage);
         }
       }
       
@@ -486,7 +522,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get gallery images from Object Storage
   app.get("/api/gallery", async (req, res) => {
     try {
-      let imageFiles = [];
+      let imageFiles: Array<{filename: string, url: string, uploadDate: Date}> = [];
       
       logger.log('GALLERY_REQUEST', {
         objectStorageAvailable: !!objectStorage,
@@ -497,20 +533,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (objectStorage) {
         try {
           // Get from Object Storage
-          const objects = await objectStorage.list();
+          const listResult = await objectStorage.list();
+          
+          // Handle the Result type from Object Storage
+          if (listResult.error) {
+            throw new Error(`Object Storage list failed: ${listResult.error.message}`);
+          }
+          
+          const objects = listResult.value;
           imageFiles = objects
-            .filter(obj => {
+            .filter((obj: any) => {
               const ext = path.extname(obj.name).toLowerCase();
               return ['.jpg', '.jpeg', '.png', '.gif', '.webp'].includes(ext);
             })
-            .map(obj => ({
+            .map((obj: any) => ({
               filename: obj.name,
               url: `/api/image/${obj.name}`,
               uploadDate: new Date(obj.createdAt)
             }))
-            .sort((a, b) => b.uploadDate.getTime() - a.uploadDate.getTime());
+            .sort((a: any, b: any) => b.uploadDate.getTime() - a.uploadDate.getTime());
         } catch (objectStorageError) {
-          console.log('Object Storage list failed, using local files:', objectStorageError.message);
+          const errorMessage = objectStorageError instanceof Error ? objectStorageError.message : 'Unknown Object Storage error';
+          console.log('Object Storage list failed, using local files:', errorMessage);
         }
       }
       
@@ -563,10 +607,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Delete from Object Storage if available
       if (objectStorage) {
         try {
-          await objectStorage.delete(filename);
+          const deleteResult = await objectStorage.delete(filename);
+          
+          // Handle the Result type from Object Storage
+          if (deleteResult.error) {
+            throw new Error(`Object Storage delete failed: ${deleteResult.error.message}`);
+          }
+          
           console.log('Image deleted from Object Storage:', filename);
         } catch (objectStorageError) {
-          console.log('Failed to delete from Object Storage:', objectStorageError.message);
+          const errorMessage = objectStorageError instanceof Error ? objectStorageError.message : 'Unknown Object Storage error';
+          console.log('Failed to delete from Object Storage:', errorMessage);
         }
       }
       
@@ -682,8 +733,7 @@ END:VCARD`;
       const { contactId, event, userAgent, referrer } = req.body;
       
       // Get IP address from request
-      const ipAddress = req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 
-        (req.connection.socket ? req.connection.socket.remoteAddress : null) || 'unknown';
+      const ipAddress = req.ip || req.connection?.remoteAddress || req.socket?.remoteAddress || 'unknown';
       
       const analyticsData = {
         contactId: parseInt(contactId),
@@ -917,8 +967,9 @@ END:VCARD`;
 
       res.send(html);
     } catch (error) {
-      logger.log('LOGS_ACCESS_ERROR', { error: error.message }, req);
-      res.status(500).send('Error loading logs: ' + error.message);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      logger.log('LOGS_ACCESS_ERROR', { error: errorMessage }, req);
+      res.status(500).send('Error loading logs: ' + errorMessage);
     }
   });
 

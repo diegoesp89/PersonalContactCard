@@ -64,6 +64,11 @@ Preferred communication style: Simple, everyday language.
 - **Julio 24, 2025**: Configuración automática de entorno basada en NODE_ENV y REPLIT_DEPLOYMENT 
 - **Julio 24, 2025**: Doble botón de subida móvil: "Galería" para fotos existentes, "Cámara" para tomar nueva
 - **Julio 24, 2025**: Soporte completo HEIC/HEIF para dispositivos iOS, timeout optimizado para conexiones móviles
+- **Julio 24, 2025**: CRÍTICO - Aplicados fixes para Object Storage deployment crashes: startup delay de 2 segundos, error handling robusto, Result type handling
+- **Julio 24, 2025**: Implementado manejo graceful de errores Object Storage - aplicación no se crashea si Object Storage no está disponible
+- **Julio 24, 2025**: Agregado try-catch wrapping en inicialización Object Storage para prevenir fallos de deployment
+- **Julio 24, 2025**: Corregidos todos los tipos de error "unknown" - implementado error casting seguro con instanceof Error
+- **Julio 24, 2025**: Manejo correcto del tipo Result de Object Storage API en upload, download, list y delete operations
 - **Julio 16, 2025**: Implementado sistema completo de administración con panel de admin en /edit
 - **Julio 16, 2025**: Añadido sistema de autenticación con contraseña "CamisasWenas.!" para admin básico
 - **Julio 16, 2025**: Creado sistema de rutas dinámicas - cada contacto tiene campo "ruta" para generar URLs personalizadas
