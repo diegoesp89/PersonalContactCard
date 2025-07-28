@@ -79,6 +79,7 @@ function ContactPageContent() {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [showCASModal, setShowCASModal] = useState(false);
+  const [showTranslateModal, setShowTranslateModal] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
 
   // Get route parameter from URL
@@ -457,7 +458,7 @@ Correo: ${bank.email}`;
     <div className="min-h-screen flex flex-col">
       {/* Translate Button */}
       <div className="fixed top-4 right-4 z-50">
-        <Dialog>
+        <Dialog open={showTranslateModal} onOpenChange={setShowTranslateModal}>
           <DialogTrigger asChild>
             <Button
               variant="outline"
@@ -477,21 +478,30 @@ Correo: ${bank.email}`;
             <div className="space-y-3">
               <Button
                 variant={language === 'es' ? 'default' : 'outline'}
-                onClick={() => setLanguage('es')}
+                onClick={() => {
+                  setLanguage('es');
+                  setShowTranslateModal(false);
+                }}
                 className="w-full justify-start"
               >
                 🇪🇸 {getLanguageName('es', language)}
               </Button>
               <Button
                 variant={language === 'en' ? 'default' : 'outline'}
-                onClick={() => setLanguage('en')}
+                onClick={() => {
+                  setLanguage('en');
+                  setShowTranslateModal(false);
+                }}
                 className="w-full justify-start"
               >
                 🇺🇸 {getLanguageName('en', language)}
               </Button>
               <Button
                 variant={language === 'pt' ? 'default' : 'outline'}
-                onClick={() => setLanguage('pt')}
+                onClick={() => {
+                  setLanguage('pt');
+                  setShowTranslateModal(false);
+                }}
                 className="w-full justify-start"
               >
                 🇧🇷 {getLanguageName('pt', language)}
