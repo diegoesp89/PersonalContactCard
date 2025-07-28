@@ -238,6 +238,17 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
           </div>
           <div className="flex gap-2">
             <Button
+              onClick={() => window.open('/image-management', '_blank')}
+              variant="outline"
+              className="border-purple-600/30 text-purple-400 hover:bg-purple-600/10"
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 1.79 4 4 4h8c0 2.21 1.79 4 4 4h8c0-2.21-1.79-4-4-4V7c0-2.21-1.79-4-4-4H8c-2.21 0-4 1.79-4 4z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m9 12 2 2 4-4" />
+              </svg>
+              Gestión de Imágenes
+            </Button>
+            <Button
               onClick={() => onEditContact({} as Contact)}
               className="bg-green-600 hover:bg-green-700"
             >

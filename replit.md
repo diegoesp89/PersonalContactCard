@@ -92,6 +92,12 @@ Preferred communication style: Simple, everyday language.
 - **Julio 28, 2025**: Editor de contactos renovado con secciones dedicadas para cada tipo de información básica con botones agregar/eliminar
 - **Julio 28, 2025**: Implementado sistema de labels personalizados y numeración automática para todos los campos básicos de contacto
 - **Julio 28, 2025**: Migración automática de datos existentes - 26 contactos actualizados de formato texto a arrays JSON
+- **Julio 28, 2025**: SOLUCIÓN PERSISTENCIA - Sistema robusto para evitar pérdida de imágenes en production deploys
+- **Julio 28, 2025**: Implementado sistema de respaldo automático con migración inteligente de archivos locales a Object Storage
+- **Julio 28, 2025**: Agregado monitoreo automático cada 30 minutos para verificar estado de respaldos en producción
+- **Julio 28, 2025**: Mejorado upload con retry logic exponencial (3 intentos) para garantizar subida a Object Storage
+- **Julio 28, 2025**: Creado endpoint /api/gallery/backup-local para respaldo manual de imágenes locales (admin only)
+- **Julio 28, 2025**: Sistema de alertas automáticas en consola cuando hay imágenes sin respaldar en Object Storage
 - **Julio 16, 2025**: Implementado sistema completo de administración con panel de admin en /edit
 - **Julio 16, 2025**: Añadido sistema de autenticación con contraseña "CamisasWenas.!" para admin básico
 - **Julio 16, 2025**: Creado sistema de rutas dinámicas - cada contacto tiene campo "ruta" para generar URLs personalizadas

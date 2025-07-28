@@ -9,6 +9,7 @@ import AdminPage from "@/pages/admin";
 import AnalyticsPage from "@/pages/analytics";
 import GalleryPage from "@/pages/GalleryPage";
 import NotFound from "@/pages/not-found";
+import ImageManagement from "@/pages/image-management";
 
 function Router() {
   return (
@@ -16,6 +17,7 @@ function Router() {
       <Route path="/" component={HomePage} />
       <Route path="/edit" component={AdminPage} />
       <Route path="/gallery" component={GalleryPage} />
+      <Route path="/image-management" component={ImageManagement} />
       <Route path="/:ruta/stats" component={AnalyticsPage} />
       <Route path="/:ruta" component={ContactPage} />
       <Route component={NotFound} />

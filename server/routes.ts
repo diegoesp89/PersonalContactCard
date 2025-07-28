@@ -21,18 +21,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
   if (isProduction) {
     try {
       // Add startup delay to allow Object Storage services to be available
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 3000));
       
       objectStorage = new Client();
       console.log('Production mode: Object Storage initialized successfully');
       
-      // Test Object Storage connectivity with a non-blocking test
-      try {
-        await objectStorage.list();
-        console.log('Object Storage connectivity verified');
-      } catch (testError) {
-        console.warn('Object Storage test failed, but client initialized:', testError instanceof Error ? testError.message : 'Unknown error');
-        // Don't fail - just log the warning and continue with the client
+      // Test Object Storage connectivity with enhanced retry
+      let retryCount = 0;
+      const maxRetries = 5;
+      
+      while (retryCount < maxRetries) {
+        try {
+          await objectStorage.list();
+          console.log('Object Storage connectivity verified');
+          break;
+        } catch (testError) {
+          retryCount++;
+          console.warn(`Object Storage test failed (attempt ${retryCount}/${maxRetries}):`, testError instanceof Error ? testError.message : 'Unknown error');
+          
+          if (retryCount < maxRetries) {
+            // Exponential backoff: wait 1s, 2s, 4s, 8s
+            await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
+          }
+        }
+      }
+      
+      if (retryCount === maxRetries) {
+        console.warn('Object Storage connectivity could not be verified after all retries, but client is initialized');
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown initialization error';
@@ -57,6 +72,98 @@ export async function registerRoutes(app: Express): Promise<Server> {
   - Object Storage: ${objectStorage ? 'Available' : 'Not available'}
   - Local directory: ${uploadsDir}
   - Serving via: ${isProduction ? '/api/image/' : '/uploads/'}`);
+
+  // Setup automatic backup monitoring for production
+  if (isProduction && objectStorage) {
+    // Schedule periodic backup checks every 30 minutes
+    setInterval(async () => {
+      try {
+        console.log('Running automatic backup check...');
+        
+        if (!fs.existsSync(uploadsDir)) {
+          return;
+        }
+        
+        const localFiles = fs.readdirSync(uploadsDir).filter(file => {
+          const ext = path.extname(file).toLowerCase();
+          return ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.heic', '.heif'].includes(ext);
+        });
+        
+        if (localFiles.length === 0) {
+          return;
+        }
+        
+        // Check Object Storage status
+        let objectStorageFiles: string[] = [];
+        try {
+          const listResult = await objectStorage.list();
+          objectStorageFiles = listResult.error ? [] : (listResult.value || []).map(f => f.name);
+        } catch (error) {
+          console.warn('Automatic backup check: Object Storage not accessible');
+          return;
+        }
+        
+        const missingFiles = localFiles.filter(file => !objectStorageFiles.includes(file));
+        
+        if (missingFiles.length > 0) {
+          console.warn(`BACKUP WARNING: ${missingFiles.length} local images not backed up to Object Storage:`);
+          missingFiles.slice(0, 5).forEach(file => console.warn(`  - ${file}`));
+          if (missingFiles.length > 5) {
+            console.warn(`  ... and ${missingFiles.length - 5} more files`);
+          }
+          console.warn('Use /api/gallery/backup-local endpoint to backup these files.');
+        } else {
+          console.log(`Backup check: All ${localFiles.length} local images are backed up to Object Storage`);
+        }
+      } catch (error) {
+        console.error('Automatic backup check failed:', error instanceof Error ? error.message : 'Unknown error');
+      }
+    }, 30 * 60 * 1000); // 30 minutes
+    
+    console.log('Automatic backup monitoring enabled (30-minute intervals)');
+  }
+
+  // Auto-migration: Ensure all local images are backed up to Object Storage in production
+  if (isProduction && objectStorage && fs.existsSync(uploadsDir)) {
+    console.log('Starting auto-migration of local images to Object Storage...');
+    try {
+      const localFiles = fs.readdirSync(uploadsDir).filter(file => {
+        const ext = path.extname(file).toLowerCase();
+        return ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.heic', '.heif'].includes(ext);
+      });
+      
+      for (const file of localFiles) {
+        try {
+          const filePath = path.join(uploadsDir, file);
+          const fileBuffer = fs.readFileSync(filePath);
+          
+          // Check if file already exists in Object Storage
+          const listResult = await objectStorage.list();
+          const existingFiles = listResult.error ? [] : listResult.value || [];
+          
+          if (!existingFiles.some(existing => existing.name === file)) {
+            const uploadResult = await objectStorage.uploadFromBytes(file, fileBuffer);
+            if (uploadResult.error) {
+              console.warn(`Failed to migrate ${file}:`, uploadResult.error.message);
+            } else {
+              console.log(`Successfully migrated ${file} to Object Storage`);
+            }
+          }
+        } catch (migrationError) {
+          console.warn(`Error migrating ${file}:`, migrationError instanceof Error ? migrationError.message : 'Unknown error');
+        }
+      }
+      
+      console.log(`Auto-migration completed. Processed ${localFiles.length} files.`);
+      
+      // Set up periodic backup verification
+      if (localFiles.length > 0) {
+        console.log('IMPORTANT: Enable automatic backups by using /api/gallery/backup-local endpoint periodically');
+      }
+    } catch (migrationError) {
+      console.warn('Auto-migration failed:', migrationError instanceof Error ? migrationError.message : 'Unknown error');
+    }
+  }
 
   // Serve static files from uploads directory BEFORE other routes
   app.use('/uploads', (req, res, next) => {
@@ -356,27 +463,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
         generatedFilename: filename
       });
       
-      // Try Object Storage first, fallback to local
+      // In production, ALWAYS try Object Storage first with enhanced retry logic
       let imageUrl = isProduction ? `/api/image/${filename}` : `/uploads/${filename}`;
+      let objectStorageSuccess = false;
       
-      if (objectStorage) {
-        try {
-          const uploadResult = await objectStorage.uploadFromBytes(filename, req.file.buffer);
-          
-          // Handle the Result type from Object Storage
-          if (uploadResult.error) {
-            throw new Error(`Object Storage upload failed: ${uploadResult.error.message}`);
+      if (isProduction && objectStorage) {
+        // Enhanced retry logic for Object Storage upload
+        let retryCount = 0;
+        const maxRetries = 3;
+        
+        while (retryCount < maxRetries && !objectStorageSuccess) {
+          try {
+            const uploadResult = await objectStorage.uploadFromBytes(filename, req.file.buffer);
+            
+            // Handle the Result type from Object Storage
+            if (uploadResult.error) {
+              throw new Error(`Object Storage upload failed: ${uploadResult.error.message}`);
+            }
+            
+            console.log(`Uploaded to Object Storage (attempt ${retryCount + 1}):`, filename);
+            imageUrl = `/api/image/${filename}`;
+            objectStorageSuccess = true;
+            break;
+          } catch (storageError) {
+            retryCount++;
+            const errorMessage = storageError instanceof Error ? storageError.message : 'Unknown Object Storage error';
+            console.warn(`Object Storage upload attempt ${retryCount}/${maxRetries} failed:`, errorMessage);
+            
+            if (retryCount < maxRetries) {
+              // Wait before retry with exponential backoff
+              await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 500));
+            }
           }
-          
-          console.log('Uploaded to Object Storage:', filename);
-          imageUrl = `/api/image/${filename}`;
-        } catch (storageError) {
-          const errorMessage = storageError instanceof Error ? storageError.message : 'Unknown Object Storage error';
-          console.log('Object Storage upload failed, using local:', errorMessage);
+        }
+        
+        if (!objectStorageSuccess) {
+          logger.log('OBJECT_STORAGE_UPLOAD_FAILED_ALL_RETRIES', {
+            filename,
+            retryCount: maxRetries,
+            fallbackMode: 'Production upload failed - this will cause data loss on next deploy'
+          }, req);
+          console.error(`CRITICAL: Object Storage upload failed after ${maxRetries} retries. File will be lost on next deploy!`);
         }
       }
       
-      // Always save locally as backup/fallback
+      // Always save locally as backup/fallback (both dev and prod)
       const localPath = path.join(uploadsDir, filename);
       
       try {
@@ -692,6 +823,97 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       res.status(500).json({ error: "Failed to get gallery images" });
+    }
+  });
+
+  // Check image storage health and migrate local images to Object Storage (admin only)
+  app.post("/api/gallery/backup-local", async (req, res) => {
+    try {
+      const { password } = req.body;
+      
+      // Authenticate admin
+      if (password !== "CamisasWenas.!" && password !== "Mafatanga2025") {
+        return res.status(401).json({ error: "Invalid password" });
+      }
+      
+      if (!isProduction || !objectStorage) {
+        return res.json({
+          success: false,
+          message: "Backup only available in production with Object Storage",
+          environment: isProduction ? "production" : "development",
+          objectStorage: !!objectStorage
+        });
+      }
+      
+      // Find all local images
+      const localImages = [];
+      if (fs.existsSync(uploadsDir)) {
+        const files = fs.readdirSync(uploadsDir);
+        for (const file of files) {
+          const ext = path.extname(file).toLowerCase();
+          if (['.jpg', '.jpeg', '.png', '.gif', '.webp', '.heic', '.heif'].includes(ext)) {
+            localImages.push(file);
+          }
+        }
+      }
+      
+      const results = {
+        total: localImages.length,
+        success: 0,
+        failed: 0,
+        errors: [] as string[]
+      };
+      
+      // Check what's already in Object Storage
+      let existingFiles: string[] = [];
+      try {
+        const listResult = await objectStorage.list();
+        existingFiles = listResult.error ? [] : (listResult.value || []).map(f => f.name);
+      } catch (error) {
+        results.errors.push(`Failed to list Object Storage: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+      
+      // Upload missing files
+      for (const file of localImages) {
+        if (!existingFiles.includes(file)) {
+          try {
+            const filePath = path.join(uploadsDir, file);
+            const fileBuffer = fs.readFileSync(filePath);
+            
+            const uploadResult = await objectStorage.uploadFromBytes(file, fileBuffer);
+            if (uploadResult.error) {
+              throw new Error(uploadResult.error.message);
+            }
+            
+            results.success++;
+            console.log(`Backed up to Object Storage: ${file}`);
+          } catch (error) {
+            results.failed++;
+            const errorMsg = `Failed to backup ${file}: ${error instanceof Error ? error.message : 'Unknown error'}`;
+            results.errors.push(errorMsg);
+            console.warn(errorMsg);
+          }
+        }
+      }
+      
+      logger.log('GALLERY_BACKUP_COMPLETED', {
+        ...results,
+        adminAction: true,
+        uploadsDir,
+        existingInObjectStorage: existingFiles.length
+      }, req);
+      
+      res.json({
+        success: true,
+        message: "Backup operation completed",
+        results: {
+          ...results,
+          existingInObjectStorage: existingFiles.length
+        }
+      });
+    } catch (error) {
+      console.error('Backup error:', error);
+      res.status(500).json({ error: "Failed to backup images" });
     }
   });
 
