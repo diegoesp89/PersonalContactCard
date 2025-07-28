@@ -332,8 +332,36 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
 
                 <div className="space-y-1">
                   <p className="text-xs text-slate-400">Contacto</p>
-                  <p className="text-sm text-slate-300 truncate">{contact.email}</p>
-                  <p className="text-sm text-slate-300">{contact.phone}</p>
+                  {(() => {
+                    // Parse email field (could be JSON array or string)
+                    let emailDisplay = '';
+                    try {
+                      const emails = JSON.parse(contact.email || '[]');
+                      if (Array.isArray(emails) && emails.length > 0) {
+                        emailDisplay = emails[0].url || emails[0].label || '';
+                      }
+                    } catch {
+                      emailDisplay = contact.email || '';
+                    }
+                    
+                    // Parse phone field (could be JSON array or string)
+                    let phoneDisplay = '';
+                    try {
+                      const phones = JSON.parse(contact.phone || '[]');
+                      if (Array.isArray(phones) && phones.length > 0) {
+                        phoneDisplay = phones[0].url || phones[0].label || '';
+                      }
+                    } catch {
+                      phoneDisplay = contact.phone || '';
+                    }
+                    
+                    return (
+                      <>
+                        {emailDisplay && <p className="text-sm text-slate-300 truncate">{emailDisplay}</p>}
+                        {phoneDisplay && <p className="text-sm text-slate-300">{phoneDisplay}</p>}
+                      </>
+                    );
+                  })()}
                 </div>
 
                 {/* Action Buttons */}

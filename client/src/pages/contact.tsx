@@ -317,6 +317,22 @@ export default function ContactPage() {
     }
   };
 
+  // Helper function to parse JSON fields safely
+  const parseJSONField = (field: string | undefined | null): SocialLink[] => {
+    if (!field) return [];
+    
+    try {
+      const parsed = JSON.parse(field);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      // If it's not valid JSON, treat as legacy string format
+      if (field && field.trim()) {
+        return [{ id: '1', url: field, label: '' }];
+      }
+      return [];
+    }
+  };
+
   const handleCopyBank = async (bank: Bank) => {
     const bankData = `${bank.name}
 Cuenta ${bank.accountType}: ${bank.account}
@@ -414,27 +430,19 @@ Correo: ${bank.email}`;
     );
   }
 
-  // Parse banks and social links from JSON
+  // Parse banks and social links from JSON using helper function
   const banks: Bank[] = contact?.banks ? JSON.parse(contact.banks) : [];
   
-  const parseLinks = (jsonString: string): SocialLink[] => {
-    try {
-      return JSON.parse(jsonString);
-    } catch {
-      return [];
-    }
-  };
-  
-  const phoneLinks: SocialLink[] = contact?.phone ? parseLinks(contact.phone) : [];
-  const emailLinks: SocialLink[] = contact?.email ? parseLinks(contact.email) : [];
-  const whatsappLinks: SocialLink[] = contact?.whatsapp ? parseLinks(contact.whatsapp) : [];
-  const websiteLinks: SocialLink[] = contact?.website ? parseLinks(contact.website) : [];
-  const instagramLinks: SocialLink[] = contact?.instagram ? parseLinks(contact.instagram) : [];
-  const tiktokLinks: SocialLink[] = contact?.tiktok ? parseLinks(contact.tiktok) : [];
-  const linkedinLinks: SocialLink[] = contact?.linkedin ? parseLinks(contact.linkedin) : [];
-  const telegramLinks: SocialLink[] = contact?.telegram ? parseLinks(contact.telegram) : [];
-  const youtubeLinks: SocialLink[] = contact?.youtube ? parseLinks(contact.youtube) : [];
-  const facebookLinks: SocialLink[] = contact?.facebook ? parseLinks(contact.facebook) : [];
+  const phoneLinks: SocialLink[] = parseJSONField(contact?.phone);
+  const emailLinks: SocialLink[] = parseJSONField(contact?.email);
+  const whatsappLinks: SocialLink[] = parseJSONField(contact?.whatsapp);
+  const websiteLinks: SocialLink[] = parseJSONField(contact?.website);
+  const instagramLinks: SocialLink[] = parseJSONField(contact?.instagram);
+  const tiktokLinks: SocialLink[] = parseJSONField(contact?.tiktok);
+  const linkedinLinks: SocialLink[] = parseJSONField(contact?.linkedin);
+  const telegramLinks: SocialLink[] = parseJSONField(contact?.telegram);
+  const youtubeLinks: SocialLink[] = parseJSONField(contact?.youtube);
+  const facebookLinks: SocialLink[] = parseJSONField(contact?.facebook);
 
 
 
