@@ -79,12 +79,6 @@ export default function ImageEditor({
 
     // Draw image
     ctx.drawImage(img, drawX, drawY, scaledWidth, scaledHeight);
-
-    // Draw crop overlay
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
-    ctx.lineWidth = 2;
-    ctx.setLineDash([5, 5]);
-    ctx.strokeRect(0, 0, canvasWidth, canvasHeight);
   }, [scale, position, imageLoaded, canvasWidth, canvasHeight]);
 
   useEffect(() => {
@@ -164,16 +158,27 @@ export default function ImageEditor({
         <div className="space-y-4">
           {/* Canvas */}
           <div className="flex justify-center bg-slate-800 rounded-lg p-4">
-            <canvas
-              ref={canvasRef}
-              width={canvasWidth}
-              height={canvasHeight}
-              className="border border-slate-600 cursor-move"
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseUp}
-            />
+            <div className="relative">
+              <canvas
+                ref={canvasRef}
+                width={canvasWidth}
+                height={canvasHeight}
+                className="border border-slate-600 cursor-move"
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+              />
+              {/* Crop overlay - separate from canvas */}
+              <div 
+                className="absolute inset-0 pointer-events-none border-2 border-dashed border-white/80"
+                style={{ 
+                  width: canvasWidth, 
+                  height: canvasHeight,
+                  boxSizing: 'border-box'
+                }}
+              />
+            </div>
           </div>
 
           {/* Controls */}
