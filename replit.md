@@ -80,6 +80,7 @@ Preferred communication style: Simple, everyday language.
 - **Julio 28, 2025**: Creado endpoint /api/gallery/clear-cache para limpiar caché manualmente (solo SuperAdmin)
 - **Julio 28, 2025**: Invalidación automática de caché al subir/eliminar imágenes para mantener sincronización
 - **Julio 28, 2025**: Mejorado logging detallado para debugging de issues de Object Storage en producción
+- **Julio 28, 2025**: Duplicado el tamaño de las imágenes de perfil - contactos ahora usan w-48 h-48 (192px), página inicio usa w-64 h-64 (256px)
 - **Julio 16, 2025**: Implementado sistema completo de administración con panel de admin en /edit
 - **Julio 16, 2025**: Añadido sistema de autenticación con contraseña "CamisasWenas.!" para admin básico
 - **Julio 16, 2025**: Creado sistema de rutas dinámicas - cada contacto tiene campo "ruta" para generar URLs personalizadas

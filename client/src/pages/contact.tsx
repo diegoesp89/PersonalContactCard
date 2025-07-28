@@ -370,7 +370,7 @@ Correo: ${bank.email}`;
         <div className="flex-1 flex items-center justify-center p-4">
           <div className="glass-effect rounded-3xl p-8 w-full max-w-md">
             <div className="animate-pulse space-y-4">
-              <div className="w-24 h-24 bg-slate-700 rounded-full mx-auto"></div>
+              <div className="w-48 h-48 bg-slate-700 rounded-full mx-auto"></div>
               <div className="h-4 bg-slate-700 rounded w-3/4 mx-auto"></div>
               <div className="h-4 bg-slate-700 rounded w-1/2 mx-auto"></div>
             </div>
@@ -420,7 +420,7 @@ Correo: ${bank.email}`;
             <div className="text-center mb-8 relative">
               <div 
                 ref={profileRef}
-                className="w-24 h-24 rounded-full mx-auto mb-4 shadow-lg overflow-hidden relative transition-transform duration-300 ease-out cursor-pointer"
+                className="w-48 h-48 rounded-full mx-auto mb-4 shadow-lg overflow-hidden relative transition-transform duration-300 ease-out cursor-pointer"
                 style={{
                   transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
                   transformStyle: 'preserve-3d',
@@ -432,7 +432,7 @@ Correo: ${bank.email}`;
                   <>
                     {!imageLoaded && (
                       <div className="w-full h-full bg-slate-700/50 animate-pulse flex items-center justify-center">
-                        <div className="w-8 h-8 bg-slate-600/50 rounded-full animate-pulse"></div>
+                        <div className="w-16 h-16 bg-slate-600/50 rounded-full animate-pulse"></div>
                       </div>
                     )}
                     <img
@@ -456,7 +456,7 @@ Correo: ${bank.email}`;
               
               {/* DEMO Ribbon - Solo se muestra si inDev es "true" */}
               {contact?.inDev === "true" && (
-                <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 shadow-lg border border-red-600 z-20 whitespace-nowrap rounded">
+                <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 shadow-lg border border-red-600 z-20 whitespace-nowrap rounded">
                   DEMO
                 </div>
               )}

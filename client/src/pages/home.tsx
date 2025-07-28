@@ -83,7 +83,7 @@ export default function HomePage() {
         {/* Logo */}
         <div 
           ref={logoRef}
-          className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden shadow-2xl relative transition-transform duration-300 ease-out cursor-pointer"
+          className="w-64 h-64 mx-auto mb-6 rounded-full overflow-hidden shadow-2xl relative transition-transform duration-300 ease-out cursor-pointer"
           style={{
             transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
             transformStyle: 'preserve-3d',
@@ -93,7 +93,7 @@ export default function HomePage() {
         >
           {!imageLoaded && (
             <div className="w-full h-full bg-slate-700/50 animate-pulse flex items-center justify-center">
-              <div className="w-12 h-12 bg-slate-600/50 rounded-full animate-pulse"></div>
+              <div className="w-24 h-24 bg-slate-600/50 rounded-full animate-pulse"></div>
             </div>
           )}
           <img
