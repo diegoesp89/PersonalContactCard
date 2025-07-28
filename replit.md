@@ -107,6 +107,7 @@ Preferred communication style: Simple, everyday language.
 - **Julio 28, 2025**: Editor de contactos actualizado con sección dedicada para imagen de portada con preview y galería
 - **Julio 28, 2025**: Página de contacto rediseñada - portada se muestra en parte superior con imagen de perfil superpuesta
 - **Julio 28, 2025**: Diseño responsive estilo Facebook con imagen de perfil con borde blanco sobre la portada
+- **Julio 28, 2025**: Optimizada altura de imagen de portada - portada h-64 (256px) con perfil superpuesto -mt-32 para mejor cobertura vertical
 - **Julio 16, 2025**: Implementado sistema completo de administración con panel de admin en /edit
 - **Julio 16, 2025**: Añadido sistema de autenticación con contraseña "CamisasWenas.!" para admin básico
 - **Julio 16, 2025**: Creado sistema de rutas dinámicas - cada contacto tiene campo "ruta" para generar URLs personalizadas

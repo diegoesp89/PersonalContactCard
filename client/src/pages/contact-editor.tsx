@@ -757,7 +757,7 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
             <CardContent>
               <div className="space-y-4">
                 <div className="relative group">
-                  <div className="w-full h-32 bg-slate-700 rounded-lg flex items-center justify-center cursor-pointer overflow-hidden">
+                  <div className="w-full h-40 bg-slate-700 rounded-lg flex items-center justify-center cursor-pointer overflow-hidden">
                     {formData.coverImage ? (
                       <img
                         src={formData.coverImage}
