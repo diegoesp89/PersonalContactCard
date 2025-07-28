@@ -17,6 +17,7 @@ export const contacts = pgTable("contacts", {
   facebook: text("facebook").notNull().default("[]"), // JSON string of SocialLink[]
   website: text("website").notNull().default("[]"), // JSON string of SocialLink[]
   profileImage: text("profile_image").notNull().default(""),
+  coverImage: text("cover_image").notNull().default(""),
   officeAddress: text("office_address").notNull().default(""),
   bankName: text("bank_name").notNull(),
   bankAccount: text("bank_account").notNull(),

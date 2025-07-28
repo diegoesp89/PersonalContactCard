@@ -102,6 +102,11 @@ Preferred communication style: Simple, everyday language.
 - **Julio 28, 2025**: Modal CAS incluye WhatsApp (+56982306759), teléfono (+569 8230 6759), email (crt.cas@gmail.com) e Instagram (@cashirts_camisas_a_medida)
 - **Julio 28, 2025**: Footer actualizado en todas las páginas - "CAS (Contacto)" enlace clickeable con modal de información de contacto del sistema
 - **Julio 28, 2025**: Corregido display de campos JSON - panel admin y páginas de contacto muestran campos múltiples correctamente formateados
+- **Julio 28, 2025**: NUEVA FUNCIONALIDAD - Agregada imagen de portada tipo "portada de Facebook" a perfiles de contacto
+- **Julio 28, 2025**: Campo coverImage agregado al esquema de base de datos con migración automática
+- **Julio 28, 2025**: Editor de contactos actualizado con sección dedicada para imagen de portada con preview y galería
+- **Julio 28, 2025**: Página de contacto rediseñada - portada se muestra en parte superior con imagen de perfil superpuesta
+- **Julio 28, 2025**: Diseño responsive estilo Facebook con imagen de perfil con borde blanco sobre la portada
 - **Julio 16, 2025**: Implementado sistema completo de administración con panel de admin en /edit
 - **Julio 16, 2025**: Añadido sistema de autenticación con contraseña "CamisasWenas.!" para admin básico
 - **Julio 16, 2025**: Creado sistema de rutas dinámicas - cada contacto tiene campo "ruta" para generar URLs personalizadas

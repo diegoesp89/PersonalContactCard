@@ -15,7 +15,8 @@ import {
   Upload,
   Building2,
   User,
-  X
+  X,
+  ImageIcon
 } from "lucide-react";
 import { z } from "zod";
 import ImageGalleryModal from "@/components/ImageGalleryModal";
@@ -35,6 +36,7 @@ interface Contact {
   facebook: string;
   website: string;
   profileImage: string;
+  coverImage: string;
   officeAddress: string;
   bankName: string;
   bankAccount: string;
@@ -82,6 +84,7 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
   // State for image upload
   const [uploading, setUploading] = useState(false);
   const [showGalleryModal, setShowGalleryModal] = useState(false);
+  const [showCoverGalleryModal, setShowCoverGalleryModal] = useState(false);
 
   const [formData, setFormData] = useState<Contact>({
     name: contact?.name || "",
@@ -97,6 +100,7 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
     facebook: contact?.facebook || "[]",
     website: contact?.website || "[]",
     profileImage: contact?.profileImage || "",
+    coverImage: contact?.coverImage || "",
     officeAddress: contact?.officeAddress || "",
     bankName: contact?.bankName || "",
     bankAccount: contact?.bankAccount || "",
@@ -741,6 +745,59 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                   onChange={(e) => updateField("title", e.target.value)}
                   className="bg-slate-800/50 border-slate-600 text-slate-100"
                 />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Cover Image Upload */}
+          <Card className="glass-effect border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-slate-100">Imagen de Portada</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="relative group">
+                  <div className="w-full h-32 bg-slate-700 rounded-lg flex items-center justify-center cursor-pointer overflow-hidden">
+                    {formData.coverImage ? (
+                      <img
+                        src={formData.coverImage}
+                        alt="Cover preview"
+                        className="w-full h-full object-cover group-hover:opacity-80 transition-opacity"
+                      />
+                    ) : (
+                      <div className="text-center">
+                        <ImageIcon className="w-8 h-8 mx-auto mb-2 text-slate-500" />
+                        <p className="text-slate-500 text-sm">Sin imagen de portada</p>
+                      </div>
+                    )}
+                    {formData.coverImage && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateField('coverImage', '');
+                        }}
+                        className="absolute top-2 right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-white text-xs hover:bg-red-600 transition-colors"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-slate-200 block mb-2">
+                    Imagen de Portada (Estilo Facebook)
+                  </Label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowCoverGalleryModal(true)}
+                    className="bg-slate-800/50 border-slate-600 text-slate-100 hover:bg-slate-700/50"
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    {formData.coverImage ? "Cambiar Portada" : "Seleccionar de Galería"}
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -1503,6 +1560,15 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
         currentImage={formData.profileImage}
         onSelectImage={(imageUrl) => updateField('profileImage', imageUrl)}
         onClose={() => setShowGalleryModal(false)}
+        password={password}
+      />
+
+      {/* Cover Image Gallery Modal */}
+      <ImageGalleryModal
+        isOpen={showCoverGalleryModal}
+        currentImage={formData.coverImage}
+        onSelectImage={(imageUrl) => updateField('coverImage', imageUrl)}
+        onClose={() => setShowCoverGalleryModal(false)}
         password={password}
       />
     </div>

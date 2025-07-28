@@ -34,6 +34,7 @@ interface Contact {
   facebook: string; // JSON string of SocialLink[]
   website: string;
   profileImage: string;
+  coverImage: string;
   officeAddress: string;
   bankName: string;
   bankAccount: string;
@@ -461,14 +462,28 @@ Correo: ${bank.email}`;
         </div>
       )}
 
-      <div className="flex-1 flex items-center justify-center p-4" style={{ backgroundColor: contact.backgroundColor || '#1e293b' }}>
-        <div className="w-full max-w-md">
-          <div className="glass-effect rounded-3xl p-8 shadow-2xl" style={{ backgroundColor: `${contact.backgroundColor || '#1e293b'}e6` }}>
+      <div className="flex-1 p-4" style={{ backgroundColor: contact.backgroundColor || '#1e293b' }}>
+        <div className="w-full max-w-md mx-auto">
+          {/* Cover Image */}
+          {contact.coverImage && (
+            <div className="w-full h-48 rounded-t-3xl overflow-hidden shadow-lg mb-0">
+              <img
+                src={contact.coverImage}
+                alt={`Portada de ${contact.name}`}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+          
+          <div 
+            className={`glass-effect ${contact.coverImage ? 'rounded-b-3xl' : 'rounded-3xl'} p-8 shadow-2xl`} 
+            style={{ backgroundColor: `${contact.backgroundColor || '#1e293b'}e6` }}
+          >
             {/* Header with Profile */}
             <div className="text-center mb-8 relative">
               <div 
                 ref={profileRef}
-                className="w-48 h-48 rounded-full mx-auto mb-4 shadow-lg overflow-hidden relative transition-transform duration-300 ease-out cursor-pointer"
+                className={`w-48 h-48 rounded-full mx-auto ${contact.coverImage ? '-mt-24' : 'mb-4'} shadow-lg overflow-hidden relative transition-transform duration-300 ease-out cursor-pointer border-4 border-white`}
                 style={{
                   transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
                   transformStyle: 'preserve-3d',
@@ -508,7 +523,7 @@ Correo: ${bank.email}`;
                   DEMO
                 </div>
               )}
-              <h1 className="text-2xl font-bold text-slate-100 mb-2">
+              <h1 className={`text-2xl font-bold text-slate-100 mb-2 ${contact.coverImage ? 'mt-4' : ''}`}>
                 {contact.name}
               </h1>
               <p className="text-slate-400 font-medium">{contact.title}</p>
