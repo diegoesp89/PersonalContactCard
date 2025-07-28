@@ -17,8 +17,20 @@ interface GalleryImage {
 
 export default function GalleryPage() {
   const [password, setPassword] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    // Try to restore authentication from localStorage
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('gallery_authenticated') === 'true';
+    }
+    return false;
+  });
+  const [isSuperAdmin, setIsSuperAdmin] = useState(() => {
+    // Try to restore superadmin status from localStorage
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('gallery_superadmin') === 'true';
+    }
+    return false;
+  });
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const { toast } = useToast();
@@ -39,6 +51,11 @@ export default function GalleryPage() {
       const isSuper = password === "Mafatanga2025";
       setIsAuthenticated(true);
       setIsSuperAdmin(isSuper);
+      
+      // Save authentication state to localStorage
+      localStorage.setItem('gallery_authenticated', 'true');
+      localStorage.setItem('gallery_superadmin', isSuper.toString());
+      
       toast({
         title: "Autenticación exitosa",
         description: isSuper ? "Acceso SuperAdmin activado" : "Acceso Admin activado"
@@ -54,7 +71,7 @@ export default function GalleryPage() {
   });
 
   // Get gallery images
-  const { data: images = [], isLoading } = useQuery<GalleryImage[]>({
+  const { data: images = [], isLoading, error } = useQuery<GalleryImage[]>({
     queryKey: ["/api/gallery"],
     enabled: isAuthenticated,
   });
@@ -290,7 +307,12 @@ export default function GalleryPage() {
               variant="outline" 
               onClick={() => {
                 setIsAuthenticated(false);
+                setIsSuperAdmin(false);
                 setPassword("");
+                
+                // Clear authentication from localStorage
+                localStorage.removeItem('gallery_authenticated');
+                localStorage.removeItem('gallery_superadmin');
               }}
               className="border-slate-600 text-slate-300 hover:bg-slate-700"
             >
