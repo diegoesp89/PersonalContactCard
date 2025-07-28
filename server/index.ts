@@ -7,6 +7,30 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Middleware for redirecting old replit.app URLs to cashirts.cl
+app.use((req, res, next) => {
+  const host = req.get('host') || '';
+  const originalUrl = req.originalUrl;
+  
+  // Check if the request comes from a replit domain
+  if (host.includes('replit.dev') || host.includes('repl.app') || host.includes('replit.app')) {
+    // Only redirect if it's not an API call or static file
+    if (!originalUrl.startsWith('/api/') && 
+        !originalUrl.startsWith('/uploads/') && 
+        !originalUrl.includes('.') && // Not a static file (css, js, png, etc.)
+        !originalUrl.startsWith('/__repl') && // Not replit internal paths
+        !originalUrl.startsWith('/logs')) { // Not logs page
+      
+      const redirectUrl = `https://cashirts.cl${originalUrl}`;
+      console.log(`[REDIRECT] ${host}${originalUrl} -> ${redirectUrl}`);
+      
+      return res.redirect(301, redirectUrl);
+    }
+  }
+  
+  next();
+});
+
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;

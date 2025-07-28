@@ -112,6 +112,13 @@ Preferred communication style: Simple, everyday language.
 - **Julio 28, 2025**: Editor integrado en galería de imágenes y editor de contactos con botones dedicados
 - **Julio 28, 2025**: Canvas interactivo con arrastrar/posicionar, línea punteada como overlay HTML (no afecta imagen final)
 - **Julio 28, 2025**: Sistema de aspectos ratio automático: square para perfil, cover para imagen de portada
+- **Julio 28, 2025**: SISTEMA COMPLETO DE TRADUCCIONES - Implementado soporte para español, portugués e inglés
+- **Julio 28, 2025**: Botón "Traducir" en esquina superior derecha de páginas de contacto con modal que se cierra automáticamente
+- **Julio 28, 2025**: Cada contacto tiene selector de idioma por defecto en editor - campo defaultLanguage agregado a base de datos
+- **Julio 28, 2025**: Todas las etiquetas de interfaz totalmente traducibles: redes sociales, datos bancarios, botones de acción
+- **Julio 28, 2025**: Modal de compartir, códigos QR y textos de sistema completamente multiidioma
+- **Julio 28, 2025**: REDIRECCIÓN AUTOMÁTICA - QR codes antiguos con replit.app ahora redirigen automáticamente a cashirts.cl
+- **Julio 28, 2025**: Middleware de redirección 301 para dominios replit.dev/repl.app/replit.app hacia cashirts.cl manteniendo rutas
 - **Julio 16, 2025**: Implementado sistema completo de administración con panel de admin en /edit
 - **Julio 16, 2025**: Añadido sistema de autenticación con contraseña "CamisasWenas.!" para admin básico
 - **Julio 16, 2025**: Creado sistema de rutas dinámicas - cada contacto tiene campo "ruta" para generar URLs personalizadas
