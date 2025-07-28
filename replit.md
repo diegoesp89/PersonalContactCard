@@ -98,6 +98,10 @@ Preferred communication style: Simple, everyday language.
 - **Julio 28, 2025**: Mejorado upload con retry logic exponencial (3 intentos) para garantizar subida a Object Storage
 - **Julio 28, 2025**: Creado endpoint /api/gallery/backup-local para respaldo manual de imágenes locales (admin only)
 - **Julio 28, 2025**: Sistema de alertas automáticas en consola cuando hay imágenes sin respaldar en Object Storage
+- **Julio 28, 2025**: IMPLEMENTADO modal de contacto CAS en footer - clickeable con datos del sistema
+- **Julio 28, 2025**: Modal CAS incluye WhatsApp (+56982306759), teléfono (+569 8230 6759), email (crt.cas@gmail.com) e Instagram (@cashirts_camisas_a_medida)
+- **Julio 28, 2025**: Footer actualizado en todas las páginas - "CAS (Contacto)" enlace clickeable con modal de información de contacto del sistema
+- **Julio 28, 2025**: Corregido display de campos JSON - panel admin y páginas de contacto muestran campos múltiples correctamente formateados
 - **Julio 16, 2025**: Implementado sistema completo de administración con panel de admin en /edit
 - **Julio 16, 2025**: Añadido sistema de autenticación con contraseña "CamisasWenas.!" para admin básico
 - **Julio 16, 2025**: Creado sistema de rutas dinámicas - cada contacto tiene campo "ruta" para generar URLs personalizadas

@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from "react";
-import { Instagram } from "lucide-react";
+import { Instagram, Phone, Mail, Building2, ExternalLink } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import ImageModal from "@/components/ImageModal";
 
 export default function HomePage() {
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [imageLoaded, setImageLoaded] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
+  const [showCASModal, setShowCASModal] = useState(false);
   const logoRef = useRef<HTMLDivElement>(null);
 
   // Mouse movement and gyroscope effects
@@ -128,6 +130,20 @@ export default function HomePage() {
             </div>
           </a>
         </div>
+        
+        {/* Footer */}
+        <div className="mt-6 text-center">
+          <p className="text-slate-500 text-xs">
+            <button 
+              onClick={() => setShowCASModal(true)}
+              className="hover:text-slate-300 underline transition-colors cursor-pointer"
+            >
+              CAS (Contacto)
+            </button> - Todos los Derechos Reservados - 2025.
+            <br />
+            Sistema de Contactos Digitales
+          </p>
+        </div>
       </div>
 
       {/* Image Modal */}
@@ -137,6 +153,90 @@ export default function HomePage() {
         altText="CA Shirts Logo"
         onClose={() => setShowImageModal(false)}
       />
+
+      {/* CAS Contact Modal */}
+      <Dialog open={showCASModal} onOpenChange={setShowCASModal}>
+        <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700">
+          <DialogHeader>
+            <DialogTitle className="text-slate-100 text-center flex items-center justify-center gap-2">
+              <Building2 className="w-5 h-5 text-blue-400" />
+              Contacto CAS - Sistema
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            {/* WhatsApp */}
+            <a
+              href="https://wa.me/56982306759"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center p-4 rounded-xl border border-slate-700 hover:bg-green-500/10 hover:border-green-500/30 transition-all duration-300 group"
+            >
+              <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center mr-3">
+                <Phone className="text-white w-4 h-4" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-slate-100 font-semibold text-sm">WhatsApp</h3>
+                <p className="text-slate-400 text-sm">+56982306759</p>
+              </div>
+              <ExternalLink className="text-slate-500 w-4 h-4 group-hover:text-green-400 transition-colors" />
+            </a>
+
+            {/* Phone */}
+            <a
+              href="tel:+56982306759"
+              className="flex items-center p-4 rounded-xl border border-slate-700 hover:bg-blue-500/10 hover:border-blue-500/30 transition-all duration-300 group"
+            >
+              <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
+                <Phone className="text-white w-4 h-4" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-slate-100 font-semibold text-sm">Teléfono</h3>
+                <p className="text-slate-400 text-sm">+569 8230 6759</p>
+              </div>
+              <ExternalLink className="text-slate-500 w-4 h-4 group-hover:text-blue-400 transition-colors" />
+            </a>
+
+            {/* Email */}
+            <a
+              href="mailto:crt.cas@gmail.com"
+              className="flex items-center p-4 rounded-xl border border-slate-700 hover:bg-red-500/10 hover:border-red-500/30 transition-all duration-300 group"
+            >
+              <div className="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center mr-3">
+                <Mail className="text-white w-4 h-4" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-slate-100 font-semibold text-sm">Email</h3>
+                <p className="text-slate-400 text-sm">crt.cas@gmail.com</p>
+              </div>
+              <ExternalLink className="text-slate-500 w-4 h-4 group-hover:text-red-400 transition-colors" />
+            </a>
+
+            {/* Instagram */}
+            <a
+              href="https://instagram.com/cashirts_camisas_a_medida"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center p-4 rounded-xl border border-slate-700 hover:bg-pink-500/10 hover:border-pink-500/30 transition-all duration-300 group"
+            >
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mr-3">
+                <Instagram className="text-white w-4 h-4" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-slate-100 font-semibold text-sm">Instagram</h3>
+                <p className="text-slate-400 text-sm">@cashirts_camisas_a_medida</p>
+              </div>
+              <ExternalLink className="text-slate-500 w-4 h-4 group-hover:text-pink-400 transition-colors" />
+            </a>
+          </div>
+
+          <div className="text-center pt-4 border-t border-slate-700">
+            <p className="text-slate-500 text-xs">
+              Sistema de Contactos Digitales CAS
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
