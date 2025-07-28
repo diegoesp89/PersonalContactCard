@@ -419,6 +419,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         throw writeError;
       }
       
+      // Invalidate gallery cache after successful upload
+      galleryCache = [];
+      galleryCacheTime = 0;
+      
       console.log('Upload successful:', { filename, imageUrl });
       logger.log('IMAGE_UPLOADED', { 
         filename, 
@@ -426,6 +430,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         size: req.file.size,
         mimetype: req.file.mimetype,
         imageUrl,
+        cacheInvalidated: true,
         environment: isProduction ? 'production' : 'development'
       }, req);
       res.json({ imageUrl });
@@ -519,77 +524,213 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get gallery images from Object Storage
+  // Gallery images cache to prevent random clearing
+  let galleryCache: Array<{filename: string, url: string, uploadDate: Date}> = [];
+  let galleryCacheTime: number = 0;
+  const GALLERY_CACHE_TTL = 30000; // 30 seconds cache
+  
+  // Object Storage health monitoring
+  let lastObjectStorageSuccess: number = 0;
+  let objectStorageFailCount: number = 0;
+
+  // Helper function to retry Object Storage operations
+  async function retryObjectStorageOperation<T>(
+    operation: () => Promise<T>,
+    maxRetries: number = 3,
+    delay: number = 1000
+  ): Promise<T> {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        return await operation();
+      } catch (error) {
+        console.log(`Object Storage operation attempt ${attempt} failed:`, error);
+        if (attempt === maxRetries) throw error;
+        await new Promise(resolve => setTimeout(resolve, delay * attempt));
+      }
+    }
+    throw new Error('Max retries exceeded');
+  }
+
+  // Get gallery images from Object Storage with enhanced reliability
   app.get("/api/gallery", async (req, res) => {
     try {
+      const now = Date.now();
+      
+      // Return cached data if fresh and available
+      if (galleryCache.length > 0 && (now - galleryCacheTime) < GALLERY_CACHE_TTL) {
+        logger.log('GALLERY_CACHE_HIT', {
+          imageCount: galleryCache.length,
+          cacheAge: now - galleryCacheTime
+        }, req);
+        return res.json(galleryCache);
+      }
+      
       let imageFiles: Array<{filename: string, url: string, uploadDate: Date}> = [];
+      let objectStorageSuccess = false;
       
       logger.log('GALLERY_REQUEST', {
         objectStorageAvailable: !!objectStorage,
         uploadsDir,
-        uploadsDirExists: fs.existsSync(uploadsDir)
+        uploadsDirExists: fs.existsSync(uploadsDir),
+        cacheAge: now - galleryCacheTime,
+        cachedCount: galleryCache.length
       }, req);
       
       if (objectStorage) {
         try {
-          // Get from Object Storage
-          const listResult = await objectStorage.list();
-          
-          // Handle the Result type from Object Storage
-          if (listResult.error) {
-            throw new Error(`Object Storage list failed: ${listResult.error.message}`);
-          }
+          // Get from Object Storage with retry logic
+          const listResult = await retryObjectStorageOperation(async () => {
+            const result = await objectStorage.list();
+            if (result.error) {
+              throw new Error(`Object Storage list failed: ${result.error.message}`);
+            }
+            return result;
+          });
           
           const objects = listResult.value;
           imageFiles = objects
             .filter((obj: any) => {
+              const isImage = obj.name && typeof obj.name === 'string';
+              if (!isImage) return false;
+              
               const ext = path.extname(obj.name).toLowerCase();
-              return ['.jpg', '.jpeg', '.png', '.gif', '.webp'].includes(ext);
+              return ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.heic', '.heif'].includes(ext);
             })
             .map((obj: any) => ({
               filename: obj.name,
               url: `/api/image/${obj.name}`,
-              uploadDate: new Date(obj.createdAt)
+              uploadDate: obj.createdAt ? new Date(obj.createdAt) : new Date()
             }))
             .sort((a: any, b: any) => b.uploadDate.getTime() - a.uploadDate.getTime());
+          
+          objectStorageSuccess = true;
+          lastObjectStorageSuccess = now;
+          objectStorageFailCount = 0;
+          
+          logger.log('GALLERY_OBJECT_STORAGE_SUCCESS', {
+            objectCount: objects.length,
+            imageCount: imageFiles.length,
+            images: imageFiles.slice(0, 5).map(f => ({ filename: f.filename, url: f.url }))
+          }, req);
+          
         } catch (objectStorageError) {
           const errorMessage = objectStorageError instanceof Error ? objectStorageError.message : 'Unknown Object Storage error';
-          console.log('Object Storage list failed, using local files:', errorMessage);
+          objectStorageFailCount++;
+          
+          logger.log('GALLERY_OBJECT_STORAGE_FAILED', { 
+            error: errorMessage,
+            failCount: objectStorageFailCount,
+            lastSuccess: lastObjectStorageSuccess ? new Date(lastObjectStorageSuccess).toISOString() : 'never',
+            fallbackToCache: galleryCache.length > 0
+          }, req);
+          console.error('Object Storage list failed:', errorMessage);
         }
       }
       
-      // If Object Storage failed or not available, use local files
-      if (imageFiles.length === 0 && fs.existsSync(uploadsDir)) {
-        const files = fs.readdirSync(uploadsDir);
-        
-        logger.log('GALLERY_LOCAL_FILES', {
-          uploadsDir,
-          allFiles: files,
-          imageCount: files.length
+      // If Object Storage failed and we have cache, use cache
+      if (!objectStorageSuccess && galleryCache.length > 0) {
+        logger.log('GALLERY_FALLBACK_TO_CACHE', {
+          imageCount: galleryCache.length,
+          cacheAge: now - galleryCacheTime
         }, req);
+        return res.json(galleryCache);
+      }
+      
+      // If Object Storage failed or not available, try local files (development fallback)
+      if (!objectStorageSuccess && fs.existsSync(uploadsDir)) {
+        try {
+          const files = fs.readdirSync(uploadsDir);
+          
+          logger.log('GALLERY_LOCAL_FILES', {
+            uploadsDir,
+            allFiles: files,
+            imageCount: files.length
+          }, req);
+          
+          imageFiles = files
+            .filter(file => {
+              const ext = path.extname(file).toLowerCase();
+              return ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.heic', '.heif'].includes(ext);
+            })
+            .map(file => ({
+              filename: file,
+              url: isProduction ? `/api/image/${file}` : `/uploads/${file}`,
+              uploadDate: fs.statSync(path.join(uploadsDir, file)).mtime
+            }))
+            .sort((a, b) => b.uploadDate.getTime() - a.uploadDate.getTime());
+        } catch (localError) {
+          logger.log('GALLERY_LOCAL_FAILED', { error: localError }, req);
+        }
+      }
+      
+      // Update cache only if we got results
+      if (imageFiles.length > 0 || objectStorageSuccess) {
+        galleryCache = imageFiles;
+        galleryCacheTime = now;
         
-        imageFiles = files
-          .filter(file => {
-            const ext = path.extname(file).toLowerCase();
-            return ['.jpg', '.jpeg', '.png', '.gif', '.webp'].includes(ext);
-          })
-          .map(file => ({
-            filename: file,
-            url: isProduction ? `/api/image/${file}` : `/uploads/${file}`,
-            uploadDate: fs.statSync(path.join(uploadsDir, file)).mtime
-          }))
-          .sort((a, b) => b.uploadDate.getTime() - a.uploadDate.getTime());
+        logger.log('GALLERY_CACHE_UPDATED', {
+          imageCount: imageFiles.length,
+          objectStorageSuccess
+        }, req);
       }
       
       logger.log('GALLERY_RESPONSE', {
         imageCount: imageFiles.length,
-        images: imageFiles.map(f => ({ filename: f.filename, url: f.url }))
+        source: objectStorageSuccess ? 'object-storage' : 'local-or-cache',
+        images: imageFiles.slice(0, 5).map(f => ({ filename: f.filename, url: f.url }))
       }, req);
       
       res.json(imageFiles);
     } catch (error) {
       console.error('Gallery error:', error);
+      logger.log('GALLERY_ERROR', { error: error instanceof Error ? error.message : 'Unknown error' }, req);
+      
+      // As last resort, return cache if available
+      if (galleryCache.length > 0) {
+        logger.log('GALLERY_EMERGENCY_CACHE', { imageCount: galleryCache.length }, req);
+        return res.json(galleryCache);
+      }
+      
       res.status(500).json({ error: "Failed to get gallery images" });
+    }
+  });
+
+  // Clear gallery cache manually (admin only)
+  app.post("/api/gallery/clear-cache", async (req, res) => {
+    try {
+      const { password } = req.body;
+      
+      // Authenticate admin
+      if (password !== "CamisasWenas.!" && password !== "Mafatanga2025") {
+        return res.status(401).json({ error: "Invalid password" });
+      }
+      
+      const oldCacheSize = galleryCache.length;
+      const oldCacheTime = galleryCacheTime;
+      
+      galleryCache = [];
+      galleryCacheTime = 0;
+      
+      logger.log('GALLERY_CACHE_CLEARED', {
+        oldCacheSize,
+        oldCacheTime: oldCacheTime ? new Date(oldCacheTime).toISOString() : 'never',
+        objectStorageFailCount,
+        lastObjectStorageSuccess: lastObjectStorageSuccess ? new Date(lastObjectStorageSuccess).toISOString() : 'never',
+        adminAction: true
+      }, req);
+      
+      res.json({ 
+        success: true, 
+        message: "Gallery cache cleared successfully",
+        oldCacheSize,
+        objectStorageHealth: {
+          failCount: objectStorageFailCount,
+          lastSuccess: lastObjectStorageSuccess ? new Date(lastObjectStorageSuccess).toISOString() : 'never'
+        }
+      });
+    } catch (error) {
+      console.error('Clear cache error:', error);
+      res.status(500).json({ error: "Failed to clear cache" });
     }
   });
 
@@ -628,9 +769,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log('Local image deleted:', filename);
       }
       
+      // Invalidate gallery cache after deletion
+      galleryCache = [];
+      galleryCacheTime = 0;
+      
       logger.log('IMAGE_DELETED', { 
         filename,
-        adminAction: true 
+        adminAction: true,
+        cacheInvalidated: true
       }, req);
       res.json({ success: true, message: "Image deleted successfully" });
     } catch (error) {

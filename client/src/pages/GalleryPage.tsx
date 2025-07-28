@@ -120,6 +120,33 @@ export default function GalleryPage() {
     }
   });
 
+  // Clear cache mutation (SuperAdmin only)
+  const clearCacheMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch("/api/gallery/clear-cache", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password })
+      });
+      if (!response.ok) throw new Error("Clear cache failed");
+      return response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/gallery"] });
+      toast({
+        title: "Caché limpiado",
+        description: `Se eliminaron ${data.oldCacheSize} imágenes del caché. Object Storage: ${data.objectStorageHealth.failCount} fallos.`
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error al limpiar caché",
+        description: "No se pudo limpiar el caché",
+        variant: "destructive"
+      });
+    }
+  });
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (password) {
@@ -241,6 +268,23 @@ export default function GalleryPage() {
                 </div>
               </DialogContent>
             </Dialog>
+
+            {/* Clear Cache Button (SuperAdmin only) */}
+            {isSuperAdmin && (
+              <Button 
+                variant="outline"
+                onClick={() => {
+                  if (confirm("¿Estás seguro de que quieres limpiar el caché de imágenes? Esto forzará una recarga completa desde Object Storage.")) {
+                    clearCacheMutation.mutate();
+                  }
+                }}
+                disabled={clearCacheMutation.isPending}
+                className="border-amber-500 text-amber-400 hover:bg-amber-500/10"
+                title="Limpiar caché de galería - Solo SuperAdmin"
+              >
+                🗑️ {clearCacheMutation.isPending ? "Limpiando..." : "Limpiar Caché"}
+              </Button>
+            )}
 
             <Button 
               variant="outline" 

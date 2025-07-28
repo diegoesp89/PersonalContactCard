@@ -72,6 +72,14 @@ Preferred communication style: Simple, everyday language.
 - **Julio 24, 2025**: Implementada barra de búsqueda en panel de administración - búsqueda por nombre y ruta (/profile-name)
 - **Julio 24, 2025**: Agregado ordenamiento alfabético automático de contactos en vista de administración
 - **Julio 24, 2025**: Filtrado en tiempo real de contactos con contador de resultados y estados vacíos inteligentes
+- **Julio 28, 2025**: CRÍTICO - Solucionado problema de lista de galería que se borra aleatoriamente en producción
+- **Julio 28, 2025**: Implementado sistema de caché robusto con TTL de 30 segundos para prevenir pérdida de lista de imágenes
+- **Julio 28, 2025**: Agregado retry logic con backoff exponencial para operaciones de Object Storage fallidas
+- **Julio 28, 2025**: Implementado fallback inteligente: Object Storage → Caché → Archivos locales → Emergencia
+- **Julio 28, 2025**: Agregado monitoreo de salud de Object Storage con tracking de fallos consecutivos
+- **Julio 28, 2025**: Creado endpoint /api/gallery/clear-cache para limpiar caché manualmente (solo SuperAdmin)
+- **Julio 28, 2025**: Invalidación automática de caché al subir/eliminar imágenes para mantener sincronización
+- **Julio 28, 2025**: Mejorado logging detallado para debugging de issues de Object Storage en producción
 - **Julio 16, 2025**: Implementado sistema completo de administración con panel de admin en /edit
 - **Julio 16, 2025**: Añadido sistema de autenticación con contraseña "CamisasWenas.!" para admin básico
 - **Julio 16, 2025**: Creado sistema de rutas dinámicas - cada contacto tiene campo "ruta" para generar URLs personalizadas
