@@ -81,6 +81,12 @@ Preferred communication style: Simple, everyday language.
 - **Julio 28, 2025**: Invalidación automática de caché al subir/eliminar imágenes para mantener sincronización
 - **Julio 28, 2025**: Mejorado logging detallado para debugging de issues de Object Storage en producción
 - **Julio 28, 2025**: Duplicado el tamaño de las imágenes de perfil - contactos ahora usan w-48 h-48 (192px), página inicio usa w-64 h-64 (256px)
+- **Julio 28, 2025**: MAYOR ACTUALIZACIÓN - Implementado sistema completo de múltiples enlaces para TODAS las redes sociales
+- **Julio 28, 2025**: Todas las plataformas sociales (Instagram, TikTok, LinkedIn, Telegram, YouTube, Facebook) ahora soportan múltiples URLs
+- **Julio 28, 2025**: Cada enlace social puede tener label personalizado y botones individuales de agregar/eliminar
+- **Julio 28, 2025**: Actualizado esquema de base de datos - todos los campos sociales ahora son JSON arrays de SocialLink[]
+- **Julio 28, 2025**: Editor de contactos completamente renovado con secciones dedicadas para cada plataforma social
+- **Julio 28, 2025**: Página de contacto actualizada para mostrar múltiples enlaces con numeración automática cuando hay más de uno
 - **Julio 16, 2025**: Implementado sistema completo de administración con panel de admin en /edit
 - **Julio 16, 2025**: Añadido sistema de autenticación con contraseña "CamisasWenas.!" para admin básico
 - **Julio 16, 2025**: Creado sistema de rutas dinámicas - cada contacto tiene campo "ruta" para generar URLs personalizadas

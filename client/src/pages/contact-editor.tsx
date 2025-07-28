@@ -89,10 +89,10 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
     phone: contact?.phone || "",
     email: contact?.email || "",
     whatsapp: contact?.whatsapp || "",
-    instagram: contact?.instagram || "",
-    tiktok: contact?.tiktok || "",
-    linkedin: contact?.linkedin || "",
-    telegram: contact?.telegram || "",
+    instagram: contact?.instagram || "[]",
+    tiktok: contact?.tiktok || "[]",
+    linkedin: contact?.linkedin || "[]",
+    telegram: contact?.telegram || "[]",
     youtube: contact?.youtube || "[]",
     facebook: contact?.facebook || "[]",
     website: contact?.website || "",
@@ -111,6 +111,10 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
   });
 
   const [banks, setBanks] = useState<Bank[]>([]);
+  const [instagramLinks, setInstagramLinks] = useState<SocialLink[]>([]);
+  const [tiktokLinks, setTiktokLinks] = useState<SocialLink[]>([]);
+  const [linkedinLinks, setLinkedinLinks] = useState<SocialLink[]>([]);
+  const [telegramLinks, setTelegramLinks] = useState<SocialLink[]>([]);
   const [youtubeLinks, setYoutubeLinks] = useState<SocialLink[]>([]);
   const [facebookLinks, setFacebookLinks] = useState<SocialLink[]>([]);
 
@@ -133,6 +137,46 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
       }
     }
   }, [formData.youtube]);
+
+  useEffect(() => {
+    if (formData.instagram) {
+      try {
+        setInstagramLinks(JSON.parse(formData.instagram));
+      } catch (error) {
+        setInstagramLinks([]);
+      }
+    }
+  }, [formData.instagram]);
+
+  useEffect(() => {
+    if (formData.tiktok) {
+      try {
+        setTiktokLinks(JSON.parse(formData.tiktok));
+      } catch (error) {
+        setTiktokLinks([]);
+      }
+    }
+  }, [formData.tiktok]);
+
+  useEffect(() => {
+    if (formData.linkedin) {
+      try {
+        setLinkedinLinks(JSON.parse(formData.linkedin));
+      } catch (error) {
+        setLinkedinLinks([]);
+      }
+    }
+  }, [formData.linkedin]);
+
+  useEffect(() => {
+    if (formData.telegram) {
+      try {
+        setTelegramLinks(JSON.parse(formData.telegram));
+      } catch (error) {
+        setTelegramLinks([]);
+      }
+    }
+  }, [formData.telegram]);
 
   useEffect(() => {
     if (formData.facebook) {
@@ -231,6 +275,110 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
     );
     setBanks(updatedBanks);
     setFormData(prev => ({ ...prev, banks: JSON.stringify(updatedBanks) }));
+  };
+
+  // Instagram links functions
+  const addInstagramLink = () => {
+    const newLink: SocialLink = {
+      id: Date.now().toString(),
+      url: "",
+      label: ""
+    };
+    const updatedLinks = [...instagramLinks, newLink];
+    setInstagramLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, instagram: JSON.stringify(updatedLinks) }));
+  };
+
+  const removeInstagramLink = (linkId: string) => {
+    const updatedLinks = instagramLinks.filter(link => link.id !== linkId);
+    setInstagramLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, instagram: JSON.stringify(updatedLinks) }));
+  };
+
+  const updateInstagramLink = (linkId: string, field: keyof SocialLink, value: string) => {
+    const updatedLinks = instagramLinks.map(link =>
+      link.id === linkId ? { ...link, [field]: value } : link
+    );
+    setInstagramLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, instagram: JSON.stringify(updatedLinks) }));
+  };
+
+  // TikTok links functions
+  const addTiktokLink = () => {
+    const newLink: SocialLink = {
+      id: Date.now().toString(),
+      url: "",
+      label: ""
+    };
+    const updatedLinks = [...tiktokLinks, newLink];
+    setTiktokLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, tiktok: JSON.stringify(updatedLinks) }));
+  };
+
+  const removeTiktokLink = (linkId: string) => {
+    const updatedLinks = tiktokLinks.filter(link => link.id !== linkId);
+    setTiktokLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, tiktok: JSON.stringify(updatedLinks) }));
+  };
+
+  const updateTiktokLink = (linkId: string, field: keyof SocialLink, value: string) => {
+    const updatedLinks = tiktokLinks.map(link =>
+      link.id === linkId ? { ...link, [field]: value } : link
+    );
+    setTiktokLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, tiktok: JSON.stringify(updatedLinks) }));
+  };
+
+  // LinkedIn links functions
+  const addLinkedinLink = () => {
+    const newLink: SocialLink = {
+      id: Date.now().toString(),
+      url: "",
+      label: ""
+    };
+    const updatedLinks = [...linkedinLinks, newLink];
+    setLinkedinLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, linkedin: JSON.stringify(updatedLinks) }));
+  };
+
+  const removeLinkedinLink = (linkId: string) => {
+    const updatedLinks = linkedinLinks.filter(link => link.id !== linkId);
+    setLinkedinLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, linkedin: JSON.stringify(updatedLinks) }));
+  };
+
+  const updateLinkedinLink = (linkId: string, field: keyof SocialLink, value: string) => {
+    const updatedLinks = linkedinLinks.map(link =>
+      link.id === linkId ? { ...link, [field]: value } : link
+    );
+    setLinkedinLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, linkedin: JSON.stringify(updatedLinks) }));
+  };
+
+  // Telegram links functions
+  const addTelegramLink = () => {
+    const newLink: SocialLink = {
+      id: Date.now().toString(),
+      url: "",
+      label: ""
+    };
+    const updatedLinks = [...telegramLinks, newLink];
+    setTelegramLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, telegram: JSON.stringify(updatedLinks) }));
+  };
+
+  const removeTelegramLink = (linkId: string) => {
+    const updatedLinks = telegramLinks.filter(link => link.id !== linkId);
+    setTelegramLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, telegram: JSON.stringify(updatedLinks) }));
+  };
+
+  const updateTelegramLink = (linkId: string, field: keyof SocialLink, value: string) => {
+    const updatedLinks = telegramLinks.map(link =>
+      link.id === linkId ? { ...link, [field]: value } : link
+    );
+    setTelegramLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, telegram: JSON.stringify(updatedLinks) }));
   };
 
   // YouTube links functions
@@ -476,46 +624,6 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                 />
               </div>
               <div>
-                <Label htmlFor="instagram" className="text-slate-200">Instagram</Label>
-                <Input
-                  id="instagram"
-                  value={formData.instagram}
-                  onChange={(e) => updateField("instagram", e.target.value)}
-                  className="bg-slate-800/50 border-slate-600 text-slate-100"
-                  placeholder="usuario_instagram"
-                />
-              </div>
-              <div>
-                <Label htmlFor="tiktok" className="text-slate-200">TikTok</Label>
-                <Input
-                  id="tiktok"
-                  value={formData.tiktok}
-                  onChange={(e) => updateField("tiktok", e.target.value)}
-                  className="bg-slate-800/50 border-slate-600 text-slate-100"
-                  placeholder="@usuario_tiktok"
-                />
-              </div>
-              <div>
-                <Label htmlFor="linkedin" className="text-slate-200">LinkedIn</Label>
-                <Input
-                  id="linkedin"
-                  value={formData.linkedin}
-                  onChange={(e) => updateField("linkedin", e.target.value)}
-                  className="bg-slate-800/50 border-slate-600 text-slate-100"
-                  placeholder="usuario-linkedin"
-                />
-              </div>
-              <div>
-                <Label htmlFor="telegram" className="text-slate-200">Telegram</Label>
-                <Input
-                  id="telegram"
-                  value={formData.telegram}
-                  onChange={(e) => updateField("telegram", e.target.value)}
-                  className="bg-slate-800/50 border-slate-600 text-slate-100"
-                  placeholder="@usuario_telegram"
-                />
-              </div>
-              <div>
                 <Label htmlFor="website" className="text-slate-200">Sitio Web</Label>
                 <Input
                   id="website"
@@ -525,6 +633,222 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                   placeholder="https://ejemplo.com"
                 />
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Instagram Links */}
+          <Card className="glass-effect border-slate-700">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-slate-100">Instagram</CardTitle>
+              <Button type="button" onClick={addInstagramLink} variant="outline" size="sm">
+                <Plus className="w-4 h-4 mr-2" />
+                Agregar Cuenta
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {instagramLinks.map((link, index) => (
+                <div key={link.id} className="p-4 border border-slate-600 rounded-lg space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-slate-200 font-medium">Cuenta {index + 1}</h4>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeInstagramLink(link.id)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-slate-200">Usuario de Instagram</Label>
+                      <Input
+                        value={link.url}
+                        onChange={(e) => updateInstagramLink(link.id, "url", e.target.value)}
+                        className="bg-slate-800/50 border-slate-600 text-slate-100"
+                        placeholder="usuario_instagram"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-slate-200">Nombre de la cuenta (opcional)</Label>
+                      <Input
+                        value={link.label || ""}
+                        onChange={(e) => updateInstagramLink(link.id, "label", e.target.value)}
+                        className="bg-slate-800/50 border-slate-600 text-slate-100"
+                        placeholder="Mi cuenta de Instagram"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {instagramLinks.length === 0 && (
+                <div className="text-center py-8 text-slate-400">
+                  <p>No hay cuentas de Instagram agregadas</p>
+                  <p className="text-sm">Usa el botón "Agregar Cuenta" para añadir una</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* TikTok Links */}
+          <Card className="glass-effect border-slate-700">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-slate-100">TikTok</CardTitle>
+              <Button type="button" onClick={addTiktokLink} variant="outline" size="sm">
+                <Plus className="w-4 h-4 mr-2" />
+                Agregar Cuenta
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {tiktokLinks.map((link, index) => (
+                <div key={link.id} className="p-4 border border-slate-600 rounded-lg space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-slate-200 font-medium">Cuenta {index + 1}</h4>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeTiktokLink(link.id)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-slate-200">Usuario de TikTok</Label>
+                      <Input
+                        value={link.url}
+                        onChange={(e) => updateTiktokLink(link.id, "url", e.target.value)}
+                        className="bg-slate-800/50 border-slate-600 text-slate-100"
+                        placeholder="@usuario_tiktok"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-slate-200">Nombre de la cuenta (opcional)</Label>
+                      <Input
+                        value={link.label || ""}
+                        onChange={(e) => updateTiktokLink(link.id, "label", e.target.value)}
+                        className="bg-slate-800/50 border-slate-600 text-slate-100"
+                        placeholder="Mi cuenta de TikTok"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {tiktokLinks.length === 0 && (
+                <div className="text-center py-8 text-slate-400">
+                  <p>No hay cuentas de TikTok agregadas</p>
+                  <p className="text-sm">Usa el botón "Agregar Cuenta" para añadir una</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* LinkedIn Links */}
+          <Card className="glass-effect border-slate-700">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-slate-100">LinkedIn</CardTitle>
+              <Button type="button" onClick={addLinkedinLink} variant="outline" size="sm">
+                <Plus className="w-4 h-4 mr-2" />
+                Agregar Perfil
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {linkedinLinks.map((link, index) => (
+                <div key={link.id} className="p-4 border border-slate-600 rounded-lg space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-slate-200 font-medium">Perfil {index + 1}</h4>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeLinkedinLink(link.id)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-slate-200">Usuario de LinkedIn</Label>
+                      <Input
+                        value={link.url}
+                        onChange={(e) => updateLinkedinLink(link.id, "url", e.target.value)}
+                        className="bg-slate-800/50 border-slate-600 text-slate-100"
+                        placeholder="usuario-linkedin"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-slate-200">Nombre del perfil (opcional)</Label>
+                      <Input
+                        value={link.label || ""}
+                        onChange={(e) => updateLinkedinLink(link.id, "label", e.target.value)}
+                        className="bg-slate-800/50 border-slate-600 text-slate-100"
+                        placeholder="Mi perfil profesional"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {linkedinLinks.length === 0 && (
+                <div className="text-center py-8 text-slate-400">
+                  <p>No hay perfiles de LinkedIn agregados</p>
+                  <p className="text-sm">Usa el botón "Agregar Perfil" para añadir uno</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Telegram Links */}
+          <Card className="glass-effect border-slate-700">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-slate-100">Telegram</CardTitle>
+              <Button type="button" onClick={addTelegramLink} variant="outline" size="sm">
+                <Plus className="w-4 h-4 mr-2" />
+                Agregar Cuenta
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {telegramLinks.map((link, index) => (
+                <div key={link.id} className="p-4 border border-slate-600 rounded-lg space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-slate-200 font-medium">Cuenta {index + 1}</h4>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeTelegramLink(link.id)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-slate-200">Usuario de Telegram</Label>
+                      <Input
+                        value={link.url}
+                        onChange={(e) => updateTelegramLink(link.id, "url", e.target.value)}
+                        className="bg-slate-800/50 border-slate-600 text-slate-100"
+                        placeholder="@usuario_telegram"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-slate-200">Nombre de la cuenta (opcional)</Label>
+                      <Input
+                        value={link.label || ""}
+                        onChange={(e) => updateTelegramLink(link.id, "label", e.target.value)}
+                        className="bg-slate-800/50 border-slate-600 text-slate-100"
+                        placeholder="Mi cuenta de Telegram"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {telegramLinks.length === 0 && (
+                <div className="text-center py-8 text-slate-400">
+                  <p>No hay cuentas de Telegram agregadas</p>
+                  <p className="text-sm">Usa el botón "Agregar Cuenta" para añadir una</p>
+                </div>
+              )}
             </CardContent>
           </Card>
 

@@ -9,12 +9,12 @@ export const contacts = pgTable("contacts", {
   phone: text("phone").notNull(),
   email: text("email").notNull(),
   whatsapp: text("whatsapp").notNull(),
-  instagram: text("instagram").notNull(),
-  tiktok: text("tiktok").notNull().default(""),
-  linkedin: text("linkedin").notNull().default(""),
-  telegram: text("telegram").notNull().default(""),
-  youtube: text("youtube").notNull().default("[]"),
-  facebook: text("facebook").notNull().default("[]"),
+  instagram: text("instagram").notNull().default("[]"), // JSON string of SocialLink[]
+  tiktok: text("tiktok").notNull().default("[]"), // JSON string of SocialLink[]
+  linkedin: text("linkedin").notNull().default("[]"), // JSON string of SocialLink[]
+  telegram: text("telegram").notNull().default("[]"), // JSON string of SocialLink[]
+  youtube: text("youtube").notNull().default("[]"), // JSON string of SocialLink[]
+  facebook: text("facebook").notNull().default("[]"), // JSON string of SocialLink[]
   website: text("website").notNull(),
   profileImage: text("profile_image").notNull().default(""),
   officeAddress: text("office_address").notNull().default(""),

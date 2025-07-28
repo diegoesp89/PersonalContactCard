@@ -416,24 +416,21 @@ Correo: ${bank.email}`;
 
   // Parse banks and social links from JSON
   const banks: Bank[] = contact?.banks ? JSON.parse(contact.banks) : [];
-  const youtubeLinks: SocialLink[] = contact?.youtube ? (
-    (() => {
-      try {
-        return JSON.parse(contact.youtube);
-      } catch {
-        return [];
-      }
-    })()
-  ) : [];
-  const facebookLinks: SocialLink[] = contact?.facebook ? (
-    (() => {
-      try {
-        return JSON.parse(contact.facebook);
-      } catch {
-        return [];
-      }
-    })()
-  ) : [];
+  
+  const parseLinks = (jsonString: string): SocialLink[] => {
+    try {
+      return JSON.parse(jsonString);
+    } catch {
+      return [];
+    }
+  };
+  
+  const instagramLinks: SocialLink[] = contact?.instagram ? parseLinks(contact.instagram) : [];
+  const tiktokLinks: SocialLink[] = contact?.tiktok ? parseLinks(contact.tiktok) : [];
+  const linkedinLinks: SocialLink[] = contact?.linkedin ? parseLinks(contact.linkedin) : [];
+  const telegramLinks: SocialLink[] = contact?.telegram ? parseLinks(contact.telegram) : [];
+  const youtubeLinks: SocialLink[] = contact?.youtube ? parseLinks(contact.youtube) : [];
+  const facebookLinks: SocialLink[] = contact?.facebook ? parseLinks(contact.facebook) : [];
 
 
 
@@ -692,49 +689,56 @@ Correo: ${bank.email}`;
               </a>
 
               {/* Instagram */}
-              {contact.instagram && (
+              {instagramLinks.map((instagramLink, index) => (
                 <a
-                  href={getInstagramUrl(contact.instagram)}
+                  key={`instagram-${instagramLink.id}`}
+                  href={getInstagramUrl(instagramLink.url)}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => trackEvent('instagram_click')}
-                  className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
+                  className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-pink-500/10 hover:border-pink-500/30"
                 >
                   <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mr-4 shadow-md">
                     <Instagram className="text-white w-5 h-5" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-slate-100 font-semibold">Instagram</h3>
-                    <p className="text-slate-400 text-sm">@{contact.instagram.replace(/^@+/, "")}</p>
+                    <h3 className="text-slate-100 font-semibold">
+                      {instagramLink.label || `Instagram${instagramLinks.length > 1 ? ` ${index + 1}` : ''}`}
+                    </h3>
+                    <p className="text-slate-400 text-sm">@{instagramLink.url.replace(/^@+/, "")}</p>
                   </div>
                   <ExternalLink className="text-slate-500 w-4 h-4" />
                 </a>
-              )}
+              ))}
 
               {/* TikTok */}
-              {contact.tiktok && (
+              {tiktokLinks.map((tiktokLink, index) => (
                 <a
-                  href={getTikTokUrl(contact.tiktok)}
+                  key={`tiktok-${tiktokLink.id}`}
+                  href={getTikTokUrl(tiktokLink.url)}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => trackEvent('tiktok_click')}
-                  className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
+                  className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-pink-500/10 hover:border-pink-500/30"
                 >
                   <div className="w-12 h-12 bg-gradient-to-br from-black to-gray-800 rounded-xl flex items-center justify-center mr-4 shadow-md">
                     <FaTiktok className="text-white w-5 h-5" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-slate-100 font-semibold">TikTok</h3>
-                    <p className="text-slate-400 text-sm">@{contact.tiktok.replace(/^@+/, "")}</p>
+                    <h3 className="text-slate-100 font-semibold">
+                      {tiktokLink.label || `TikTok${tiktokLinks.length > 1 ? ` ${index + 1}` : ''}`}
+                    </h3>
+                    <p className="text-slate-400 text-sm">@{tiktokLink.url.replace(/^@+/, "")}</p>
                   </div>
                   <ExternalLink className="text-slate-500 w-4 h-4" />
                 </a>
-              )}
+              ))}
 
               {/* LinkedIn */}
-              {contact.linkedin && (
+              {linkedinLinks.map((linkedinLink, index) => (
                 <a
-                  href={getLinkedInUrl(contact.linkedin)}
+                  key={`linkedin-${linkedinLink.id}`}
+                  href={getLinkedInUrl(linkedinLink.url)}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => trackEvent('linkedin_click')}
@@ -744,17 +748,20 @@ Correo: ${bank.email}`;
                     <FaLinkedin className="text-white w-5 h-5" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-slate-100 font-semibold">LinkedIn</h3>
-                    <p className="text-slate-400 text-sm">{contact.linkedin}</p>
+                    <h3 className="text-slate-100 font-semibold">
+                      {linkedinLink.label || `LinkedIn${linkedinLinks.length > 1 ? ` ${index + 1}` : ''}`}
+                    </h3>
+                    <p className="text-slate-400 text-sm">{linkedinLink.url}</p>
                   </div>
                   <ExternalLink className="text-slate-500 w-4 h-4" />
                 </a>
-              )}
+              ))}
 
               {/* Telegram */}
-              {contact.telegram && (
+              {telegramLinks.map((telegramLink, index) => (
                 <a
-                  href={getTelegramUrl(contact.telegram)}
+                  key={`telegram-${telegramLink.id}`}
+                  href={getTelegramUrl(telegramLink.url)}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => trackEvent('telegram_click')}
@@ -764,12 +771,14 @@ Correo: ${bank.email}`;
                     <FaTelegram className="text-white w-5 h-5" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-slate-100 font-semibold">Telegram</h3>
-                    <p className="text-slate-400 text-sm">@{contact.telegram.replace(/^@+/, "")}</p>
+                    <h3 className="text-slate-100 font-semibold">
+                      {telegramLink.label || `Telegram${telegramLinks.length > 1 ? ` ${index + 1}` : ''}`}
+                    </h3>
+                    <p className="text-slate-400 text-sm">@{telegramLink.url.replace(/^@+/, "")}</p>
                   </div>
                   <ExternalLink className="text-slate-500 w-4 h-4" />
                 </a>
-              )}
+              ))}
 
               {/* YouTube */}
               {youtubeLinks.map((youtubeLink, index) => (
