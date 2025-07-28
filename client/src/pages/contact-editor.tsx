@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { z } from "zod";
 import ImageGalleryModal from "@/components/ImageGalleryModal";
+import ImageEditor from "@/components/ImageEditor";
 
 interface Contact {
   id?: number;
@@ -85,6 +86,9 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
   const [uploading, setUploading] = useState(false);
   const [showGalleryModal, setShowGalleryModal] = useState(false);
   const [showCoverGalleryModal, setShowCoverGalleryModal] = useState(false);
+  const [showImageEditor, setShowImageEditor] = useState(false);
+  const [imageToEdit, setImageToEdit] = useState<string>('');
+  const [editingImageType, setEditingImageType] = useState<'profile' | 'cover'>('profile');
 
   const [formData, setFormData] = useState<Contact>({
     name: contact?.name || "",
@@ -585,6 +589,36 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
     setFormData(prev => ({ ...prev, facebook: JSON.stringify(updatedLinks) }));
   };
 
+  // Image Editor handlers
+  const handleEditProfileImage = () => {
+    if (formData.profileImage) {
+      setImageToEdit(formData.profileImage);
+      setEditingImageType('profile');
+      setShowImageEditor(true);
+    }
+  };
+
+  const handleEditCoverImage = () => {
+    if (formData.coverImage) {
+      setImageToEdit(formData.coverImage);
+      setEditingImageType('cover');
+      setShowImageEditor(true);
+    }
+  };
+
+  const handleImageEditorSave = (editedImageUrl: string) => {
+    if (editingImageType === 'profile') {
+      updateField('profileImage', editedImageUrl);
+    } else {
+      updateField('coverImage', editedImageUrl);
+    }
+    setShowImageEditor(false);
+    toast({
+      title: "Imagen editada",
+      description: "La imagen se ha guardado con los cambios aplicados"
+    });
+  };
+
   const saveMutation = useMutation({
     mutationFn: async (data: Contact) => {
       const endpoint = isEditing 
@@ -704,15 +738,27 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                   <Label className="text-slate-200 block mb-2">
                     Imagen de Perfil
                   </Label>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setShowGalleryModal(true)}
-                    className="bg-slate-800/50 border-slate-600 text-slate-100 hover:bg-slate-700/50"
-                  >
-                    <Upload className="w-4 h-4 mr-2" />
-                    {formData.profileImage ? "Cambiar Imagen" : "Seleccionar de Galería"}
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowGalleryModal(true)}
+                      className="bg-slate-800/50 border-slate-600 text-slate-100 hover:bg-slate-700/50"
+                    >
+                      <Upload className="w-4 h-4 mr-2" />
+                      {formData.profileImage ? "Cambiar Imagen" : "Seleccionar de Galería"}
+                    </Button>
+                    {formData.profileImage && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleEditProfileImage}
+                        className="bg-blue-800/50 border-blue-600 text-blue-100 hover:bg-blue-700/50"
+                      >
+                        ✂️ Editar
+                      </Button>
+                    )}
+                  </div>
                   <p className="text-xs text-slate-400 mt-2">
                     Haz clic para abrir la galería de imágenes
                   </p>
@@ -788,15 +834,27 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                   <Label className="text-slate-200 block mb-2">
                     Imagen de Portada (Estilo Facebook)
                   </Label>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setShowCoverGalleryModal(true)}
-                    className="bg-slate-800/50 border-slate-600 text-slate-100 hover:bg-slate-700/50"
-                  >
-                    <Upload className="w-4 h-4 mr-2" />
-                    {formData.coverImage ? "Cambiar Portada" : "Seleccionar de Galería"}
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowCoverGalleryModal(true)}
+                      className="bg-slate-800/50 border-slate-600 text-slate-100 hover:bg-slate-700/50"
+                    >
+                      <Upload className="w-4 h-4 mr-2" />
+                      {formData.coverImage ? "Cambiar Portada" : "Seleccionar de Galería"}
+                    </Button>
+                    {formData.coverImage && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleEditCoverImage}
+                        className="bg-blue-800/50 border-blue-600 text-blue-100 hover:bg-blue-700/50"
+                      >
+                        ✂️ Editar
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -1570,6 +1628,15 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
         onSelectImage={(imageUrl) => updateField('coverImage', imageUrl)}
         onClose={() => setShowCoverGalleryModal(false)}
         password={password}
+      />
+
+      {/* Image Editor Modal */}
+      <ImageEditor
+        isOpen={showImageEditor}
+        onClose={() => setShowImageEditor(false)}
+        imageUrl={imageToEdit}
+        onSave={handleImageEditorSave}
+        aspectRatio={editingImageType === 'cover' ? 'cover' : 'square'}
       />
     </div>
   );

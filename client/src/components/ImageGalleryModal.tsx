@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from "react";
-import { X, Upload, Check, Trash2 } from "lucide-react";
+import { X, Upload, Check, Trash2, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import ImageEditor from "./ImageEditor";
 
 interface ImageGalleryModalProps {
   isOpen: boolean;
@@ -22,6 +23,8 @@ export default function ImageGalleryModal({ isOpen, currentImage, onSelectImage,
   const [selectedImage, setSelectedImage] = useState<string>(currentImage || '');
   const [uploading, setUploading] = useState(false);
   const [deletingImages, setDeletingImages] = useState<Set<string>>(new Set());
+  const [showEditor, setShowEditor] = useState(false);
+  const [imageToEdit, setImageToEdit] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -221,13 +224,30 @@ export default function ImageGalleryModal({ isOpen, currentImage, onSelectImage,
       return;
     }
 
-    setUploading(true);
-    uploadMutation.mutate(file);
+    // Create temporary URL for editor
+    const tempUrl = URL.createObjectURL(file);
+    setImageToEdit(tempUrl);
+    setShowEditor(true);
     
     // Clear both inputs so same file can be selected again
     event.target.value = '';
     if (fileInputRef.current) fileInputRef.current.value = '';
     if (cameraInputRef.current) cameraInputRef.current.value = '';
+  };
+
+  const handleEditImage = (imageUrl: string) => {
+    setImageToEdit(imageUrl);
+    setShowEditor(true);
+  };
+
+  const handleEditorSave = (editedImageUrl: string) => {
+    setSelectedImage(editedImageUrl);
+    queryClient.invalidateQueries({ queryKey: ['/api/gallery'] });
+    setShowEditor(false);
+    toast({
+      title: "Imagen editada",
+      description: "La imagen se ha guardado con los cambios aplicados"
+    });
   };
 
   const handleSelectImage = () => {
@@ -409,14 +429,30 @@ export default function ImageGalleryModal({ isOpen, currentImage, onSelectImage,
                     loading="lazy"
                   />
                   
-                  {/* Delete button */}
-                  <button
-                    onClick={(e) => handleDeleteImage(image.filename, e)}
-                    disabled={deletingImages.has(image.filename)}
-                    className="absolute top-2 right-2 p-1.5 bg-red-500 rounded-full text-white hover:bg-red-600 transition-all opacity-0 group-hover:opacity-100 z-10"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </button>
+                  {/* Action buttons */}
+                  <div className="absolute top-2 right-2 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                    {/* Edit button */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditImage(image.url);
+                      }}
+                      className="p-1.5 bg-blue-500 rounded-full text-white hover:bg-blue-600 transition-all"
+                      title="Editar imagen"
+                    >
+                      <Edit className="w-3 h-3" />
+                    </button>
+                    
+                    {/* Delete button */}
+                    <button
+                      onClick={(e) => handleDeleteImage(image.filename, e)}
+                      disabled={deletingImages.has(image.filename)}
+                      className="p-1.5 bg-red-500 rounded-full text-white hover:bg-red-600 transition-all"
+                      title="Eliminar imagen"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </div>
 
                   {selectedImage === image.url && (
                     <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
@@ -462,6 +498,15 @@ export default function ImageGalleryModal({ isOpen, currentImage, onSelectImage,
           </div>
         </div>
       </div>
+
+      {/* Image Editor Modal */}
+      <ImageEditor
+        isOpen={showEditor}
+        onClose={() => setShowEditor(false)}
+        imageUrl={imageToEdit}
+        onSave={handleEditorSave}
+        aspectRatio="square"
+      />
     </div>
   );
 }
