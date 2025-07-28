@@ -87,6 +87,11 @@ Preferred communication style: Simple, everyday language.
 - **Julio 28, 2025**: Actualizado esquema de base de datos - todos los campos sociales ahora son JSON arrays de SocialLink[]
 - **Julio 28, 2025**: Editor de contactos completamente renovado con secciones dedicadas para cada plataforma social
 - **Julio 28, 2025**: Página de contacto actualizada para mostrar múltiples enlaces con numeración automática cuando hay más de uno
+- **Julio 28, 2025**: EXTENSIÓN COMPLETA - Sistema múltiples enlaces extendido a TODOS los campos de información básica (teléfono, email, WhatsApp, sitio web)
+- **Julio 28, 2025**: Migración completa de base de datos - todos los campos de contacto básico ahora usan arrays JSON de SocialLink[]
+- **Julio 28, 2025**: Editor de contactos renovado con secciones dedicadas para cada tipo de información básica con botones agregar/eliminar
+- **Julio 28, 2025**: Implementado sistema de labels personalizados y numeración automática para todos los campos básicos de contacto
+- **Julio 28, 2025**: Migración automática de datos existentes - 26 contactos actualizados de formato texto a arrays JSON
 - **Julio 16, 2025**: Implementado sistema completo de administración con panel de admin en /edit
 - **Julio 16, 2025**: Añadido sistema de autenticación con contraseña "CamisasWenas.!" para admin básico
 - **Julio 16, 2025**: Creado sistema de rutas dinámicas - cada contacto tiene campo "ruta" para generar URLs personalizadas

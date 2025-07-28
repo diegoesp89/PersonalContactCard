@@ -14,14 +14,26 @@ export async function seedDatabase() {
   await db.insert(contacts).values({
     name: "Cristian Alfaro Sepúlveda",
     title: "ℂ𝕒𝕤.ℂ𝕣𝕥",
-    phone: "+569 8230 6759",
-    email: "crt.cas@gmail.com",
-    whatsapp: "+56982306759",
-    instagram: "cashirts_camisas_a_medida",
-    tiktok: "",
-    linkedin: "",
-    telegram: "",
-    website: "https://www.cashirts.cl",
+    phone: JSON.stringify([
+      { id: "1", url: "+569 8230 6759", label: "Celular Principal" }
+    ]),
+    email: JSON.stringify([
+      { id: "1", url: "crt.cas@gmail.com", label: "Email Principal" }
+    ]),
+    whatsapp: JSON.stringify([
+      { id: "1", url: "+56982306759", label: "WhatsApp Principal" }
+    ]),
+    instagram: JSON.stringify([
+      { id: "1", url: "cashirts_camisas_a_medida", label: "" }
+    ]),
+    tiktok: JSON.stringify([]),
+    linkedin: JSON.stringify([]),
+    telegram: JSON.stringify([]),
+    youtube: JSON.stringify([]),
+    facebook: JSON.stringify([]),
+    website: JSON.stringify([
+      { id: "1", url: "https://www.cashirts.cl", label: "Sitio Web CAS" }
+    ]),
     profileImage: "",
     officeAddress: "Av. Las Condes 123, Las Condes, Santiago",
     bankName: "Mercado Pago y BCI",

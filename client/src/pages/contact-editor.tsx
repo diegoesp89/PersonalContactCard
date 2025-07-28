@@ -86,16 +86,16 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
   const [formData, setFormData] = useState<Contact>({
     name: contact?.name || "",
     title: contact?.title || "",
-    phone: contact?.phone || "",
-    email: contact?.email || "",
-    whatsapp: contact?.whatsapp || "",
+    phone: contact?.phone || "[]",
+    email: contact?.email || "[]",
+    whatsapp: contact?.whatsapp || "[]",
     instagram: contact?.instagram || "[]",
     tiktok: contact?.tiktok || "[]",
     linkedin: contact?.linkedin || "[]",
     telegram: contact?.telegram || "[]",
     youtube: contact?.youtube || "[]",
     facebook: contact?.facebook || "[]",
-    website: contact?.website || "",
+    website: contact?.website || "[]",
     profileImage: contact?.profileImage || "",
     officeAddress: contact?.officeAddress || "",
     bankName: contact?.bankName || "",
@@ -111,6 +111,10 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
   });
 
   const [banks, setBanks] = useState<Bank[]>([]);
+  const [phoneLinks, setPhoneLinks] = useState<SocialLink[]>([]);
+  const [emailLinks, setEmailLinks] = useState<SocialLink[]>([]);
+  const [whatsappLinks, setWhatsappLinks] = useState<SocialLink[]>([]);
+  const [websiteLinks, setWebsiteLinks] = useState<SocialLink[]>([]);
   const [instagramLinks, setInstagramLinks] = useState<SocialLink[]>([]);
   const [tiktokLinks, setTiktokLinks] = useState<SocialLink[]>([]);
   const [linkedinLinks, setLinkedinLinks] = useState<SocialLink[]>([]);
@@ -127,6 +131,46 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
       }
     }
   }, [formData.banks]);
+
+  useEffect(() => {
+    if (formData.phone) {
+      try {
+        setPhoneLinks(JSON.parse(formData.phone));
+      } catch (error) {
+        setPhoneLinks([]);
+      }
+    }
+  }, [formData.phone]);
+
+  useEffect(() => {
+    if (formData.email) {
+      try {
+        setEmailLinks(JSON.parse(formData.email));
+      } catch (error) {
+        setEmailLinks([]);
+      }
+    }
+  }, [formData.email]);
+
+  useEffect(() => {
+    if (formData.whatsapp) {
+      try {
+        setWhatsappLinks(JSON.parse(formData.whatsapp));
+      } catch (error) {
+        setWhatsappLinks([]);
+      }
+    }
+  }, [formData.whatsapp]);
+
+  useEffect(() => {
+    if (formData.website) {
+      try {
+        setWebsiteLinks(JSON.parse(formData.website));
+      } catch (error) {
+        setWebsiteLinks([]);
+      }
+    }
+  }, [formData.website]);
 
   useEffect(() => {
     if (formData.youtube) {
@@ -275,6 +319,110 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
     );
     setBanks(updatedBanks);
     setFormData(prev => ({ ...prev, banks: JSON.stringify(updatedBanks) }));
+  };
+
+  // Phone links functions
+  const addPhoneLink = () => {
+    const newLink: SocialLink = {
+      id: Date.now().toString(),
+      url: "",
+      label: ""
+    };
+    const updatedLinks = [...phoneLinks, newLink];
+    setPhoneLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, phone: JSON.stringify(updatedLinks) }));
+  };
+
+  const removePhoneLink = (linkId: string) => {
+    const updatedLinks = phoneLinks.filter(link => link.id !== linkId);
+    setPhoneLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, phone: JSON.stringify(updatedLinks) }));
+  };
+
+  const updatePhoneLink = (linkId: string, field: keyof SocialLink, value: string) => {
+    const updatedLinks = phoneLinks.map(link =>
+      link.id === linkId ? { ...link, [field]: value } : link
+    );
+    setPhoneLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, phone: JSON.stringify(updatedLinks) }));
+  };
+
+  // Email links functions
+  const addEmailLink = () => {
+    const newLink: SocialLink = {
+      id: Date.now().toString(),
+      url: "",
+      label: ""
+    };
+    const updatedLinks = [...emailLinks, newLink];
+    setEmailLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, email: JSON.stringify(updatedLinks) }));
+  };
+
+  const removeEmailLink = (linkId: string) => {
+    const updatedLinks = emailLinks.filter(link => link.id !== linkId);
+    setEmailLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, email: JSON.stringify(updatedLinks) }));
+  };
+
+  const updateEmailLink = (linkId: string, field: keyof SocialLink, value: string) => {
+    const updatedLinks = emailLinks.map(link =>
+      link.id === linkId ? { ...link, [field]: value } : link
+    );
+    setEmailLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, email: JSON.stringify(updatedLinks) }));
+  };
+
+  // WhatsApp links functions
+  const addWhatsappLink = () => {
+    const newLink: SocialLink = {
+      id: Date.now().toString(),
+      url: "",
+      label: ""
+    };
+    const updatedLinks = [...whatsappLinks, newLink];
+    setWhatsappLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, whatsapp: JSON.stringify(updatedLinks) }));
+  };
+
+  const removeWhatsappLink = (linkId: string) => {
+    const updatedLinks = whatsappLinks.filter(link => link.id !== linkId);
+    setWhatsappLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, whatsapp: JSON.stringify(updatedLinks) }));
+  };
+
+  const updateWhatsappLink = (linkId: string, field: keyof SocialLink, value: string) => {
+    const updatedLinks = whatsappLinks.map(link =>
+      link.id === linkId ? { ...link, [field]: value } : link
+    );
+    setWhatsappLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, whatsapp: JSON.stringify(updatedLinks) }));
+  };
+
+  // Website links functions
+  const addWebsiteLink = () => {
+    const newLink: SocialLink = {
+      id: Date.now().toString(),
+      url: "",
+      label: ""
+    };
+    const updatedLinks = [...websiteLinks, newLink];
+    setWebsiteLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, website: JSON.stringify(updatedLinks) }));
+  };
+
+  const removeWebsiteLink = (linkId: string) => {
+    const updatedLinks = websiteLinks.filter(link => link.id !== linkId);
+    setWebsiteLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, website: JSON.stringify(updatedLinks) }));
+  };
+
+  const updateWebsiteLink = (linkId: string, field: keyof SocialLink, value: string) => {
+    const updatedLinks = websiteLinks.map(link =>
+      link.id === linkId ? { ...link, [field]: value } : link
+    );
+    setWebsiteLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, website: JSON.stringify(updatedLinks) }));
   };
 
   // Instagram links functions
@@ -594,45 +742,223 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                   className="bg-slate-800/50 border-slate-600 text-slate-100"
                 />
               </div>
-              <div>
-                <Label htmlFor="email" className="text-slate-200">Email *</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => updateField("email", e.target.value)}
-                  className="bg-slate-800/50 border-slate-600 text-slate-100"
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="phone" className="text-slate-200">Teléfono</Label>
-                <Input
-                  id="phone"
-                  value={formData.phone}
-                  onChange={(e) => updateField("phone", e.target.value)}
-                  className="bg-slate-800/50 border-slate-600 text-slate-100"
-                />
-              </div>
-              <div>
-                <Label htmlFor="whatsapp" className="text-slate-200">WhatsApp</Label>
-                <Input
-                  id="whatsapp"
-                  value={formData.whatsapp}
-                  onChange={(e) => updateField("whatsapp", e.target.value)}
-                  className="bg-slate-800/50 border-slate-600 text-slate-100"
-                />
-              </div>
-              <div>
-                <Label htmlFor="website" className="text-slate-200">Sitio Web</Label>
-                <Input
-                  id="website"
-                  value={formData.website}
-                  onChange={(e) => updateField("website", e.target.value)}
-                  className="bg-slate-800/50 border-slate-600 text-slate-100"
-                  placeholder="https://ejemplo.com"
-                />
-              </div>
+            </CardContent>
+          </Card>
+
+          {/* Phone Links */}
+          <Card className="glass-effect border-slate-700">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-slate-100">Teléfonos</CardTitle>
+              <Button type="button" onClick={addPhoneLink} variant="outline" size="sm">
+                <Plus className="w-4 h-4 mr-2" />
+                Agregar Teléfono
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {phoneLinks.map((link, index) => (
+                <div key={link.id} className="p-4 border border-slate-600 rounded-lg space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-slate-200 font-medium">Teléfono {index + 1}</h4>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removePhoneLink(link.id)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-slate-200">Número de teléfono</Label>
+                      <Input
+                        value={link.url}
+                        onChange={(e) => updatePhoneLink(link.id, "url", e.target.value)}
+                        className="bg-slate-800/50 border-slate-600 text-slate-100"
+                        placeholder="+56912345678"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-slate-200">Nombre del teléfono (opcional)</Label>
+                      <Input
+                        value={link.label || ""}
+                        onChange={(e) => updatePhoneLink(link.id, "label", e.target.value)}
+                        className="bg-slate-800/50 border-slate-600 text-slate-100"
+                        placeholder="Teléfono personal"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {phoneLinks.length === 0 && (
+                <div className="text-center py-8 text-slate-400">
+                  <p>No hay teléfonos agregados</p>
+                  <p className="text-sm">Usa el botón "Agregar Teléfono" para añadir uno</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Email Links */}
+          <Card className="glass-effect border-slate-700">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-slate-100">Emails</CardTitle>
+              <Button type="button" onClick={addEmailLink} variant="outline" size="sm">
+                <Plus className="w-4 h-4 mr-2" />
+                Agregar Email
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {emailLinks.map((link, index) => (
+                <div key={link.id} className="p-4 border border-slate-600 rounded-lg space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-slate-200 font-medium">Email {index + 1}</h4>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeEmailLink(link.id)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-slate-200">Dirección de email</Label>
+                      <Input
+                        type="email"
+                        value={link.url}
+                        onChange={(e) => updateEmailLink(link.id, "url", e.target.value)}
+                        className="bg-slate-800/50 border-slate-600 text-slate-100"
+                        placeholder="correo@ejemplo.com"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-slate-200">Nombre del email (opcional)</Label>
+                      <Input
+                        value={link.label || ""}
+                        onChange={(e) => updateEmailLink(link.id, "label", e.target.value)}
+                        className="bg-slate-800/50 border-slate-600 text-slate-100"
+                        placeholder="Email de trabajo"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {emailLinks.length === 0 && (
+                <div className="text-center py-8 text-slate-400">
+                  <p>No hay emails agregados</p>
+                  <p className="text-sm">Usa el botón "Agregar Email" para añadir uno</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* WhatsApp Links */}
+          <Card className="glass-effect border-slate-700">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-slate-100">WhatsApp</CardTitle>
+              <Button type="button" onClick={addWhatsappLink} variant="outline" size="sm">
+                <Plus className="w-4 h-4 mr-2" />
+                Agregar WhatsApp
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {whatsappLinks.map((link, index) => (
+                <div key={link.id} className="p-4 border border-slate-600 rounded-lg space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-slate-200 font-medium">WhatsApp {index + 1}</h4>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeWhatsappLink(link.id)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-slate-200">Número de WhatsApp</Label>
+                      <Input
+                        value={link.url}
+                        onChange={(e) => updateWhatsappLink(link.id, "url", e.target.value)}
+                        className="bg-slate-800/50 border-slate-600 text-slate-100"
+                        placeholder="+56912345678"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-slate-200">Nombre del WhatsApp (opcional)</Label>
+                      <Input
+                        value={link.label || ""}
+                        onChange={(e) => updateWhatsappLink(link.id, "label", e.target.value)}
+                        className="bg-slate-800/50 border-slate-600 text-slate-100"
+                        placeholder="WhatsApp personal"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {whatsappLinks.length === 0 && (
+                <div className="text-center py-8 text-slate-400">
+                  <p>No hay números de WhatsApp agregados</p>
+                  <p className="text-sm">Usa el botón "Agregar WhatsApp" para añadir uno</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Website Links */}
+          <Card className="glass-effect border-slate-700">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-slate-100">Sitios Web</CardTitle>
+              <Button type="button" onClick={addWebsiteLink} variant="outline" size="sm">
+                <Plus className="w-4 h-4 mr-2" />
+                Agregar Sitio Web
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {websiteLinks.map((link, index) => (
+                <div key={link.id} className="p-4 border border-slate-600 rounded-lg space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-slate-200 font-medium">Sitio Web {index + 1}</h4>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeWebsiteLink(link.id)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-slate-200">URL del sitio web</Label>
+                      <Input
+                        value={link.url}
+                        onChange={(e) => updateWebsiteLink(link.id, "url", e.target.value)}
+                        className="bg-slate-800/50 border-slate-600 text-slate-100"
+                        placeholder="https://ejemplo.com"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-slate-200">Nombre del sitio web (opcional)</Label>
+                      <Input
+                        value={link.label || ""}
+                        onChange={(e) => updateWebsiteLink(link.id, "label", e.target.value)}
+                        className="bg-slate-800/50 border-slate-600 text-slate-100"
+                        placeholder="Mi sitio web"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {websiteLinks.length === 0 && (
+                <div className="text-center py-8 text-slate-400">
+                  <p>No hay sitios web agregados</p>
+                  <p className="text-sm">Usa el botón "Agregar Sitio Web" para añadir uno</p>
+                </div>
+              )}
             </CardContent>
           </Card>
 

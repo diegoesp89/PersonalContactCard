@@ -425,6 +425,10 @@ Correo: ${bank.email}`;
     }
   };
   
+  const phoneLinks: SocialLink[] = contact?.phone ? parseLinks(contact.phone) : [];
+  const emailLinks: SocialLink[] = contact?.email ? parseLinks(contact.email) : [];
+  const whatsappLinks: SocialLink[] = contact?.whatsapp ? parseLinks(contact.whatsapp) : [];
+  const websiteLinks: SocialLink[] = contact?.website ? parseLinks(contact.website) : [];
   const instagramLinks: SocialLink[] = contact?.instagram ? parseLinks(contact.instagram) : [];
   const tiktokLinks: SocialLink[] = contact?.tiktok ? parseLinks(contact.tiktok) : [];
   const linkedinLinks: SocialLink[] = contact?.linkedin ? parseLinks(contact.linkedin) : [];
@@ -635,9 +639,10 @@ Correo: ${bank.email}`;
             {/* Contact Information */}
             <div className="space-y-4">
               {/* WhatsApp */}
-              {contact.whatsapp && (
+              {whatsappLinks.map((whatsappLink, index) => (
                 <a
-                  href={getWhatsAppUrl(contact.whatsapp)}
+                  key={`whatsapp-${whatsappLink.id}`}
+                  href={getWhatsAppUrl(whatsappLink.url)}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => trackEvent('whatsapp_click')}
@@ -647,17 +652,20 @@ Correo: ${bank.email}`;
                     <Phone className="text-white w-5 h-5" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-slate-100 font-semibold">WhatsApp</h3>
-                    <p className="text-slate-400 text-sm">{contact.whatsapp}</p>
+                    <h3 className="text-slate-100 font-semibold">
+                      {whatsappLink.label || `WhatsApp${whatsappLinks.length > 1 ? ` ${index + 1}` : ''}`}
+                    </h3>
+                    <p className="text-slate-400 text-sm">{whatsappLink.url}</p>
                   </div>
                   <ExternalLink className="text-slate-500 w-4 h-4" />
                 </a>
-              )}
+              ))}
 
               {/* Phone */}
-              {contact.phone && (
+              {phoneLinks.map((phoneLink, index) => (
                 <a
-                  href={getTelUrl(contact.phone)}
+                  key={`phone-${phoneLink.id}`}
+                  href={getTelUrl(phoneLink.url)}
                   onClick={() => trackEvent('phone_click')}
                   className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
                 >
@@ -665,28 +673,35 @@ Correo: ${bank.email}`;
                     <Phone className="text-white w-5 h-5" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-slate-100 font-semibold">Teléfono</h3>
-                    <p className="text-slate-400 text-sm">{contact.phone}</p>
+                    <h3 className="text-slate-100 font-semibold">
+                      {phoneLink.label || `Teléfono${phoneLinks.length > 1 ? ` ${index + 1}` : ''}`}
+                    </h3>
+                    <p className="text-slate-400 text-sm">{phoneLink.url}</p>
                   </div>
                   <ExternalLink className="text-slate-500 w-4 h-4" />
                 </a>
-              )}
+              ))}
 
               {/* Email */}
-              <a
-                href={getEmailUrl(contact.email)}
-                onClick={() => trackEvent('email_click')}
-                className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
-              >
-                <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mr-4 shadow-md">
-                  <Mail className="text-white w-5 h-5" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-slate-100 font-semibold">Correo</h3>
-                  <p className="text-slate-400 text-sm">{contact.email}</p>
-                </div>
-                <ExternalLink className="text-slate-500 w-4 h-4" />
-              </a>
+              {emailLinks.map((emailLink, index) => (
+                <a
+                  key={`email-${emailLink.id}`}
+                  href={getEmailUrl(emailLink.url)}
+                  onClick={() => trackEvent('email_click')}
+                  className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-red-500/10 hover:border-red-500/30"
+                >
+                  <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center mr-4 shadow-md">
+                    <Mail className="text-white w-5 h-5" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-slate-100 font-semibold">
+                      {emailLink.label || `Email${emailLinks.length > 1 ? ` ${index + 1}` : ''}`}
+                    </h3>
+                    <p className="text-slate-400 text-sm">{emailLink.url}</p>
+                  </div>
+                  <ExternalLink className="text-slate-500 w-4 h-4" />
+                </a>
+              ))}
 
               {/* Instagram */}
               {instagramLinks.map((instagramLink, index) => (
@@ -827,9 +842,10 @@ Correo: ${bank.email}`;
               ))}
 
               {/* Website */}
-              {contact.website && (
+              {websiteLinks.map((websiteLink, index) => (
                 <a
-                  href={contact.website}
+                  key={`website-${websiteLink.id}`}
+                  href={websiteLink.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => trackEvent('website_click')}
@@ -839,12 +855,14 @@ Correo: ${bank.email}`;
                     <Globe className="text-white w-5 h-5" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-slate-100 font-semibold">Sitio Web</h3>
-                    <p className="text-slate-400 text-sm">{contact.website}</p>
+                    <h3 className="text-slate-100 font-semibold">
+                      {websiteLink.label || `Sitio Web${websiteLinks.length > 1 ? ` ${index + 1}` : ''}`}
+                    </h3>
+                    <p className="text-slate-400 text-sm">{websiteLink.url}</p>
                   </div>
                   <ExternalLink className="text-slate-500 w-4 h-4" />
                 </a>
-              )}
+              ))}
 
               {/* Office Address */}
               {contact.officeAddress && (

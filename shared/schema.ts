@@ -6,16 +6,16 @@ export const contacts = pgTable("contacts", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   title: text("title").notNull(),
-  phone: text("phone").notNull(),
-  email: text("email").notNull(),
-  whatsapp: text("whatsapp").notNull(),
+  phone: text("phone").notNull().default("[]"), // JSON string of SocialLink[]
+  email: text("email").notNull().default("[]"), // JSON string of SocialLink[]
+  whatsapp: text("whatsapp").notNull().default("[]"), // JSON string of SocialLink[]
   instagram: text("instagram").notNull().default("[]"), // JSON string of SocialLink[]
   tiktok: text("tiktok").notNull().default("[]"), // JSON string of SocialLink[]
   linkedin: text("linkedin").notNull().default("[]"), // JSON string of SocialLink[]
   telegram: text("telegram").notNull().default("[]"), // JSON string of SocialLink[]
   youtube: text("youtube").notNull().default("[]"), // JSON string of SocialLink[]
   facebook: text("facebook").notNull().default("[]"), // JSON string of SocialLink[]
-  website: text("website").notNull(),
+  website: text("website").notNull().default("[]"), // JSON string of SocialLink[]
   profileImage: text("profile_image").notNull().default(""),
   officeAddress: text("office_address").notNull().default(""),
   bankName: text("bank_name").notNull(),
