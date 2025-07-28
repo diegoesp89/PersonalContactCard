@@ -16,7 +16,7 @@ import {
   QrCode,
   X,
 } from "lucide-react";
-import { FaTiktok, FaLinkedin, FaTelegram } from "react-icons/fa";
+import { FaTiktok, FaLinkedin, FaTelegram, FaYoutube, FaFacebook } from "react-icons/fa";
 import ImageModal from "@/components/ImageModal";
 
 interface Contact {
@@ -30,6 +30,8 @@ interface Contact {
   tiktok: string;
   linkedin: string;
   telegram: string;
+  youtube: string; // JSON string of SocialLink[]
+  facebook: string; // JSON string of SocialLink[]
   website: string;
   profileImage: string;
   officeAddress: string;
@@ -53,6 +55,12 @@ interface Bank {
   rut: string;
   email: string;
   logo?: string;
+}
+
+interface SocialLink {
+  id: string;
+  url: string;
+  label?: string;
 }
 
 export default function ContactPage() {
@@ -364,6 +372,18 @@ Correo: ${bank.email}`;
     return `https://t.me/${cleanUsername}`;
   };
 
+  const getYoutubeUrl = (url: string) => {
+    // If it's already a full URL, return as is, otherwise construct it
+    if (url.startsWith('http')) return url;
+    return `https://youtube.com/${url.startsWith('@') ? url : '@' + url}`;
+  };
+
+  const getFacebookUrl = (url: string) => {
+    // If it's already a full URL, return as is, otherwise construct it
+    if (url.startsWith('http')) return url;
+    return `https://facebook.com/${url}`;
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -394,8 +414,26 @@ Correo: ${bank.email}`;
     );
   }
 
-  // Parse banks from JSON
+  // Parse banks and social links from JSON
   const banks: Bank[] = contact?.banks ? JSON.parse(contact.banks) : [];
+  const youtubeLinks: SocialLink[] = contact?.youtube ? (
+    (() => {
+      try {
+        return JSON.parse(contact.youtube);
+      } catch {
+        return [];
+      }
+    })()
+  ) : [];
+  const facebookLinks: SocialLink[] = contact?.facebook ? (
+    (() => {
+      try {
+        return JSON.parse(contact.facebook);
+      } catch {
+        return [];
+      }
+    })()
+  ) : [];
 
 
 
@@ -733,6 +771,52 @@ Correo: ${bank.email}`;
                 </a>
               )}
 
+              {/* YouTube */}
+              {youtubeLinks.map((youtubeLink, index) => (
+                <a
+                  key={`youtube-${youtubeLink.id}`}
+                  href={getYoutubeUrl(youtubeLink.url)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackEvent('youtube_click')}
+                  className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-red-500/10 hover:border-red-500/30"
+                >
+                  <div className="w-12 h-12 bg-gradient-to-br from-red-600 to-red-800 rounded-xl flex items-center justify-center mr-4 shadow-md">
+                    <FaYoutube className="text-white w-5 h-5" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-slate-100 font-semibold">
+                      {youtubeLink.label || `YouTube${youtubeLinks.length > 1 ? ` ${index + 1}` : ''}`}
+                    </h3>
+                    <p className="text-slate-400 text-sm">{youtubeLink.url}</p>
+                  </div>
+                  <ExternalLink className="text-slate-500 w-4 h-4" />
+                </a>
+              ))}
+
+              {/* Facebook */}
+              {facebookLinks.map((facebookLink, index) => (
+                <a
+                  key={`facebook-${facebookLink.id}`}
+                  href={getFacebookUrl(facebookLink.url)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackEvent('facebook_click')}
+                  className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-600/10 hover:border-blue-600/30"
+                >
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center mr-4 shadow-md">
+                    <FaFacebook className="text-white w-5 h-5" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-slate-100 font-semibold">
+                      {facebookLink.label || `Facebook${facebookLinks.length > 1 ? ` ${index + 1}` : ''}`}
+                    </h3>
+                    <p className="text-slate-400 text-sm">{facebookLink.url}</p>
+                  </div>
+                  <ExternalLink className="text-slate-500 w-4 h-4" />
+                </a>
+              ))}
+
               {/* Website */}
               {contact.website && (
                 <a
@@ -740,7 +824,7 @@ Correo: ${bank.email}`;
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => trackEvent('website_click')}
-                  className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-500/30"
+                  className="contact-item flex items-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] block transition-all duration-300 hover:bg-emerald-500/10 hover:border-emerald-500/30"
                 >
                   <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-xl flex items-center justify-center mr-4 shadow-md">
                     <Globe className="text-white w-5 h-5" />

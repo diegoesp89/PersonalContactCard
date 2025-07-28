@@ -31,6 +31,8 @@ interface Contact {
   tiktok: string;
   linkedin: string;
   telegram: string;
+  youtube: string;
+  facebook: string;
   website: string;
   profileImage: string;
   officeAddress: string;
@@ -55,6 +57,12 @@ interface Bank {
   rut: string;
   email: string;
   logo?: string;
+}
+
+interface SocialLink {
+  id: string;
+  url: string;
+  label?: string;
 }
 
 interface ContactEditorProps {
@@ -85,6 +93,8 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
     tiktok: contact?.tiktok || "",
     linkedin: contact?.linkedin || "",
     telegram: contact?.telegram || "",
+    youtube: contact?.youtube || "[]",
+    facebook: contact?.facebook || "[]",
     website: contact?.website || "",
     profileImage: contact?.profileImage || "",
     officeAddress: contact?.officeAddress || "",
@@ -101,6 +111,8 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
   });
 
   const [banks, setBanks] = useState<Bank[]>([]);
+  const [youtubeLinks, setYoutubeLinks] = useState<SocialLink[]>([]);
+  const [facebookLinks, setFacebookLinks] = useState<SocialLink[]>([]);
 
   useEffect(() => {
     if (formData.banks) {
@@ -111,6 +123,26 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
       }
     }
   }, [formData.banks]);
+
+  useEffect(() => {
+    if (formData.youtube) {
+      try {
+        setYoutubeLinks(JSON.parse(formData.youtube));
+      } catch (error) {
+        setYoutubeLinks([]);
+      }
+    }
+  }, [formData.youtube]);
+
+  useEffect(() => {
+    if (formData.facebook) {
+      try {
+        setFacebookLinks(JSON.parse(formData.facebook));
+      } catch (error) {
+        setFacebookLinks([]);
+      }
+    }
+  }, [formData.facebook]);
 
   const updateField = (field: keyof Contact, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -199,6 +231,58 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
     );
     setBanks(updatedBanks);
     setFormData(prev => ({ ...prev, banks: JSON.stringify(updatedBanks) }));
+  };
+
+  // YouTube links functions
+  const addYoutubeLink = () => {
+    const newLink: SocialLink = {
+      id: Date.now().toString(),
+      url: "",
+      label: ""
+    };
+    const updatedLinks = [...youtubeLinks, newLink];
+    setYoutubeLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, youtube: JSON.stringify(updatedLinks) }));
+  };
+
+  const removeYoutubeLink = (linkId: string) => {
+    const updatedLinks = youtubeLinks.filter(link => link.id !== linkId);
+    setYoutubeLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, youtube: JSON.stringify(updatedLinks) }));
+  };
+
+  const updateYoutubeLink = (linkId: string, field: keyof SocialLink, value: string) => {
+    const updatedLinks = youtubeLinks.map(link =>
+      link.id === linkId ? { ...link, [field]: value } : link
+    );
+    setYoutubeLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, youtube: JSON.stringify(updatedLinks) }));
+  };
+
+  // Facebook links functions
+  const addFacebookLink = () => {
+    const newLink: SocialLink = {
+      id: Date.now().toString(),
+      url: "",
+      label: ""
+    };
+    const updatedLinks = [...facebookLinks, newLink];
+    setFacebookLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, facebook: JSON.stringify(updatedLinks) }));
+  };
+
+  const removeFacebookLink = (linkId: string) => {
+    const updatedLinks = facebookLinks.filter(link => link.id !== linkId);
+    setFacebookLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, facebook: JSON.stringify(updatedLinks) }));
+  };
+
+  const updateFacebookLink = (linkId: string, field: keyof SocialLink, value: string) => {
+    const updatedLinks = facebookLinks.map(link =>
+      link.id === linkId ? { ...link, [field]: value } : link
+    );
+    setFacebookLinks(updatedLinks);
+    setFormData(prev => ({ ...prev, facebook: JSON.stringify(updatedLinks) }));
   };
 
   const saveMutation = useMutation({
@@ -441,29 +525,148 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                   placeholder="https://ejemplo.com"
                 />
               </div>
-              <div className="md:col-span-2">
-                <Label htmlFor="officeAddress" className="text-slate-200">Dirección de Oficina</Label>
-                <Input
-                  id="officeAddress"
-                  value={formData.officeAddress}
-                  onChange={(e) => updateField("officeAddress", e.target.value)}
-                  className="bg-slate-800/50 border-slate-600 text-slate-100"
-                  placeholder="Ej: Av. Las Condes 123, Las Condes, Santiago"
-                />
-              </div>
-              <div>
-                <Label htmlFor="ruta" className="text-slate-200">Ruta *</Label>
-                <Input
-                  id="ruta"
-                  value={formData.ruta}
-                  onChange={(e) => updateField("ruta", e.target.value)}
-                  className="bg-slate-800/50 border-slate-600 text-slate-100"
-                  placeholder="cristian"
-                  required
-                />
-                <p className="text-xs text-slate-400 mt-1">
-                  La URL será: /{formData.ruta}
-                </p>
+            </CardContent>
+          </Card>
+
+          {/* YouTube Links */}
+          <Card className="glass-effect border-slate-700">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-slate-100">YouTube</CardTitle>
+              <Button type="button" onClick={addYoutubeLink} variant="outline" size="sm">
+                <Plus className="w-4 h-4 mr-2" />
+                Agregar Canal
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {youtubeLinks.map((link, index) => (
+                <div key={link.id} className="p-4 border border-slate-600 rounded-lg space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-slate-200 font-medium">Canal {index + 1}</h4>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeYoutubeLink(link.id)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-slate-200">URL del Canal</Label>
+                      <Input
+                        value={link.url}
+                        onChange={(e) => updateYoutubeLink(link.id, "url", e.target.value)}
+                        className="bg-slate-800/50 border-slate-600 text-slate-100"
+                        placeholder="https://youtube.com/@usuario"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-slate-200">Nombre del Canal (opcional)</Label>
+                      <Input
+                        value={link.label || ""}
+                        onChange={(e) => updateYoutubeLink(link.id, "label", e.target.value)}
+                        className="bg-slate-800/50 border-slate-600 text-slate-100"
+                        placeholder="Mi Canal de YouTube"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {youtubeLinks.length === 0 && (
+                <div className="text-center py-8 text-slate-400">
+                  <p>No hay canales de YouTube agregados</p>
+                  <p className="text-sm">Usa el botón "Agregar Canal" para añadir uno</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Facebook Links */}
+          <Card className="glass-effect border-slate-700">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-slate-100">Facebook</CardTitle>
+              <Button type="button" onClick={addFacebookLink} variant="outline" size="sm">
+                <Plus className="w-4 h-4 mr-2" />
+                Agregar Página
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {facebookLinks.map((link, index) => (
+                <div key={link.id} className="p-4 border border-slate-600 rounded-lg space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-slate-200 font-medium">Página {index + 1}</h4>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeFacebookLink(link.id)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-slate-200">URL de la Página</Label>
+                      <Input
+                        value={link.url}
+                        onChange={(e) => updateFacebookLink(link.id, "url", e.target.value)}
+                        className="bg-slate-800/50 border-slate-600 text-slate-100"
+                        placeholder="https://facebook.com/mipagina"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-slate-200">Nombre de la Página (opcional)</Label>
+                      <Input
+                        value={link.label || ""}
+                        onChange={(e) => updateFacebookLink(link.id, "label", e.target.value)}
+                        className="bg-slate-800/50 border-slate-600 text-slate-100"
+                        placeholder="Mi Página de Facebook"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {facebookLinks.length === 0 && (
+                <div className="text-center py-8 text-slate-400">
+                  <p>No hay páginas de Facebook agregadas</p>
+                  <p className="text-sm">Usa el botón "Agregar Página" para añadir una</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Contact Information Card */}
+          <Card className="glass-effect border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-slate-100">Información Adicional</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="md:col-span-2">
+                  <Label htmlFor="officeAddress" className="text-slate-200">Dirección de Oficina</Label>
+                  <Input
+                    id="officeAddress"
+                    value={formData.officeAddress}
+                    onChange={(e) => updateField("officeAddress", e.target.value)}
+                    className="bg-slate-800/50 border-slate-600 text-slate-100"
+                    placeholder="Ej: Av. Las Condes 123, Las Condes, Santiago"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="ruta" className="text-slate-200">Ruta *</Label>
+                  <Input
+                    id="ruta"
+                    value={formData.ruta}
+                    onChange={(e) => updateField("ruta", e.target.value)}
+                    className="bg-slate-800/50 border-slate-600 text-slate-100"
+                    placeholder="cristian"
+                    required
+                  />
+                  <p className="text-xs text-slate-400 mt-1">
+                    La URL será: /{formData.ruta}
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>

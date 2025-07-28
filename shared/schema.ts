@@ -13,6 +13,8 @@ export const contacts = pgTable("contacts", {
   tiktok: text("tiktok").notNull().default(""),
   linkedin: text("linkedin").notNull().default(""),
   telegram: text("telegram").notNull().default(""),
+  youtube: text("youtube").notNull().default("[]"),
+  facebook: text("facebook").notNull().default("[]"),
   website: text("website").notNull(),
   profileImage: text("profile_image").notNull().default(""),
   officeAddress: text("office_address").notNull().default(""),
@@ -45,6 +47,13 @@ export interface Bank {
   rut: string;
   email: string;
   logo?: string;
+}
+
+// Social media link interface for JSON storage
+export interface SocialLink {
+  id: string;
+  url: string;
+  label?: string;
 }
 
 // Keep existing users table
