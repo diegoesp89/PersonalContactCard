@@ -47,6 +47,7 @@ interface Contact {
   ruta: string;
   backgroundColor: string;
   statsPassword: string;
+  defaultLanguage: string;
 
   banks: string;
 }
@@ -114,6 +115,7 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
     ruta: contact?.ruta || "",
     backgroundColor: contact?.backgroundColor || "#1e293b", // Default slate-800
     statsPassword: contact?.statsPassword || "",
+    defaultLanguage: contact?.defaultLanguage || "es",
 
     banks: contact?.banks || "[]"
   });
@@ -857,6 +859,30 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                   </div>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Default Language */}
+          <Card className="glass-effect border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-slate-100">Idioma por Defecto</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Label className="text-slate-200 block mb-2">
+                Selecciona el idioma por defecto para este contacto
+              </Label>
+              <select
+                value={formData.defaultLanguage || 'es'}
+                onChange={(e) => updateField('defaultLanguage', e.target.value)}
+                className="w-full px-3 py-2 bg-slate-800/50 border border-slate-600 rounded-md text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="es">Español</option>
+                <option value="en">English</option>
+                <option value="pt">Português</option>
+              </select>
+              <p className="text-xs text-slate-400 mt-2">
+                Los visitantes verán este idioma por defecto, pero podrán cambiarlo con el botón "Traducir"
+              </p>
             </CardContent>
           </Card>
 

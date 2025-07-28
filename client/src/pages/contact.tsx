@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import { FaTiktok, FaLinkedin, FaTelegram, FaYoutube, FaFacebook } from "react-icons/fa";
 import ImageModal from "@/components/ImageModal";
+import { TranslationProvider, useTranslation } from "@/hooks/useTranslation";
+import { Language, getLanguageName } from "@/utils/translations";
 
 interface Contact {
   id: number;
@@ -43,6 +45,7 @@ interface Contact {
   inDev: string;
   ruta: string;
   backgroundColor: string;
+  defaultLanguage: string;
 
   banks: string; // JSON string of Bank[]
 }
@@ -64,7 +67,9 @@ interface SocialLink {
   label?: string;
 }
 
-export default function ContactPage() {
+// Internal component that uses translations
+function ContactPageContent() {
+  const { t, language, setLanguage } = useTranslation();
   const { toast } = useToast();
   const [showShareModal, setShowShareModal] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
@@ -76,7 +81,7 @@ export default function ContactPage() {
   const [showCASModal, setShowCASModal] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
 
-  // Try to get route parameter from URL
+  // Get route parameter from URL
   const path = window.location.pathname;
   const routeParam = path === "/" || path === "" ? null : path.substring(1);
 
@@ -450,6 +455,52 @@ Correo: ${bank.email}`;
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Translate Button */}
+      <div className="fixed top-4 right-4 z-50">
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="bg-slate-800/80 backdrop-blur-sm border-slate-600 text-slate-100 hover:bg-slate-700/80"
+            >
+              <Globe className="w-4 h-4 mr-2" />
+              {t('translate')}
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700">
+            <DialogHeader>
+              <DialogTitle className="text-slate-100">
+                {t('translate')}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3">
+              <Button
+                variant={language === 'es' ? 'default' : 'outline'}
+                onClick={() => setLanguage('es')}
+                className="w-full justify-start"
+              >
+                🇪🇸 {getLanguageName('es', language)}
+              </Button>
+              <Button
+                variant={language === 'en' ? 'default' : 'outline'}
+                onClick={() => setLanguage('en')}
+                className="w-full justify-start"
+              >
+                🇺🇸 {getLanguageName('en', language)}
+              </Button>
+              <Button
+                variant={language === 'pt' ? 'default' : 'outline'}
+                onClick={() => setLanguage('pt')}
+                className="w-full justify-start"
+              >
+                🇧🇷 {getLanguageName('pt', language)}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+
       {/* Development Banner - Solo se muestra si inDev es "true" */}
       {contact?.inDev === "true" && (
         <div className="bg-amber-500/20 border-b border-amber-500/30 p-3">
@@ -536,7 +587,7 @@ Correo: ${bank.email}`;
                 className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:translate-y-[-2px] shadow-lg"
               >
                 <Download className="w-4 h-4 mr-2" />
-                Guardar Contacto
+                {t('saveContact')}
               </Button>
               
               <Dialog open={showShareModal} onOpenChange={setShowShareModal}>
@@ -546,14 +597,14 @@ Correo: ${bank.email}`;
                     className="flex-1 bg-gradient-to-r from-violet-500 to-violet-600 hover:from-violet-600 hover:to-violet-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:translate-y-[-2px] shadow-lg hover:scale-105"
                   >
                     <Share2 className="w-4 h-4 mr-2" />
-                    Compartir
+                    {t('shareContact')}
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700">
                   <DialogHeader>
                     <DialogTitle className="text-slate-100 text-center flex items-center justify-center gap-2">
                       <Share2 className="w-5 h-5 text-violet-400" />
-                      Compartir Contacto
+                      {t('shareOptions')}
                     </DialogTitle>
                   </DialogHeader>
                   
@@ -572,7 +623,7 @@ Correo: ${bank.email}`;
                           className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white py-3 rounded-xl transition-all duration-300 hover:scale-105"
                         >
                           <QrCode className="w-5 h-5 mr-3" />
-                          Mostrar Código QR
+                          {t('qrCode')}
                         </Button>
                         
                         <Button
@@ -581,7 +632,7 @@ Correo: ${bank.email}`;
                           className="w-full bg-slate-700 border-slate-600 text-slate-100 hover:bg-slate-600 py-3 rounded-xl"
                         >
                           <Copy className="w-5 h-5 mr-3" />
-                          Copiar Enlace
+                          {t('copyLink')}
                         </Button>
                         
                         <Button
@@ -590,7 +641,7 @@ Correo: ${bank.email}`;
                           className="w-full bg-slate-700 border-slate-600 text-slate-100 hover:bg-slate-600 py-3 rounded-xl"
                         >
                           <Share2 className="w-5 h-5 mr-3" />
-                          Compartir Enlace
+                          {t('shareNative')}
                         </Button>
                       </div>
                     </div>
@@ -602,7 +653,7 @@ Correo: ${bank.email}`;
                         variant="ghost"
                         className="self-start text-slate-400 hover:text-slate-100 p-2"
                       >
-                        ← Volver
+                        ← {t('back')}
                       </Button>
 
                       {/* QR Code Display */}
@@ -619,7 +670,7 @@ Correo: ${bank.email}`;
                           />
                         ) : (
                           <div className="w-48 h-48 flex items-center justify-center text-gray-500">
-                            Error al cargar QR
+                            {t('qrError')}
                           </div>
                         )}
                       </div>
@@ -629,7 +680,7 @@ Correo: ${bank.email}`;
                         <h3 className="font-semibold text-slate-100">{contact?.name}</h3>
                         <p className="text-sm text-slate-400">{contact?.title}</p>
                         <p className="text-xs text-slate-500 mt-2">
-                          Escanea el código para acceder al contacto
+                          {t('scanQR')}
                         </p>
                       </div>
 
@@ -642,7 +693,7 @@ Correo: ${bank.email}`;
                           disabled={!qrCodeUrl}
                         >
                           <Download className="w-4 h-4 mr-2" />
-                          Descargar QR
+                          {t('downloadQR')}
                         </Button>
                         
                         <Button
@@ -651,7 +702,7 @@ Correo: ${bank.email}`;
                           className="flex-1 bg-slate-700 border-slate-600 text-slate-100 hover:bg-slate-600"
                         >
                           <Copy className="w-4 h-4 mr-2" />
-                          Copiar Enlace
+                          {t('copyLink')}
                         </Button>
                       </div>
                     </div>
@@ -677,7 +728,7 @@ Correo: ${bank.email}`;
                   </div>
                   <div className="flex-1">
                     <h3 className="text-slate-100 font-semibold">
-                      {whatsappLink.label || `WhatsApp${whatsappLinks.length > 1 ? ` ${index + 1}` : ''}`}
+                      {whatsappLink.label || `${t('whatsapp')}${whatsappLinks.length > 1 ? ` ${index + 1}` : ''}`}
                     </h3>
                     <p className="text-slate-400 text-sm">{whatsappLink.url}</p>
                   </div>
@@ -698,7 +749,7 @@ Correo: ${bank.email}`;
                   </div>
                   <div className="flex-1">
                     <h3 className="text-slate-100 font-semibold">
-                      {phoneLink.label || `Teléfono${phoneLinks.length > 1 ? ` ${index + 1}` : ''}`}
+                      {phoneLink.label || `${t('phone')}${phoneLinks.length > 1 ? ` ${index + 1}` : ''}`}
                     </h3>
                     <p className="text-slate-400 text-sm">{phoneLink.url}</p>
                   </div>
@@ -719,7 +770,7 @@ Correo: ${bank.email}`;
                   </div>
                   <div className="flex-1">
                     <h3 className="text-slate-100 font-semibold">
-                      {emailLink.label || `Email${emailLinks.length > 1 ? ` ${index + 1}` : ''}`}
+                      {emailLink.label || `${t('email')}${emailLinks.length > 1 ? ` ${index + 1}` : ''}`}
                     </h3>
                     <p className="text-slate-400 text-sm">{emailLink.url}</p>
                   </div>
@@ -742,7 +793,7 @@ Correo: ${bank.email}`;
                   </div>
                   <div className="flex-1">
                     <h3 className="text-slate-100 font-semibold">
-                      {instagramLink.label || `Instagram${instagramLinks.length > 1 ? ` ${index + 1}` : ''}`}
+                      {instagramLink.label || `${t('instagram')}${instagramLinks.length > 1 ? ` ${index + 1}` : ''}`}
                     </h3>
                     <p className="text-slate-400 text-sm">@{instagramLink.url.replace(/^@+/, "")}</p>
                   </div>
@@ -765,7 +816,7 @@ Correo: ${bank.email}`;
                   </div>
                   <div className="flex-1">
                     <h3 className="text-slate-100 font-semibold">
-                      {tiktokLink.label || `TikTok${tiktokLinks.length > 1 ? ` ${index + 1}` : ''}`}
+                      {tiktokLink.label || `${t('tiktok')}${tiktokLinks.length > 1 ? ` ${index + 1}` : ''}`}
                     </h3>
                     <p className="text-slate-400 text-sm">@{tiktokLink.url.replace(/^@+/, "")}</p>
                   </div>
@@ -788,7 +839,7 @@ Correo: ${bank.email}`;
                   </div>
                   <div className="flex-1">
                     <h3 className="text-slate-100 font-semibold">
-                      {linkedinLink.label || `LinkedIn${linkedinLinks.length > 1 ? ` ${index + 1}` : ''}`}
+                      {linkedinLink.label || `${t('linkedin')}${linkedinLinks.length > 1 ? ` ${index + 1}` : ''}`}
                     </h3>
                     <p className="text-slate-400 text-sm">{linkedinLink.url}</p>
                   </div>
@@ -811,7 +862,7 @@ Correo: ${bank.email}`;
                   </div>
                   <div className="flex-1">
                     <h3 className="text-slate-100 font-semibold">
-                      {telegramLink.label || `Telegram${telegramLinks.length > 1 ? ` ${index + 1}` : ''}`}
+                      {telegramLink.label || `${t('telegram')}${telegramLinks.length > 1 ? ` ${index + 1}` : ''}`}
                     </h3>
                     <p className="text-slate-400 text-sm">@{telegramLink.url.replace(/^@+/, "")}</p>
                   </div>
@@ -834,7 +885,7 @@ Correo: ${bank.email}`;
                   </div>
                   <div className="flex-1">
                     <h3 className="text-slate-100 font-semibold">
-                      {youtubeLink.label || `YouTube${youtubeLinks.length > 1 ? ` ${index + 1}` : ''}`}
+                      {youtubeLink.label || `${t('youtube')}${youtubeLinks.length > 1 ? ` ${index + 1}` : ''}`}
                     </h3>
                     <p className="text-slate-400 text-sm">{youtubeLink.url}</p>
                   </div>
@@ -857,7 +908,7 @@ Correo: ${bank.email}`;
                   </div>
                   <div className="flex-1">
                     <h3 className="text-slate-100 font-semibold">
-                      {facebookLink.label || `Facebook${facebookLinks.length > 1 ? ` ${index + 1}` : ''}`}
+                      {facebookLink.label || `${t('facebook')}${facebookLinks.length > 1 ? ` ${index + 1}` : ''}`}
                     </h3>
                     <p className="text-slate-400 text-sm">{facebookLink.url}</p>
                   </div>
@@ -880,7 +931,7 @@ Correo: ${bank.email}`;
                   </div>
                   <div className="flex-1">
                     <h3 className="text-slate-100 font-semibold">
-                      {websiteLink.label || `Sitio Web${websiteLinks.length > 1 ? ` ${index + 1}` : ''}`}
+                      {websiteLink.label || `${t('website')}${websiteLinks.length > 1 ? ` ${index + 1}` : ''}`}
                     </h3>
                     <p className="text-slate-400 text-sm">{websiteLink.url}</p>
                   </div>
@@ -895,7 +946,7 @@ Correo: ${bank.email}`;
                     <Building2 className="text-white w-5 h-5" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-slate-100 font-semibold">Oficina</h3>
+                    <h3 className="text-slate-100 font-semibold">{t('officeAddress')}</h3>
                     <p className="text-slate-400 text-sm">{contact.officeAddress}</p>
                   </div>
                 </div>
@@ -907,7 +958,7 @@ Correo: ${bank.email}`;
               <div className="mt-8 space-y-4">
                 <h3 className="text-slate-100 font-semibold flex items-center">
                   <Building2 className="text-emerald-500 mr-2 w-5 h-5" />
-                  Datos de Transferencia
+                  {t('bankingInfo')}
                 </h3>
 
                 {banks.map((bank) => (
@@ -930,34 +981,34 @@ Correo: ${bank.email}`;
                         className="bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20"
                       >
                         <Copy className="w-4 h-4 mr-2" />
-                        Copiar
+                        {t('copy')}
                       </Button>
                     </div>
                     <div className="space-y-3 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-slate-400">Cuenta:</span>
+                        <span className="text-slate-400">{t('bankAccount')}:</span>
                         <span className="text-slate-100 font-medium font-mono">
                           {bank.account}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-400">RUT:</span>
+                        <span className="text-slate-400">{t('rut')}:</span>
                         <span className="text-slate-100 font-medium">
                           {bank.rut}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-400">Tipo de cuenta:</span>
+                        <span className="text-slate-400">{t('accountType')}:</span>
                         <span className="text-slate-100 font-medium">{bank.accountType}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-400">Titular:</span>
+                        <span className="text-slate-400">{t('holder')}:</span>
                         <span className="text-slate-100 font-medium">
                           {bank.holder}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-400">Correo:</span>
+                        <span className="text-slate-400">{t('email')}:</span>
                         <span className="text-slate-100 font-medium">
                           {bank.email}
                         </span>
@@ -1075,5 +1126,33 @@ Correo: ${bank.email}`;
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+// Main component that provides translation context
+export default function ContactPage() {
+  // Try to get route parameter from URL
+  const path = window.location.pathname;
+  const routeParam = path === "/" || path === "" ? null : path.substring(1);
+
+  // Fetch contact data to get default language
+  const { data: contact } = useQuery<Contact>({
+    queryKey: ["/api/contact", routeParam],
+    queryFn: async () => {
+      const response = await fetch(`/api/contact/${routeParam}`);
+      if (!response.ok) {
+        throw new Error("Contact not found");
+      }
+      return response.json();
+    },
+    enabled: !!routeParam,
+  });
+
+  const defaultLanguage = (contact?.defaultLanguage as Language) || 'es';
+
+  return (
+    <TranslationProvider defaultLanguage={defaultLanguage}>
+      <ContactPageContent />
+    </TranslationProvider>
   );
 }

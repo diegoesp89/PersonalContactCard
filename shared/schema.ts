@@ -27,6 +27,7 @@ export const contacts = pgTable("contacts", {
   ruta: text("ruta").notNull().unique(),
   backgroundColor: text("background_color").notNull().default("#1e293b"), // Default slate-800
   statsPassword: text("stats_password"),
+  defaultLanguage: text("default_language").notNull().default("es"), // es, en, pt
 
   banks: text("banks").notNull().default("[]"), // JSON array of bank objects
 });
