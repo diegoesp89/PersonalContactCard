@@ -466,7 +466,7 @@ Correo: ${bank.email}`;
         <div className="w-full max-w-md mx-auto">
           {/* Cover Image */}
           {contact.coverImage && (
-            <div className="w-full h-64 rounded-t-3xl overflow-hidden shadow-lg mb-0">
+            <div className="w-full h-80 rounded-t-3xl overflow-hidden shadow-lg mb-0">
               <img
                 src={contact.coverImage}
                 alt={`Portada de ${contact.name}`}
@@ -483,7 +483,7 @@ Correo: ${bank.email}`;
             <div className="text-center mb-8 relative">
               <div 
                 ref={profileRef}
-                className={`w-48 h-48 rounded-full mx-auto ${contact.coverImage ? '-mt-32' : 'mb-4'} shadow-lg overflow-hidden relative transition-transform duration-300 ease-out cursor-pointer border-4 border-white`}
+                className={`w-48 h-48 rounded-full mx-auto ${contact.coverImage ? '-mt-44' : 'mb-4'} shadow-lg overflow-hidden relative transition-transform duration-300 ease-out cursor-pointer border-4 border-white`}
                 style={{
                   transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
                   transformStyle: 'preserve-3d',
