@@ -53,9 +53,9 @@ Preferred communication style: Simple, everyday language.
 - **Julio 19, 2025**: Implementado sistema de contraseñas específicas por contacto para acceso a estadísticas
 - **Julio 19, 2025**: Campo "statsPassword" agregado al editor de contactos - cada contacto puede tener su propia contraseña de stats
 - **Julio 19, 2025**: Página de analytics acepta tanto contraseñas de admin como contraseñas específicas del contacto
-- **Julio 19, 2025**: Implementado Replit Object Storage para persistencia de imágenes en producción
-- **Julio 19, 2025**: Sistema híbrido: Object Storage en producción, archivos locales como fallback en desarrollo
-- **Julio 19, 2025**: Nuevo endpoint /api/image/:filename para servir imágenes desde almacenamiento persistente
+- **Julio 19, 2025**: Implementado Replit Object Storage para persistencia de imágenes (inicialmente solo producción)
+- **Julio 29, 2025**: ACTUALIZADO - Object Storage ahora activo en development y production como almacenamiento principal
+- **Julio 19, 2025**: Endpoint /api/image/:filename optimizado para servir desde Object Storage con fallback inteligente
 - **Julio 19, 2025**: Implementado sistema completo de logging con ruta /logs
 - **Julio 19, 2025**: Tracking detallado de todas las operaciones: visualizaciones, creación/edición/eliminación de contactos, subida/eliminación de imágenes
 - **Julio 19, 2025**: Página de logs con interfaz web estilo terminal, auto-refresh cada 30 segundos, filtros de cantidad
@@ -112,6 +112,11 @@ Preferred communication style: Simple, everyday language.
 - **Julio 28, 2025**: Editor integrado en galería de imágenes y editor de contactos con botones dedicados
 - **Julio 28, 2025**: Canvas interactivo con arrastrar/posicionar, línea punteada como overlay HTML (no afecta imagen final)
 - **Julio 28, 2025**: Sistema de aspectos ratio automático: square para perfil, cover para imagen de portada
+- **Julio 29, 2025**: MIGRACIÓN COMPLETA A OBJECT STORAGE - Sistema completamente migrado a Replit Object Storage como almacenamiento principal
+- **Julio 29, 2025**: Configurado bucket "casbucket" con migración automática de todas las imágenes existentes al startup
+- **Julio 29, 2025**: Object Storage habilitado para development y production - eliminada dependencia de archivos locales efímeros
+- **Julio 29, 2025**: Sistema híbrido robusto: Object Storage como principal, archivos locales como respaldo para máxima confiabilidad
+- **Julio 29, 2025**: Todas las URLs de imágenes migradas a /api/image/ endpoint que sirve desde Object Storage con fallback local
 - **Julio 29, 2025**: SOLUCIÓN DEFINITIVA - Resuelto permanentemente el problema de imágenes que desaparecían de la galería
 - **Julio 29, 2025**: Implementado sistema de "safety check" automático que detecta caché vacío con archivos físicos presentes
 - **Julio 29, 2025**: Agregado endpoint `/api/gallery/status` para diagnóstico y monitoreo del estado de la galería

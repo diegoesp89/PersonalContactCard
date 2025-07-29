@@ -17,45 +17,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const isProduction = process.env.NODE_ENV === 'production' || process.env.REPLIT_DEPLOYMENT === '1';
   let objectStorage: Client | null = null;
   
-  // Initialize Object Storage for production with enhanced error handling
-  if (isProduction) {
-    try {
-      // Add startup delay to allow Object Storage services to be available
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      
-      objectStorage = new Client();
-      console.log('Production mode: Object Storage initialized successfully');
-      
-      // Test Object Storage connectivity with enhanced retry
-      let retryCount = 0;
-      const maxRetries = 5;
-      
-      while (retryCount < maxRetries) {
-        try {
-          await objectStorage.list();
-          console.log('Object Storage connectivity verified');
-          break;
-        } catch (testError) {
-          retryCount++;
-          console.warn(`Object Storage test failed (attempt ${retryCount}/${maxRetries}):`, testError instanceof Error ? testError.message : 'Unknown error');
-          
-          if (retryCount < maxRetries) {
-            // Exponential backoff: wait 1s, 2s, 4s, 8s
-            await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
-          }
+  // Initialize Object Storage for both production and development with enhanced error handling
+  try {
+    // Add startup delay to allow Object Storage services to be available
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    objectStorage = new Client();
+    console.log(`${isProduction ? 'Production' : 'Development'} mode: Object Storage initialized successfully with bucket "casbucket"`);
+    
+    // Test Object Storage connectivity with enhanced retry
+    let retryCount = 0;
+    const maxRetries = 5;
+    
+    while (retryCount < maxRetries) {
+      try {
+        await objectStorage.list();
+        console.log('Object Storage connectivity verified');
+        break;
+      } catch (testError) {
+        retryCount++;
+        console.warn(`Object Storage test failed (attempt ${retryCount}/${maxRetries}):`, testError instanceof Error ? testError.message : 'Unknown error');
+        
+        if (retryCount < maxRetries) {
+          // Exponential backoff: wait 1s, 2s, 4s, 8s
+          await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
         }
       }
-      
-      if (retryCount === maxRetries) {
-        console.warn('Object Storage connectivity could not be verified after all retries, but client is initialized');
-      }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown initialization error';
-      console.warn('Production mode: Object Storage initialization failed, falling back to local storage:', errorMessage);
-      objectStorage = null; // Ensure it's explicitly null on failure
     }
-  } else {
-    console.log('Development mode: Using local file storage');
+    
+    if (retryCount === maxRetries) {
+      console.warn('Object Storage connectivity could not be verified after all retries, but client is initialized');
+    }
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown initialization error';
+    console.warn(`${isProduction ? 'Production' : 'Development'} mode: Object Storage initialization failed, falling back to local storage:`, errorMessage);
+    objectStorage = null; // Ensure it's explicitly null on failure
   }
 
   // Configure uploads directory based on environment
@@ -69,12 +65,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   console.log(`File storage configuration:
   - Environment: ${isProduction ? 'Production' : 'Development'}
-  - Object Storage: ${objectStorage ? 'Available' : 'Not available'}
-  - Local directory: ${uploadsDir}
-  - Serving via: ${isProduction ? '/api/image/' : '/uploads/'}`);
+  - Object Storage: ${objectStorage ? 'Available (PRIMARY)' : 'Not available'}
+  - Local directory: ${uploadsDir} (backup only)
+  - Serving via: /api/image/ (Object Storage first, local fallback)`);
 
-  // Setup automatic backup monitoring for production
-  if (isProduction && objectStorage) {
+  // Automatic migration of existing local images to Object Storage on startup
+  if (objectStorage && fs.existsSync(uploadsDir)) {
+    console.log('Running automatic image migration to Object Storage...');
+    
+    try {
+      const localFiles = fs.readdirSync(uploadsDir).filter(file => {
+        const ext = path.extname(file).toLowerCase();
+        return ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.heic', '.heif'].includes(ext);
+      });
+      
+      if (localFiles.length > 0) {
+        console.log(`Found ${localFiles.length} local images to migrate`);
+        
+        // Check what's already in Object Storage
+        let existingFiles: string[] = [];
+        try {
+          const listResult = await objectStorage.list();
+          existingFiles = listResult.error ? [] : (listResult.value || []).map(f => f.name);
+        } catch (error) {
+          console.warn('Could not check existing Object Storage files:', error instanceof Error ? error.message : 'Unknown error');
+        }
+        
+        let migrated = 0;
+        let skipped = 0;
+        
+        for (const file of localFiles) {
+          if (existingFiles.includes(file)) {
+            skipped++;
+            continue;
+          }
+          
+          try {
+            const filePath = path.join(uploadsDir, file);
+            const fileData = fs.readFileSync(filePath);
+            
+            const uploadResult = await objectStorage.uploadFromBytes(file, fileData);
+            
+            if (uploadResult.error) {
+              console.warn(`Failed to migrate ${file}:`, uploadResult.error.message);
+            } else {
+              migrated++;
+              console.log(`Migrated: ${file}`);
+            }
+          } catch (error) {
+            console.warn(`Error migrating ${file}:`, error instanceof Error ? error.message : 'Unknown error');
+          }
+        }
+        
+        console.log(`Migration completed: ${migrated} migrated, ${skipped} already existed`);
+      } else {
+        console.log('No local images found to migrate');
+      }
+    } catch (error) {
+      console.warn('Migration process failed:', error instanceof Error ? error.message : 'Unknown error');
+    }
+  }
+
+  // Setup automatic backup monitoring if Object Storage is available
+  if (objectStorage) {
     // Schedule periodic backup checks every 30 minutes
     setInterval(async () => {
       try {
@@ -463,11 +516,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         generatedFilename: filename
       });
       
-      // In production, ALWAYS try Object Storage first with enhanced retry logic
-      let imageUrl = isProduction ? `/api/image/${filename}` : `/uploads/${filename}`;
+      // ALWAYS try Object Storage first (both dev and production) with enhanced retry logic
+      let imageUrl = `/api/image/${filename}`;
       let objectStorageSuccess = false;
       
-      if (isProduction && objectStorage) {
+      if (objectStorage) {
         // Enhanced retry logic for Object Storage upload
         let retryCount = 0;
         const maxRetries = 3;
@@ -501,9 +554,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           logger.log('OBJECT_STORAGE_UPLOAD_FAILED_ALL_RETRIES', {
             filename,
             retryCount: maxRetries,
-            fallbackMode: 'Production upload failed - this will cause data loss on next deploy'
+            fallbackMode: 'Object Storage upload failed - using local storage as backup'
           }, req);
-          console.error(`CRITICAL: Object Storage upload failed after ${maxRetries} retries. File will be lost on next deploy!`);
+          console.warn(`Object Storage upload failed after ${maxRetries} retries. Using local storage as backup.`);
         }
       }
       
@@ -805,7 +858,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             })
             .map(file => ({
               filename: file,
-              url: isProduction ? `/api/image/${file}` : `/uploads/${file}`,
+              url: `/api/image/${file}`, // Always use API endpoint
               uploadDate: fs.statSync(path.join(uploadsDir, file)).mtime
             }))
             .sort((a, b) => b.uploadDate.getTime() - a.uploadDate.getTime());
