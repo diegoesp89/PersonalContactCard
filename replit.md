@@ -125,6 +125,9 @@ Preferred communication style: Simple, everyday language.
 - **Julio 29, 2025**: CRÍTICO - Solucionado problema de imágenes rotas en galería web causado por incompatibilidad de tipos Object Storage
 - **Julio 29, 2025**: Object Storage devuelve Array[Buffer] - implementado sistema de detección y conversión automática a Buffer nativo
 - **Julio 29, 2025**: Todas las imágenes ahora se cargan correctamente desde Object Storage con headers HTTP optimizados
+- **Julio 29, 2025**: CORREGIDO - URLs de imágenes inconsistentes - todas las URLs migradas de /uploads/ a /api/image/ endpoint
+- **Julio 29, 2025**: Actualizada base de datos para usar exclusivamente el endpoint /api/image/ para servir imágenes
+- **Julio 29, 2025**: Solucionado error de clear-cache en galería - implementado almacenamiento persistente de contraseña de admin
 - **Julio 28, 2025**: SISTEMA COMPLETO DE TRADUCCIONES - Implementado soporte para español, portugués e inglés
 - **Julio 28, 2025**: Botón "Traducir" en esquina superior derecha de páginas de contacto con modal que se cierra automáticamente
 - **Julio 28, 2025**: Cada contacto tiene selector de idioma por defecto en editor - campo defaultLanguage agregado a base de datos
