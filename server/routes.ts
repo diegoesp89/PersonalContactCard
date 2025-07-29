@@ -656,7 +656,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
             throw new Error(`Object Storage download failed: ${downloadResult.error.message}`);
           }
           
-          const imageBuffer = downloadResult.value;
+          let imageBuffer: Buffer;
+          const rawData = downloadResult.value as any;
+          
+          // Convert Array to Buffer if necessary (Object Storage returns Array sometimes)
+          if (Array.isArray(rawData) && rawData.length === 1 && Buffer.isBuffer(rawData[0])) {
+            // Handle [Buffer] case
+            imageBuffer = rawData[0];
+          } else if (Array.isArray(rawData)) {
+            // Handle Array of bytes case
+            imageBuffer = Buffer.from(rawData);
+          } else if (rawData instanceof Uint8Array) {
+            imageBuffer = Buffer.from(rawData);
+          } else if (Buffer.isBuffer(rawData)) {
+            imageBuffer = rawData;
+          } else {
+            throw new Error(`Unexpected data type from Object Storage: ${typeof rawData}, constructor: ${rawData?.constructor?.name}`);
+          }
           
           // Set appropriate headers with better MIME type detection
           const ext = path.extname(filename).toLowerCase();
@@ -677,7 +693,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           res.setHeader('Content-Type', contentType);
           res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 year cache
-          res.send(imageBuffer);
+          res.setHeader('Content-Length', imageBuffer.length.toString());
+          res.end(imageBuffer, 'binary');
           return;
         } catch (objectStorageError) {
           const errorMessage = objectStorageError instanceof Error ? objectStorageError.message : 'Unknown Object Storage error';

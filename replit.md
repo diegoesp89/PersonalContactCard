@@ -122,6 +122,9 @@ Preferred communication style: Simple, everyday language.
 - **Julio 29, 2025**: Agregado endpoint `/api/gallery/status` para diagnóstico y monitoreo del estado de la galería
 - **Julio 29, 2025**: Mejorado logging detallado con tracking de invalidaciones de caché para debugging avanzado
 - **Julio 29, 2025**: Sistema de auto-reconstrucción de caché cuando se detectan inconsistencias entre memoria y almacenamiento físico
+- **Julio 29, 2025**: CRÍTICO - Solucionado problema de imágenes rotas en galería web causado por incompatibilidad de tipos Object Storage
+- **Julio 29, 2025**: Object Storage devuelve Array[Buffer] - implementado sistema de detección y conversión automática a Buffer nativo
+- **Julio 29, 2025**: Todas las imágenes ahora se cargan correctamente desde Object Storage con headers HTTP optimizados
 - **Julio 28, 2025**: SISTEMA COMPLETO DE TRADUCCIONES - Implementado soporte para español, portugués e inglés
 - **Julio 28, 2025**: Botón "Traducir" en esquina superior derecha de páginas de contacto con modal que se cierra automáticamente
 - **Julio 28, 2025**: Cada contacto tiene selector de idioma por defecto en editor - campo defaultLanguage agregado a base de datos
