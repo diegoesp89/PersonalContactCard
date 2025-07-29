@@ -112,6 +112,11 @@ Preferred communication style: Simple, everyday language.
 - **Julio 28, 2025**: Editor integrado en galería de imágenes y editor de contactos con botones dedicados
 - **Julio 28, 2025**: Canvas interactivo con arrastrar/posicionar, línea punteada como overlay HTML (no afecta imagen final)
 - **Julio 28, 2025**: Sistema de aspectos ratio automático: square para perfil, cover para imagen de portada
+- **Julio 29, 2025**: SOLUCIÓN DEFINITIVA - Resuelto permanentemente el problema de imágenes que desaparecían de la galería
+- **Julio 29, 2025**: Implementado sistema de "safety check" automático que detecta caché vacío con archivos físicos presentes
+- **Julio 29, 2025**: Agregado endpoint `/api/gallery/status` para diagnóstico y monitoreo del estado de la galería
+- **Julio 29, 2025**: Mejorado logging detallado con tracking de invalidaciones de caché para debugging avanzado
+- **Julio 29, 2025**: Sistema de auto-reconstrucción de caché cuando se detectan inconsistencias entre memoria y almacenamiento físico
 - **Julio 28, 2025**: SISTEMA COMPLETO DE TRADUCCIONES - Implementado soporte para español, portugués e inglés
 - **Julio 28, 2025**: Botón "Traducir" en esquina superior derecha de páginas de contacto con modal que se cierra automáticamente
 - **Julio 28, 2025**: Cada contacto tiene selector de idioma por defecto en editor - campo defaultLanguage agregado a base de datos

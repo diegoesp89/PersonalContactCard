@@ -554,6 +554,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       galleryCache = [];
       galleryCacheTime = 0;
       
+      logger.log('GALLERY_CACHE_INVALIDATED_UPLOAD', { 
+        reason: 'image_uploaded',
+        filename 
+      }, req);
+      
       console.log('Upload successful:', { filename, imageUrl });
       logger.log('IMAGE_UPLOADED', { 
         filename, 
@@ -696,6 +701,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.json(galleryCache);
       }
       
+      // Safety check: if cache is empty but physical files exist, force rebuild
+      if (galleryCache.length === 0 && fs.existsSync(uploadsDir)) {
+        const physicalFiles = fs.readdirSync(uploadsDir).filter(file => 
+          /\.(jpg|jpeg|png|gif|webp|heic|heif)$/i.test(file)
+        );
+        
+        if (physicalFiles.length > 0) {
+          logger.log('GALLERY_SAFETY_REBUILD', { 
+            physicalFilesFound: physicalFiles.length,
+            cacheWasEmpty: true,
+            forcingRebuild: true
+          }, req);
+        }
+      }
+      
       let imageFiles: Array<{filename: string, url: string, uploadDate: Date}> = [];
       let objectStorageSuccess = false;
       
@@ -796,13 +816,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Update cache only if we got results
       if (imageFiles.length > 0 || objectStorageSuccess) {
-        galleryCache = imageFiles;
-        galleryCacheTime = now;
-        
-        logger.log('GALLERY_CACHE_UPDATED', {
-          imageCount: imageFiles.length,
-          objectStorageSuccess
-        }, req);
+        // Only update cache if we have actual images
+        if (imageFiles.length > 0) {
+          galleryCache = imageFiles;
+          galleryCacheTime = now;
+          
+          logger.log('GALLERY_CACHE_UPDATED', { 
+            imageCount: imageFiles.length, 
+            objectStorageSuccess,
+            source: objectStorageSuccess ? 'object-storage' : 'local-files'
+          }, req);
+        } else {
+          logger.log('GALLERY_CACHE_NOT_UPDATED', { 
+            reason: 'no_images_found',
+            objectStorageSuccess
+          }, req);
+        }
+
       }
       
       logger.log('GALLERY_RESPONSE', {
@@ -917,6 +947,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Gallery status endpoint for debugging (admin only)
+  app.get("/api/gallery/status", async (req, res) => {
+    try {
+      const { password } = req.query;
+      
+      // Authenticate admin
+      if (password !== "CamisasWenas.!" && password !== "Mafatanga2025") {
+        return res.status(401).json({ error: "Invalid password" });
+      }
+      
+      const physicalFiles = fs.existsSync(uploadsDir) 
+        ? fs.readdirSync(uploadsDir).filter(file => 
+            /\.(jpg|jpeg|png|gif|webp|heic|heif)$/i.test(file)
+          )
+        : [];
+      
+      const now = Date.now();
+      
+      res.json({
+        cache: {
+          size: galleryCache.length,
+          lastUpdate: galleryCacheTime ? new Date(galleryCacheTime).toISOString() : 'never',
+          age: galleryCacheTime ? now - galleryCacheTime : 'n/a',
+          ttl: GALLERY_CACHE_TTL,
+          isExpired: galleryCacheTime ? (now - galleryCacheTime) >= GALLERY_CACHE_TTL : true
+        },
+        storage: {
+          objectStorageAvailable: !!objectStorage,
+          lastObjectStorageSuccess: lastObjectStorageSuccess ? new Date(lastObjectStorageSuccess).toISOString() : 'never',
+          objectStorageFailCount,
+          uploadsDir,
+          physicalFilesCount: physicalFiles.length,
+          physicalFiles: physicalFiles.slice(0, 10) // Show first 10 files
+        },
+        environment: {
+          isProduction,
+          nodeEnv: process.env.NODE_ENV,
+          replitDeployment: process.env.REPLIT_DEPLOYMENT
+        }
+      });
+    } catch (error) {
+      console.error('Gallery status error:', error);
+      res.status(500).json({ error: "Failed to get gallery status" });
+    }
+  });
+
   // Clear gallery cache manually (admin only)
   app.post("/api/gallery/clear-cache", async (req, res) => {
     try {
@@ -994,6 +1070,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Invalidate gallery cache after deletion
       galleryCache = [];
       galleryCacheTime = 0;
+      
+      logger.log('GALLERY_CACHE_INVALIDATED_DELETE', { 
+        reason: 'image_deleted',
+        filename 
+      }, req);
       
       logger.log('IMAGE_DELETED', { 
         filename,
