@@ -146,8 +146,12 @@ export default function ImageEditor({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md bg-slate-900 border-slate-700">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent 
+        className="max-w-md bg-slate-900 border-slate-700"
+        onPointerDownOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={onClose}
+      >
         <DialogHeader>
           <DialogTitle className="text-slate-100 flex items-center">
             <ZoomIn className="w-5 h-5 mr-2" />
@@ -155,7 +159,11 @@ export default function ImageEditor({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div 
+          className="space-y-4"
+          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+        >
           {/* Canvas */}
           <div className="flex justify-center bg-slate-800 rounded-lg p-4">
             <div className="relative">
@@ -164,10 +172,22 @@ export default function ImageEditor({
                 width={canvasWidth}
                 height={canvasHeight}
                 className="border border-slate-600 cursor-move"
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseUp}
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  handleMouseDown(e);
+                }}
+                onMouseMove={(e) => {
+                  e.stopPropagation();
+                  handleMouseMove(e);
+                }}
+                onMouseUp={(e) => {
+                  e.stopPropagation();
+                  handleMouseUp();
+                }}
+                onMouseLeave={(e) => {
+                  e.stopPropagation();
+                  handleMouseUp();
+                }}
               />
               {/* Crop overlay - separate from canvas */}
               <div 
@@ -196,6 +216,8 @@ export default function ImageEditor({
                 max={3}
                 step={0.1}
                 className="w-full"
+                onPointerDown={(e) => e.stopPropagation()}
+                onPointerMove={(e) => e.stopPropagation()}
               />
             </div>
 
@@ -214,7 +236,10 @@ export default function ImageEditor({
           <div className="flex justify-between">
             <Button
               variant="outline"
-              onClick={handleReset}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleReset();
+              }}
               className="border-slate-600 text-slate-200"
             >
               <RotateCcw className="w-4 h-4 mr-2" />
@@ -222,11 +247,23 @@ export default function ImageEditor({
             </Button>
             
             <div className="flex space-x-2">
-              <Button variant="ghost" onClick={onClose}>
+              <Button 
+                variant="ghost" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClose();
+                }}
+              >
                 <X className="w-4 h-4 mr-2" />
                 Cancelar
               </Button>
-              <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700">
+              <Button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleSave();
+                }} 
+                className="bg-blue-600 hover:bg-blue-700"
+              >
                 <Save className="w-4 h-4 mr-2" />
                 Guardar
               </Button>
