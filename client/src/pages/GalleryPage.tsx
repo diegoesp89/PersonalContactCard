@@ -31,6 +31,11 @@ export default function GalleryPage() {
     }
     return false;
   });
+  
+  // Get stored password for operations
+  const getStoredPassword = () => {
+    return localStorage.getItem('gallery_password') || '';
+  };
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const { toast } = useToast();
@@ -55,6 +60,7 @@ export default function GalleryPage() {
       // Save authentication state to localStorage
       localStorage.setItem('gallery_authenticated', 'true');
       localStorage.setItem('gallery_superadmin', isSuper.toString());
+      localStorage.setItem('gallery_password', password);
       
       toast({
         title: "Autenticación exitosa",
@@ -116,7 +122,7 @@ export default function GalleryPage() {
       const response = await fetch(`/api/gallery/${filename}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password })
+        body: JSON.stringify({ password: getStoredPassword() })
       });
       if (!response.ok) throw new Error("Delete failed");
       return response.json();
@@ -143,7 +149,7 @@ export default function GalleryPage() {
       const response = await fetch("/api/gallery/clear-cache", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password })
+        body: JSON.stringify({ password: getStoredPassword() })
       });
       if (!response.ok) throw new Error("Clear cache failed");
       return response.json();
@@ -313,6 +319,7 @@ export default function GalleryPage() {
                 // Clear authentication from localStorage
                 localStorage.removeItem('gallery_authenticated');
                 localStorage.removeItem('gallery_superadmin');
+                localStorage.removeItem('gallery_password');
               }}
               className="border-slate-600 text-slate-300 hover:bg-slate-700"
             >
