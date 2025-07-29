@@ -128,6 +128,9 @@ Preferred communication style: Simple, everyday language.
 - **Julio 29, 2025**: CORREGIDO - URLs de imágenes inconsistentes - todas las URLs migradas de /uploads/ a /api/image/ endpoint
 - **Julio 29, 2025**: Actualizada base de datos para usar exclusivamente el endpoint /api/image/ para servir imágenes
 - **Julio 29, 2025**: Solucionado error de clear-cache en galería - implementado almacenamiento persistente de contraseña de admin
+- **Julio 29, 2025**: IMPLEMENTADO fallback robusto para imágenes rotas - avatar por defecto para perfiles, portadas ocultas si fallan
+- **Julio 29, 2025**: Sistema inteligente de detección de errores de imagen con reset automático al cambiar contactos
+- **Julio 29, 2025**: Modal de imagen ampliada se cierra automáticamente si la imagen no carga correctamente
 - **Julio 28, 2025**: SISTEMA COMPLETO DE TRADUCCIONES - Implementado soporte para español, portugués e inglés
 - **Julio 28, 2025**: Botón "Traducir" en esquina superior derecha de páginas de contacto con modal que se cierra automáticamente
 - **Julio 28, 2025**: Cada contacto tiene selector de idioma por defecto en editor - campo defaultLanguage agregado a base de datos

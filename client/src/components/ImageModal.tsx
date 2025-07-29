@@ -47,6 +47,7 @@ export default function ImageModal({ isOpen, imageUrl, altText, onClose }: Image
           alt={altText}
           className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
           onClick={(e) => e.stopPropagation()}
+          onError={onClose}
         />
       </div>
     </div>

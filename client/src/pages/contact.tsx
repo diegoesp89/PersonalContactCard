@@ -77,6 +77,8 @@ function ContactPageContent() {
   const [showQRView, setShowQRView] = useState(false);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [profileImageError, setProfileImageError] = useState(false);
+  const [coverImageError, setCoverImageError] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [showCASModal, setShowCASModal] = useState(false);
   const [showTranslateModal, setShowTranslateModal] = useState(false);
@@ -169,9 +171,14 @@ function ContactPageContent() {
         })
   });
 
-  // Track page view when contact loads
+  // Track page view when contact loads and reset image error states
   useEffect(() => {
     if (contact) {
+      // Reset image error states when contact changes
+      setProfileImageError(false);
+      setCoverImageError(false);
+      setImageLoaded(false);
+      
       fetch('/api/analytics/track', {
         method: 'POST',
         headers: {
@@ -526,33 +533,34 @@ Correo: ${bank.email}`;
       <div className="flex-1 p-4" style={{ backgroundColor: contact.backgroundColor || '#1e293b' }}>
         <div className="w-full max-w-md mx-auto">
           {/* Cover Image */}
-          {contact.coverImage && (
+          {contact.coverImage && !coverImageError && (
             <div className="w-full h-80 rounded-t-3xl overflow-hidden shadow-lg mb-0">
               <img
                 src={contact.coverImage}
                 alt={`Portada de ${contact.name}`}
                 className="w-full h-full object-cover"
+                onError={() => setCoverImageError(true)}
               />
             </div>
           )}
           
           <div 
-            className={`glass-effect ${contact.coverImage ? 'rounded-b-3xl' : 'rounded-3xl'} p-8 shadow-2xl`} 
+            className={`glass-effect ${contact.coverImage && !coverImageError ? 'rounded-b-3xl' : 'rounded-3xl'} p-8 shadow-2xl`} 
             style={{ backgroundColor: `${contact.backgroundColor || '#1e293b'}e6` }}
           >
             {/* Header with Profile */}
             <div className="text-center mb-8 relative">
               <div 
                 ref={profileRef}
-                className={`w-48 h-48 rounded-full mx-auto ${contact.coverImage ? '-mt-44' : 'mb-4'} shadow-lg overflow-hidden relative transition-transform duration-300 ease-out cursor-pointer border-4 border-white`}
+                className={`w-48 h-48 rounded-full mx-auto ${contact.coverImage && !coverImageError ? '-mt-44' : 'mb-4'} shadow-lg overflow-hidden relative transition-transform duration-300 ease-out cursor-pointer border-4 border-white`}
                 style={{
                   transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
                   transformStyle: 'preserve-3d',
                   willChange: 'transform'
                 }}
-                onClick={() => contact.profileImage && setShowImageModal(true)}
+                onClick={() => contact.profileImage && !profileImageError && setShowImageModal(true)}
               >
-                {contact.profileImage ? (
+                {contact.profileImage && !profileImageError ? (
                   <>
                     {!imageLoaded && (
                       <div className="w-full h-full bg-slate-700/50 animate-pulse flex items-center justify-center">
@@ -566,7 +574,10 @@ Correo: ${bank.email}`;
                         imageLoaded ? 'opacity-100' : 'opacity-0 absolute inset-0'
                       }`}
                       onLoad={() => setImageLoaded(true)}
-                      onError={() => setImageLoaded(true)}
+                      onError={() => {
+                        setImageLoaded(true);
+                        setProfileImageError(true);
+                      }}
                     />
                   </>
                 ) : (
@@ -584,7 +595,7 @@ Correo: ${bank.email}`;
                   DEMO
                 </div>
               )}
-              <h1 className={`text-2xl font-bold text-slate-100 mb-2 ${contact.coverImage ? 'mt-4' : ''}`}>
+              <h1 className={`text-2xl font-bold text-slate-100 mb-2 ${contact.coverImage && !coverImageError ? 'mt-4' : ''}`}>
                 {contact.name}
               </h1>
               <p className="text-slate-400 font-medium">{contact.title}</p>
@@ -1046,7 +1057,7 @@ Correo: ${bank.email}`;
 
       {/* Image Modal */}
       <ImageModal
-        isOpen={showImageModal}
+        isOpen={showImageModal && !profileImageError}
         imageUrl={contact.profileImage || ''}
         altText={contact.name}
         onClose={() => setShowImageModal(false)}
