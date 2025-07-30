@@ -139,6 +139,7 @@ Preferred communication style: Simple, everyday language.
 - **Julio 29, 2025**: VALIDACIÓN DE RUTA - Campo ruta limitado a letras minúsculas y guiones únicamente (sin espacios)
 - **Julio 29, 2025**: Filtrado automático en frontend - solo permite a-z y guión, bloquea espacios en tiempo real
 - **Julio 29, 2025**: Validación backend - conversión automática a lowercase y sanitización eliminando espacios y caracteres no permitidos
+- **Julio 29, 2025**: EXCEPCIÓN ESPECIAL - Perfil Demis Silva configurado con URL /DemisSilva (con mayúsculas) como caso excepcional
 - **Julio 29, 2025**: DEMO MENU RESTAURANTE - Creada página completa /menu-demo solo para visualización (sin compras)
 - **Julio 29, 2025**: Menu demo incluye entradas, platos principales, postres y bebidas con precios en pesos chilenos y placeholders para fotos
 - **Julio 29, 2025**: Aplicado tema árabe al menú: colores dorados, ámbar y terracota que evocan comida del medio oriente
