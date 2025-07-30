@@ -3,8 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
-  Star,
-  Clock,
   Leaf,
   Flame,
   ChefHat,
@@ -20,9 +18,6 @@ interface MenuItem {
   image?: string;
   isVegetarian?: boolean;
   isSpicy?: boolean;
-  isPopular?: boolean;
-  prepTime?: string;
-  rating?: number;
 }
 
 
@@ -34,10 +29,7 @@ const menuItems: MenuItem[] = [
     name: "Carpaccio de Salmón",
     description: "Láminas finas de salmón fresco con alcaparras, rúcula y aceite de oliva extra virgen",
     price: 12500,
-    category: "entradas",
-    isPopular: true,
-    prepTime: "10 min",
-    rating: 4.8
+    category: "entradas"
   },
   {
     id: "2",
@@ -45,9 +37,7 @@ const menuItems: MenuItem[] = [
     description: "Selección de quesos locales con mermeladas caseras, nueces y crackers",
     price: 9800,
     category: "entradas",
-    isVegetarian: true,
-    prepTime: "5 min",
-    rating: 4.6
+    isVegetarian: true
   },
   {
     id: "3",
@@ -55,9 +45,7 @@ const menuItems: MenuItem[] = [
     description: "Corvina fresca marinada en limón con ají amarillo, cebolla morada y camote",
     price: 11200,
     category: "entradas",
-    isSpicy: true,
-    prepTime: "15 min",
-    rating: 4.9
+    isSpicy: true
   },
 
   // Platos Principales
@@ -67,19 +55,14 @@ const menuItems: MenuItem[] = [
     description: "Lomo fino salteado con cebolla, tomate y ají amarillo, acompañado de papas fritas y arroz",
     price: 18900,
     category: "principales",
-    isPopular: true,
-    isSpicy: true,
-    prepTime: "20 min",
-    rating: 4.7
+    isSpicy: true
   },
   {
     id: "5",
     name: "Salmón a la Plancha",
     description: "Filete de salmón con risotto de espárragos y salsa de mantequilla al limón",
     price: 22500,
-    category: "principales",
-    prepTime: "25 min",
-    rating: 4.8
+    category: "principales"
   },
   {
     id: "6",
@@ -87,18 +70,14 @@ const menuItems: MenuItem[] = [
     description: "Ñoquis caseros de espinaca con salsa de queso parmesano y nueces",
     price: 14800,
     category: "principales",
-    isVegetarian: true,
-    prepTime: "15 min",
-    rating: 4.5
+    isVegetarian: true
   },
   {
     id: "7",
     name: "Paella Mixta",
     description: "Arroz bomba con mariscos, pollo, chorizo español y azafrán (para 2 personas)",
     price: 32000,
-    category: "principales",
-    prepTime: "35 min",
-    rating: 4.9
+    category: "principales"
   },
 
   // Postres
@@ -107,10 +86,7 @@ const menuItems: MenuItem[] = [
     name: "Tiramisú de la Casa",
     description: "Clásico italiano con café expreso, mascarpone y cacao en polvo",
     price: 7500,
-    category: "postres",
-    isPopular: true,
-    prepTime: "5 min",
-    rating: 4.7
+    category: "postres"
   },
   {
     id: "9",
@@ -118,9 +94,7 @@ const menuItems: MenuItem[] = [
     description: "Suave cheesecake con compota de frutos rojos y base de galleta",
     price: 8200,
     category: "postres",
-    isVegetarian: true,
-    prepTime: "5 min",
-    rating: 4.6
+    isVegetarian: true
   },
   {
     id: "10",
@@ -128,9 +102,7 @@ const menuItems: MenuItem[] = [
     description: "Bizcocho de chocolate con centro líquido, helado de vainilla y frutos secos",
     price: 8900,
     category: "postres",
-    isVegetarian: true,
-    prepTime: "12 min",
-    rating: 4.8
+    isVegetarian: true
   },
 
   // Bebidas
@@ -139,10 +111,7 @@ const menuItems: MenuItem[] = [
     name: "Pisco Sour Premium",
     description: "Pisco acholado, limón, jarabe de goma, clara de huevo y amargo de angostura",
     price: 6500,
-    category: "bebidas",
-    isPopular: true,
-    prepTime: "3 min",
-    rating: 4.9
+    category: "bebidas"
   },
   {
     id: "12",
@@ -150,18 +119,14 @@ const menuItems: MenuItem[] = [
     description: "Refrescante limonada con pulpa de maracuyá y menta fresca",
     price: 4200,
     category: "bebidas",
-    isVegetarian: true,
-    prepTime: "2 min",
-    rating: 4.4
+    isVegetarian: true
   },
   {
     id: "13",
     name: "Sangría de la Casa",
     description: "Vino tinto con frutas de estación, brandy y especias (jarra 1L)",
     price: 12800,
-    category: "bebidas",
-    prepTime: "5 min",
-    rating: 4.6
+    category: "bebidas"
   }
 ];
 
@@ -234,12 +199,6 @@ export default function MenuDemo() {
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-2">
                                 <h3 className="text-xl font-semibold text-slate-100">{item.name}</h3>
-                                {item.isPopular && (
-                                  <Badge className="bg-orange-600 text-white">
-                                    <Star className="w-3 h-3 mr-1" />
-                                    Popular
-                                  </Badge>
-                                )}
                                 {item.isVegetarian && (
                                   <Badge variant="outline" className="border-green-500 text-green-400">
                                     <Leaf className="w-3 h-3 mr-1" />
@@ -256,22 +215,7 @@ export default function MenuDemo() {
                               
                               <p className="text-slate-300 mb-3">{item.description}</p>
                               
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-4 text-sm text-slate-400">
-                                  {item.prepTime && (
-                                    <div className="flex items-center gap-1">
-                                      <Clock className="w-4 h-4" />
-                                      {item.prepTime}
-                                    </div>
-                                  )}
-                                  {item.rating && (
-                                    <div className="flex items-center gap-1">
-                                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                                      {item.rating}
-                                    </div>
-                                  )}
-                                </div>
-                                
+                              <div className="flex items-center justify-end">
                                 <div className="text-2xl font-bold text-orange-400">
                                   {formatPrice(item.price)}
                                 </div>
@@ -285,13 +229,6 @@ export default function MenuDemo() {
                 </TabsContent>
               ))}
             </Tabs>
-        </div>
-        
-        {/* Footer con nota */}
-        <div className="mt-12 text-center">
-          <p className="text-slate-400 text-sm">
-            Este es un menú de demostración. No se procesan pedidos reales.
-          </p>
         </div>
       </div>
     </div>
