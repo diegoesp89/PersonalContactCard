@@ -131,6 +131,7 @@ const menuItems: MenuItem[] = [
 ];
 
 const categories = [
+  { id: "todos", name: "Todos los platos", icon: "📋" },
   { id: "entradas", name: "Entradas", icon: "🥗" },
   { id: "principales", name: "Platos Principales", icon: "🍽️" },
   { id: "postres", name: "Postres", icon: "🍰" },
@@ -138,7 +139,7 @@ const categories = [
 ];
 
 export default function MenuDemo() {
-  const [activeCategory, setActiveCategory] = useState("entradas");
+  const [activeCategory, setActiveCategory] = useState("todos");
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-CL', {
@@ -148,7 +149,9 @@ export default function MenuDemo() {
     }).format(price);
   };
 
-  const filteredItems = menuItems.filter(item => item.category === activeCategory);
+  const filteredItems = activeCategory === "todos" 
+    ? menuItems 
+    : menuItems.filter(item => item.category === activeCategory);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
@@ -171,7 +174,7 @@ export default function MenuDemo() {
         <div className="w-full">
             {/* Category Tabs */}
             <Tabs value={activeCategory} onValueChange={setActiveCategory} className="w-full">
-              <TabsList className="grid w-full grid-cols-4 bg-slate-800 border-slate-700">
+              <TabsList className="grid w-full grid-cols-5 bg-slate-800 border-slate-700">
                 {categories.map(category => (
                   <TabsTrigger
                     key={category.id}
