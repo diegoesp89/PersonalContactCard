@@ -1222,7 +1222,7 @@ END:VCARD`;
         return res.status(404).json({ error: "Contact not found" });
       }
 
-      const contactUrl = `https://cashirts.replit.app/${foundContact.ruta}`;
+      const contactUrl = `https://cashirts.cl/perfil/${foundContact.ruta}`;
       
       // Generate QR code as PNG buffer
       const qrCodeBuffer = await QRCode.toBuffer(contactUrl, {

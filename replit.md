@@ -133,6 +133,9 @@ Preferred communication style: Simple, everyday language.
 - **Julio 29, 2025**: Modal de imagen ampliada se cierra automáticamente si la imagen no carga correctamente
 - **Julio 29, 2025**: CORREGIDO - Editor de imágenes se cerraba al hacer zoom o click - implementado stopPropagation completo
 - **Julio 29, 2025**: Modal del editor ahora bloquea clicks externos y maneja correctamente eventos de mouse y slider
+- **Julio 29, 2025**: ACTUALIZADO - URLs de QR codes y compartir migradas de replit.app a cashirts.cl/perfil
+- **Julio 29, 2025**: Generador de QR codes ahora usa https://cashirts.cl/perfil/{ruta} en lugar de replit.app URLs
+- **Julio 29, 2025**: Funciones de copiar enlace y compartir nativo actualizadas para usar cashirts.cl como dominio principal
 - **Julio 28, 2025**: SISTEMA COMPLETO DE TRADUCCIONES - Implementado soporte para español, portugués e inglés
 - **Julio 28, 2025**: Botón "Traducir" en esquina superior derecha de páginas de contacto con modal que se cierra automáticamente
 - **Julio 28, 2025**: Cada contacto tiene selector de idioma por defecto en editor - campo defaultLanguage agregado a base de datos

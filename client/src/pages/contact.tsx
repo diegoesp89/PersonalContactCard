@@ -286,7 +286,8 @@ function ContactPageContent() {
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      const correctUrl = contact ? `https://cashirts.cl/perfil/${contact.ruta}` : window.location.href;
+      await navigator.clipboard.writeText(correctUrl);
       toast({
         title: "¡Enlace copiado!",
         description: "El enlace se ha copiado al portapapeles",
@@ -303,10 +304,11 @@ function ContactPageContent() {
   const handleNativeShare = async () => {
     try {
       if (navigator.share) {
+        const correctUrl = contact ? `https://cashirts.cl/perfil/${contact.ruta}` : window.location.href;
         await navigator.share({
           title: `Contacto de ${contact?.name}`,
           text: "Aquí tienes mi información de contacto",
-          url: window.location.href,
+          url: correctUrl,
         });
       } else {
         handleCopyLink();
