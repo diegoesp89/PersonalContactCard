@@ -162,8 +162,8 @@ export default function MenuDemo() {
             <div className="flex items-center gap-3">
               <ChefHat className="w-8 h-8 text-orange-400" />
               <div>
-                <h1 className="text-2xl font-bold text-slate-100">Restaurante Demo</h1>
-                <p className="text-slate-400 text-sm">Cocina Fusión Gourmet - Solo Muestra</p>
+                <h1 className="text-2xl font-bold text-slate-100">Menú Demo</h1>
+                <p className="text-slate-400 text-sm">Comida rápida - Solo Muestra</p>
               </div>
             </div>
           </div>
