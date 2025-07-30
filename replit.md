@@ -139,8 +139,8 @@ Preferred communication style: Simple, everyday language.
 - **Julio 29, 2025**: VALIDACIÓN DE RUTA - Campo ruta limitado a letras minúsculas y guiones únicamente (sin espacios)
 - **Julio 29, 2025**: Filtrado automático en frontend - solo permite a-z y guión, bloquea espacios en tiempo real
 - **Julio 29, 2025**: Validación backend - conversión automática a lowercase y sanitización eliminando espacios y caracteres no permitidos
-- **Julio 29, 2025**: DEMO MENU RESTAURANTE - Creada página completa /menu-demo con carrito funcional y categorías
-- **Julio 29, 2025**: Menu demo incluye entradas, platos principales, postres y bebidas con precios en pesos chilenos
+- **Julio 29, 2025**: DEMO MENU RESTAURANTE - Creada página completa /menu-demo solo para visualización (sin compras)
+- **Julio 29, 2025**: Menu demo incluye entradas, platos principales, postres y bebidas con precios en pesos chilenos y placeholders para fotos
 - **Julio 29, 2025**: REDIRECT CONDICIONAL - Redirección replit.app → cashirts.cl solo activa en producción, no en desarrollo
 - **Julio 28, 2025**: SISTEMA COMPLETO DE TRADUCCIONES - Implementado soporte para español, portugués e inglés
 - **Julio 28, 2025**: Botón "Traducir" en esquina superior derecha de páginas de contacto con modal que se cierra automáticamente

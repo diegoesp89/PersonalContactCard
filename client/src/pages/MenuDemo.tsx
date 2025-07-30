@@ -1,18 +1,14 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Star,
   Clock,
-  Users,
   Leaf,
   Flame,
-  ShoppingCart,
-  Plus,
-  Minus,
-  ChefHat
+  ChefHat,
+  ImageIcon
 } from "lucide-react";
 
 interface MenuItem {
@@ -29,9 +25,7 @@ interface MenuItem {
   rating?: number;
 }
 
-interface CartItem extends MenuItem {
-  quantity: number;
-}
+
 
 const menuItems: MenuItem[] = [
   // Entradas
@@ -180,44 +174,6 @@ const categories = [
 
 export default function MenuDemo() {
   const [activeCategory, setActiveCategory] = useState("entradas");
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [showCart, setShowCart] = useState(false);
-
-  const addToCart = (item: MenuItem) => {
-    setCart(prev => {
-      const existingItem = prev.find(cartItem => cartItem.id === item.id);
-      if (existingItem) {
-        return prev.map(cartItem =>
-          cartItem.id === item.id
-            ? { ...cartItem, quantity: cartItem.quantity + 1 }
-            : cartItem
-        );
-      }
-      return [...prev, { ...item, quantity: 1 }];
-    });
-  };
-
-  const removeFromCart = (itemId: string) => {
-    setCart(prev => {
-      const existingItem = prev.find(cartItem => cartItem.id === itemId);
-      if (existingItem && existingItem.quantity > 1) {
-        return prev.map(cartItem =>
-          cartItem.id === itemId
-            ? { ...cartItem, quantity: cartItem.quantity - 1 }
-            : cartItem
-        );
-      }
-      return prev.filter(cartItem => cartItem.id !== itemId);
-    });
-  };
-
-  const getTotalPrice = () => {
-    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-  };
-
-  const getTotalItems = () => {
-    return cart.reduce((total, item) => total + item.quantity, 0);
-  };
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-CL', {
@@ -239,31 +195,15 @@ export default function MenuDemo() {
               <ChefHat className="w-8 h-8 text-orange-400" />
               <div>
                 <h1 className="text-2xl font-bold text-slate-100">Restaurante Demo</h1>
-                <p className="text-slate-400 text-sm">Cocina Fusión Gourmet</p>
+                <p className="text-slate-400 text-sm">Cocina Fusión Gourmet - Solo Muestra</p>
               </div>
             </div>
-            
-            {/* Cart Button */}
-            <Button
-              onClick={() => setShowCart(!showCart)}
-              className="relative bg-orange-600 hover:bg-orange-700"
-            >
-              <ShoppingCart className="w-5 h-5 mr-2" />
-              Carrito
-              {getTotalItems() > 0 && (
-                <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs">
-                  {getTotalItems()}
-                </Badge>
-              )}
-            </Button>
           </div>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Menu Content */}
-          <div className="lg:col-span-3">
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="w-full">
             {/* Category Tabs */}
             <Tabs value={activeCategory} onValueChange={setActiveCategory} className="w-full">
               <TabsList className="grid w-full grid-cols-4 bg-slate-800 border-slate-700">
@@ -285,7 +225,12 @@ export default function MenuDemo() {
                     {filteredItems.map(item => (
                       <Card key={item.id} className="glass-effect border-slate-700 hover:border-orange-500/50 transition-all duration-300">
                         <CardContent className="p-6">
-                          <div className="flex justify-between items-start gap-4">
+                          <div className="flex gap-6">
+                            {/* Placeholder para imagen */}
+                            <div className="w-32 h-32 bg-slate-700/50 rounded-lg flex items-center justify-center flex-shrink-0 border border-slate-600">
+                              <ImageIcon className="w-8 h-8 text-slate-500" />
+                            </div>
+                            
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-2">
                                 <h3 className="text-xl font-semibold text-slate-100">{item.name}</h3>
@@ -311,33 +256,26 @@ export default function MenuDemo() {
                               
                               <p className="text-slate-300 mb-3">{item.description}</p>
                               
-                              <div className="flex items-center gap-4 text-sm text-slate-400">
-                                {item.prepTime && (
-                                  <div className="flex items-center gap-1">
-                                    <Clock className="w-4 h-4" />
-                                    {item.prepTime}
-                                  </div>
-                                )}
-                                {item.rating && (
-                                  <div className="flex items-center gap-1">
-                                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                                    {item.rating}
-                                  </div>
-                                )}
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4 text-sm text-slate-400">
+                                  {item.prepTime && (
+                                    <div className="flex items-center gap-1">
+                                      <Clock className="w-4 h-4" />
+                                      {item.prepTime}
+                                    </div>
+                                  )}
+                                  {item.rating && (
+                                    <div className="flex items-center gap-1">
+                                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                                      {item.rating}
+                                    </div>
+                                  )}
+                                </div>
+                                
+                                <div className="text-2xl font-bold text-orange-400">
+                                  {formatPrice(item.price)}
+                                </div>
                               </div>
-                            </div>
-                            
-                            <div className="text-right">
-                              <div className="text-2xl font-bold text-orange-400 mb-3">
-                                {formatPrice(item.price)}
-                              </div>
-                              <Button
-                                onClick={() => addToCart(item)}
-                                className="bg-orange-600 hover:bg-orange-700"
-                              >
-                                <Plus className="w-4 h-4 mr-1" />
-                                Agregar
-                              </Button>
                             </div>
                           </div>
                         </CardContent>
@@ -347,69 +285,13 @@ export default function MenuDemo() {
                 </TabsContent>
               ))}
             </Tabs>
-          </div>
-
-          {/* Cart Sidebar */}
-          <div className={`lg:col-span-1 ${showCart ? 'block' : 'hidden lg:block'}`}>
-            <Card className="glass-effect border-slate-700 sticky top-24">
-              <CardHeader>
-                <CardTitle className="text-slate-100 flex items-center gap-2">
-                  <ShoppingCart className="w-5 h-5" />
-                  Tu Pedido
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {cart.length === 0 ? (
-                  <p className="text-slate-400 text-center py-8">
-                    Tu carrito está vacío
-                  </p>
-                ) : (
-                  <div className="space-y-4">
-                    {cart.map(item => (
-                      <div key={item.id} className="flex items-center justify-between bg-slate-800/50 p-3 rounded-lg">
-                        <div className="flex-1">
-                          <h4 className="text-slate-100 font-medium text-sm">{item.name}</h4>
-                          <p className="text-slate-400 text-xs">{formatPrice(item.price)} c/u</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => removeFromCart(item.id)}
-                            className="w-8 h-8 p-0 border-slate-600"
-                          >
-                            <Minus className="w-3 h-3" />
-                          </Button>
-                          <span className="text-slate-100 w-8 text-center">{item.quantity}</span>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => addToCart(item)}
-                            className="w-8 h-8 p-0 border-slate-600"
-                          >
-                            <Plus className="w-3 h-3" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                    
-                    <div className="border-t border-slate-600 pt-4 mt-4">
-                      <div className="flex justify-between items-center mb-4">
-                        <span className="text-slate-100 font-semibold">Total:</span>
-                        <span className="text-orange-400 font-bold text-xl">
-                          {formatPrice(getTotalPrice())}
-                        </span>
-                      </div>
-                      
-                      <Button className="w-full bg-orange-600 hover:bg-orange-700">
-                        Proceder al Pago
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+        </div>
+        
+        {/* Footer con nota */}
+        <div className="mt-12 text-center">
+          <p className="text-slate-400 text-sm">
+            Este es un menú de demostración. No se procesan pedidos reales.
+          </p>
         </div>
       </div>
     </div>
