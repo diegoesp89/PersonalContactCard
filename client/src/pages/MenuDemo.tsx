@@ -154,16 +154,16 @@ export default function MenuDemo() {
     : menuItems.filter(item => item.category === activeCategory);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-amber-900 via-orange-900 to-red-900">
       {/* Header */}
-      <div className="bg-slate-800/80 backdrop-blur-sm border-b border-slate-700 sticky top-0 z-40">
+      <div className="bg-amber-800/80 backdrop-blur-sm border-b border-amber-600 sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <ChefHat className="w-8 h-8 text-orange-400" />
+              <ChefHat className="w-8 h-8 text-yellow-400" />
               <div>
-                <h1 className="text-2xl font-bold text-slate-100">Menú Demo</h1>
-                <p className="text-slate-400 text-sm">Comida rápida - Solo Muestra</p>
+                <h1 className="text-2xl font-bold text-amber-100">Menú Demo</h1>
+                <p className="text-amber-300 text-sm">Comida rápida - Solo Muestra</p>
               </div>
             </div>
           </div>
@@ -174,12 +174,12 @@ export default function MenuDemo() {
         <div className="w-full">
             {/* Category Tabs */}
             <Tabs value={activeCategory} onValueChange={setActiveCategory} className="w-full">
-              <TabsList className="grid w-full grid-cols-5 bg-slate-800 border-slate-700">
+              <TabsList className="grid w-full grid-cols-5 bg-amber-800 border-amber-600">
                 {categories.map(category => (
                   <TabsTrigger
                     key={category.id}
                     value={category.id}
-                    className="data-[state=active]:bg-orange-600 data-[state=active]:text-white"
+                    className="data-[state=active]:bg-yellow-600 data-[state=active]:text-amber-900 text-amber-200"
                   >
                     <span className="mr-2">{category.icon}</span>
                     {category.name}
@@ -191,35 +191,35 @@ export default function MenuDemo() {
                 <TabsContent key={category.id} value={category.id} className="mt-6">
                   <div className="grid gap-6">
                     {filteredItems.map(item => (
-                      <Card key={item.id} className="glass-effect border-slate-700 hover:border-orange-500/50 transition-all duration-300">
+                      <Card key={item.id} className="bg-amber-950/70 border-amber-700 hover:border-yellow-500/50 transition-all duration-300 backdrop-blur-sm">
                         <CardContent className="p-6">
                           <div className="flex gap-6">
                             {/* Placeholder para imagen */}
-                            <div className="w-32 h-32 bg-slate-700/50 rounded-lg flex items-center justify-center flex-shrink-0 border border-slate-600">
-                              <ImageIcon className="w-8 h-8 text-slate-500" />
+                            <div className="w-32 h-32 bg-amber-800/50 rounded-lg flex items-center justify-center flex-shrink-0 border border-amber-600">
+                              <ImageIcon className="w-8 h-8 text-amber-400" />
                             </div>
                             
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-2">
-                                <h3 className="text-xl font-semibold text-slate-100">{item.name}</h3>
+                                <h3 className="text-xl font-semibold text-amber-100">{item.name}</h3>
                                 {item.isVegetarian && (
-                                  <Badge variant="outline" className="border-green-500 text-green-400">
+                                  <Badge variant="outline" className="border-green-400 text-green-300 bg-green-900/30">
                                     <Leaf className="w-3 h-3 mr-1" />
                                     Vegetariano
                                   </Badge>
                                 )}
                                 {item.isSpicy && (
-                                  <Badge variant="outline" className="border-red-500 text-red-400">
+                                  <Badge variant="outline" className="border-red-400 text-red-300 bg-red-900/30">
                                     <Flame className="w-3 h-3 mr-1" />
                                     Picante
                                   </Badge>
                                 )}
                               </div>
                               
-                              <p className="text-slate-300 mb-3">{item.description}</p>
+                              <p className="text-amber-200 mb-3">{item.description}</p>
                               
                               <div className="flex items-center justify-end">
-                                <div className="text-2xl font-bold text-orange-400">
+                                <div className="text-2xl font-bold text-yellow-400">
                                   {formatPrice(item.price)}
                                 </div>
                               </div>
