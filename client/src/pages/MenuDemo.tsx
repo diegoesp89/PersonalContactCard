@@ -26,107 +26,132 @@ const menuItems: MenuItem[] = [
   // Entradas
   {
     id: "1",
-    name: "Carpaccio de Salmón",
-    description: "Láminas finas de salmón fresco con alcaparras, rúcula y aceite de oliva extra virgen",
-    price: 12500,
-    category: "entradas"
+    name: "Hummus con Pan Pita",
+    description: "Puré cremoso de garbanzos con tahini, aceite de oliva, limón y ajo, servido con pan pita caliente",
+    price: 8500,
+    category: "entradas",
+    isVegetarian: true
   },
   {
     id: "2",
-    name: "Tabla de Quesos Artesanales",
-    description: "Selección de quesos locales con mermeladas caseras, nueces y crackers",
-    price: 9800,
+    name: "Baba Ganoush",
+    description: "Puré de berenjenas asadas con tahini, ajo, limón y aceite de oliva, acompañado de vegetales frescos",
+    price: 9200,
     category: "entradas",
     isVegetarian: true
   },
   {
     id: "3",
-    name: "Ceviche de Corvina",
-    description: "Corvina fresca marinada en limón con ají amarillo, cebolla morada y camote",
-    price: 11200,
+    name: "Falafel (6 unidades)",
+    description: "Croquetas de garbanzos y especias árabes fritas, servidas con salsa tahini y ensalada",
+    price: 10800,
     category: "entradas",
-    isSpicy: true
+    isVegetarian: true
+  },
+  {
+    id: "4",
+    name: "Kibbeh (4 unidades)",
+    description: "Croquetas de bulgur rellenas con carne de cordero, cebolla y especias, fritas hasta dorar",
+    price: 12500,
+    category: "entradas"
   },
 
   // Platos Principales
   {
-    id: "4",
-    name: "Lomo Saltado Premium",
-    description: "Lomo fino salteado con cebolla, tomate y ají amarillo, acompañado de papas fritas y arroz",
-    price: 18900,
-    category: "principales",
-    isSpicy: true
-  },
-  {
     id: "5",
-    name: "Salmón a la Plancha",
-    description: "Filete de salmón con risotto de espárragos y salsa de mantequilla al limón",
-    price: 22500,
+    name: "Shawarma de Cordero",
+    description: "Finas láminas de cordero marinado con especias árabes, servido en pan pita con vegetales y salsa tahini",
+    price: 16800,
     category: "principales"
   },
   {
     id: "6",
-    name: "Ñoquis de Espinaca",
-    description: "Ñoquis caseros de espinaca con salsa de queso parmesano y nueces",
-    price: 14800,
-    category: "principales",
-    isVegetarian: true
+    name: "Shawarma de Pollo",
+    description: "Pollo marinado en especias árabes, servido en pan pita con tomate, cebolla, pepino y salsa ajo",
+    price: 14500,
+    category: "principales"
   },
   {
     id: "7",
-    name: "Paella Mixta",
-    description: "Arroz bomba con mariscos, pollo, chorizo español y azafrán (para 2 personas)",
-    price: 32000,
+    name: "Kebab de Cordero",
+    description: "Brochetas de cordero marinado con especias orientales, servido con arroz basmati y ensalada tabbouleh",
+    price: 19800,
     category: "principales"
+  },
+  {
+    id: "8",
+    name: "Mansaf",
+    description: "Cordero cocido en salsa de yogurt fermentado (jameed) con almendras, servido sobre arroz",
+    price: 22500,
+    category: "principales"
+  },
+  {
+    id: "9",
+    name: "Makloubeh Vegetariano",
+    description: "Arroz basmati con berenjenas, coliflor y especias árabes, servido invertido con yogurt",
+    price: 15200,
+    category: "principales",
+    isVegetarian: true
   },
 
   // Postres
   {
-    id: "8",
-    name: "Tiramisú de la Casa",
-    description: "Clásico italiano con café expreso, mascarpone y cacao en polvo",
-    price: 7500,
-    category: "postres"
-  },
-  {
-    id: "9",
-    name: "Cheesecake de Frutos Rojos",
-    description: "Suave cheesecake con compota de frutos rojos y base de galleta",
-    price: 8200,
+    id: "10",
+    name: "Baklava (3 piezas)",
+    description: "Hojaldre relleno de nueces y pistachos, bañado en miel con agua de rosas",
+    price: 7800,
     category: "postres",
     isVegetarian: true
   },
   {
-    id: "10",
-    name: "Volcán de Chocolate",
-    description: "Bizcocho de chocolate con centro líquido, helado de vainilla y frutos secos",
-    price: 8900,
+    id: "11",
+    name: "Kanafeh",
+    description: "Postre tradicional con queso fresco cubierto de pasta kadaif y jarabe de azúcar con agua de rosas",
+    price: 8500,
+    category: "postres",
+    isVegetarian: true
+  },
+  {
+    id: "12",
+    name: "Muhallabia",
+    description: "Pudín cremoso de leche con agua de rosas, decorado con pistachos molidos y canela",
+    price: 6200,
     category: "postres",
     isVegetarian: true
   },
 
   // Bebidas
   {
-    id: "11",
-    name: "Pisco Sour Premium",
-    description: "Pisco acholado, limón, jarabe de goma, clara de huevo y amargo de angostura",
-    price: 6500,
-    category: "bebidas"
+    id: "13",
+    name: "Té de Menta Árabe",
+    description: "Té verde con hojas de menta fresca y azúcar, servido en vaso tradicional",
+    price: 3500,
+    category: "bebidas",
+    isVegetarian: true
   },
   {
-    id: "12",
-    name: "Limonada de Maracuyá",
-    description: "Refrescante limonada con pulpa de maracuyá y menta fresca",
+    id: "14",
+    name: "Café Árabe (Qahwa)",
+    description: "Café tradicional con cardamomo, servido en tacitas pequeñas con dátiles",
     price: 4200,
     category: "bebidas",
     isVegetarian: true
   },
   {
-    id: "13",
-    name: "Sangría de la Casa",
-    description: "Vino tinto con frutas de estación, brandy y especias (jarra 1L)",
-    price: 12800,
-    category: "bebidas"
+    id: "15",
+    name: "Limonada con Agua de Rosas",
+    description: "Refrescante limonada con un toque de agua de rosas y menta fresca",
+    price: 4800,
+    category: "bebidas",
+    isVegetarian: true
+  },
+  {
+    id: "16",
+    name: "Jallab",
+    description: "Bebida tradicional de jarabe de dátiles, agua de rosas y piñones, servida con hielo",
+    price: 5500,
+    category: "bebidas",
+    isVegetarian: true
   }
 ];
 

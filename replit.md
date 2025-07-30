@@ -142,6 +142,7 @@ Preferred communication style: Simple, everyday language.
 - **Julio 29, 2025**: DEMO MENU RESTAURANTE - Creada página completa /menu-demo solo para visualización (sin compras)
 - **Julio 29, 2025**: Menu demo incluye entradas, platos principales, postres y bebidas con precios en pesos chilenos y placeholders para fotos
 - **Julio 29, 2025**: Aplicado tema árabe al menú: colores dorados, ámbar y terracota que evocan comida del medio oriente
+- **Julio 29, 2025**: Actualizado menú con platos árabes auténticos: hummus, shawarma, kebab, baklava, té de menta, etc.
 - **Julio 29, 2025**: REDIRECT CONDICIONAL - Redirección replit.app → cashirts.cl solo activa en producción, no en desarrollo
 - **Julio 28, 2025**: SISTEMA COMPLETO DE TRADUCCIONES - Implementado soporte para español, portugués e inglés
 - **Julio 28, 2025**: Botón "Traducir" en esquina superior derecha de páginas de contacto con modal que se cierra automáticamente
