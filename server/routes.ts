@@ -351,6 +351,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { password, ...contactData } = req.body;
       const isSuperAdmin = password === "Mafatanga2025";
       
+      // Ensure ruta is always lowercase and sanitized
+      if (contactData.ruta) {
+        contactData.ruta = contactData.ruta.toLowerCase().replace(/[^a-z-]/g, '');
+      }
+      
       const result = insertContactSchema.safeParse(contactData);
       if (!result.success) {
         return res.status(400).json({ error: result.error });
@@ -383,6 +388,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Only superadmin can modify inDev field
       if ("inDev" in updateData && password !== "Mafatanga2025") {
         delete updateData.inDev; // Remove inDev from update if not superadmin
+      }
+      
+      // Ensure ruta is always lowercase and sanitized
+      if ("ruta" in updateData && updateData.ruta) {
+        updateData.ruta = updateData.ruta.toLowerCase().replace(/[^a-z-]/g, '');
       }
       
       const contact = await storage.updateContact(parseInt(id), updateData);
