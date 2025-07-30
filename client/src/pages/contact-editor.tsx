@@ -1450,7 +1450,7 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                     id="ruta"
                     value={formData.ruta}
                     onChange={(e) => {
-                      // Filter input to allow only lowercase letters and hyphens
+                      // Filter input to allow only lowercase letters and hyphens (no spaces)
                       const filteredValue = e.target.value.toLowerCase().replace(/[^a-z-]/g, '');
                       updateField("ruta", filteredValue);
                     }}
@@ -1464,7 +1464,7 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                     La URL será: /{formData.ruta}
                   </p>
                   <p className="text-xs text-slate-500 mt-1">
-                    Solo letras minúsculas y guiones (-)
+                    Solo letras minúsculas y guiones (-). No espacios
                   </p>
                 </div>
               </div>

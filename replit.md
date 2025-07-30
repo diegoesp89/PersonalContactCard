@@ -136,9 +136,9 @@ Preferred communication style: Simple, everyday language.
 - **Julio 29, 2025**: ACTUALIZADO - URLs de QR codes y compartir migradas de replit.app a cashirts.cl
 - **Julio 29, 2025**: Generador de QR codes ahora usa https://cashirts.cl/{ruta} en lugar de replit.app URLs
 - **Julio 29, 2025**: Funciones de copiar enlace y compartir nativo actualizadas para usar cashirts.cl/{ruta} como estructura correcta
-- **Julio 29, 2025**: VALIDACIÓN DE RUTA - Campo ruta limitado a letras minúsculas y guiones únicamente
-- **Julio 29, 2025**: Filtrado automático en frontend - solo permite a-z y guión en tiempo real
-- **Julio 29, 2025**: Validación backend - conversión automática a lowercase y sanitización de caracteres no permitidos
+- **Julio 29, 2025**: VALIDACIÓN DE RUTA - Campo ruta limitado a letras minúsculas y guiones únicamente (sin espacios)
+- **Julio 29, 2025**: Filtrado automático en frontend - solo permite a-z y guión, bloquea espacios en tiempo real
+- **Julio 29, 2025**: Validación backend - conversión automática a lowercase y sanitización eliminando espacios y caracteres no permitidos
 - **Julio 28, 2025**: SISTEMA COMPLETO DE TRADUCCIONES - Implementado soporte para español, portugués e inglés
 - **Julio 28, 2025**: Botón "Traducir" en esquina superior derecha de páginas de contacto con modal que se cierra automáticamente
 - **Julio 28, 2025**: Cada contacto tiene selector de idioma por defecto en editor - campo defaultLanguage agregado a base de datos
