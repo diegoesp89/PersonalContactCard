@@ -18,6 +18,7 @@ interface MenuItem {
   image?: string;
   isVegetarian?: boolean;
   isSpicy?: boolean;
+  specialLabel?: string;
 }
 
 
@@ -30,7 +31,8 @@ const menuItems: MenuItem[] = [
     description: "Puré cremoso de garbanzos con tahini, aceite de oliva, limón y ajo, servido con pan pita caliente",
     price: 8500,
     category: "entradas",
-    isVegetarian: true
+    isVegetarian: true,
+    specialLabel: "Recomendación del Chef"
   },
   {
     id: "2",
@@ -38,7 +40,8 @@ const menuItems: MenuItem[] = [
     description: "Puré de berenjenas asadas con tahini, ajo, limón y aceite de oliva, acompañado de vegetales frescos",
     price: 9200,
     category: "entradas",
-    isVegetarian: true
+    isVegetarian: true,
+    specialLabel: "Plato favorito de la gente"
   },
   {
     id: "3",
@@ -225,8 +228,13 @@ export default function MenuDemo() {
                             </div>
                             
                             <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-2">
+                              <div className="flex items-center gap-2 mb-2 flex-wrap">
                                 <h3 className="text-xl font-semibold text-amber-100">{item.name}</h3>
+                                {item.specialLabel && (
+                                  <Badge className="bg-yellow-600 text-amber-900 font-medium">
+                                    {item.specialLabel}
+                                  </Badge>
+                                )}
                                 {item.isVegetarian && (
                                   <Badge variant="outline" className="border-green-400 text-green-300 bg-green-900/30">
                                     <Leaf className="w-3 h-3 mr-1" />
