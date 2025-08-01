@@ -1177,37 +1177,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Contact not found" });
       }
 
-      // Parse JSON fields and extract first URL for each field
-      const parseJsonField = (field: string) => {
-        try {
-          const parsed = JSON.parse(field || '[]');
-          return parsed.length > 0 ? parsed[0].url : '';
-        } catch {
-          return field || '';
-        }
-      };
-
-      const phone = parseJsonField(contact.phone);
-      const email = parseJsonField(contact.email);
-      const whatsapp = parseJsonField(contact.whatsapp);
-      const instagram = parseJsonField(contact.instagram);
-      const website = parseJsonField(contact.website);
-
       const vcard = `BEGIN:VCARD
 VERSION:3.0
 FN:${contact.name || ''}
 TITLE:${contact.title || ''}
-TEL:${phone}
-EMAIL:${email}
-URL:${website}
-NOTE:WhatsApp: ${whatsapp}\\nInstagram: ${instagram}\\nOficina: ${contact.officeAddress || ''}
+TEL:${contact.phone || ''}
+EMAIL:${contact.email || ''}
+URL:${contact.website || ''}
+NOTE:WhatsApp: ${contact.whatsapp || ''}\\nInstagram: ${contact.instagram || ''}\\nTikTok: ${contact.tiktok || ''}\\nLinkedIn: ${contact.linkedin || ''}\\nTelegram: ${contact.telegram || ''}\\nOficina: ${contact.officeAddress || ''}
 END:VCARD`;
 
-      // Use route name as filename to avoid Unicode issues in HTTP headers
-      const filename = contact.ruta || 'contact';
+      // Sanitize filename to avoid invalid characters in HTTP header
+      const sanitizedName = (contact.name || 'contact')
+        .replace(/[^\w\s-]/g, '') // Remove non-alphanumeric characters except spaces and hyphens
+        .replace(/\s+/g, '_') // Replace spaces with underscores
+        .trim() || 'contact';
 
       res.setHeader('Content-Type', 'text/vcard');
-      res.setHeader('Content-Disposition', `attachment; filename="${filename}.vcf"`);
+      res.setHeader('Content-Disposition', `attachment; filename="${sanitizedName}.vcf"`);
       res.send(vcard);
     } catch (error) {
       console.error('vCard generation error:', error);
@@ -1223,37 +1210,24 @@ END:VCARD`;
         return res.status(404).json({ error: "Contact not found" });
       }
 
-      // Parse JSON fields and extract first URL for each field
-      const parseJsonField = (field: string) => {
-        try {
-          const parsed = JSON.parse(field || '[]');
-          return parsed.length > 0 ? parsed[0].url : '';
-        } catch {
-          return field || '';
-        }
-      };
-
-      const phone = parseJsonField(contact.phone);
-      const email = parseJsonField(contact.email);
-      const whatsapp = parseJsonField(contact.whatsapp);
-      const instagram = parseJsonField(contact.instagram);
-      const website = parseJsonField(contact.website);
-
       const vcard = `BEGIN:VCARD
 VERSION:3.0
 FN:${contact.name || ''}
 TITLE:${contact.title || ''}
-TEL:${phone}
-EMAIL:${email}
-URL:${website}
-NOTE:WhatsApp: ${whatsapp}\\nInstagram: ${instagram}\\nOficina: ${contact.officeAddress || ''}
+TEL:${contact.phone || ''}
+EMAIL:${contact.email || ''}
+URL:${contact.website || ''}
+NOTE:WhatsApp: ${contact.whatsapp || ''}\\nInstagram: ${contact.instagram || ''}\\nTikTok: ${contact.tiktok || ''}\\nLinkedIn: ${contact.linkedin || ''}\\nTelegram: ${contact.telegram || ''}\\nOficina: ${contact.officeAddress || ''}
 END:VCARD`;
 
-      // Use route name as filename to avoid Unicode issues in HTTP headers  
-      const filename = contact.ruta || 'contact';
+      // Sanitize filename to avoid invalid characters in HTTP header
+      const sanitizedName = (contact.name || 'contact')
+        .replace(/[^\w\s-]/g, '') // Remove non-alphanumeric characters except spaces and hyphens
+        .replace(/\s+/g, '_') // Replace spaces with underscores
+        .trim() || 'contact';
 
       res.setHeader('Content-Type', 'text/vcard');
-      res.setHeader('Content-Disposition', `attachment; filename="${filename}.vcf"`);
+      res.setHeader('Content-Disposition', `attachment; filename="${sanitizedName}.vcf"`);
       res.send(vcard);
     } catch (error) {
       console.error('vCard generation error:', error);
