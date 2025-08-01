@@ -1168,6 +1168,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Helper function to parse contact fields (both simple strings and JSON arrays)
+  const parseContactField = (field: string): string => {
+    if (!field) return '';
+    
+    // Handle empty JSON arrays specifically
+    if (field === '[]') return '';
+    
+    // If it's already a simple string without brackets, return as is
+    if (typeof field === 'string' && !field.startsWith('[')) {
+      return field;
+    }
+    
+    try {
+      const parsed = JSON.parse(field);
+      if (Array.isArray(parsed)) {
+        if (parsed.length === 0) return '';
+        return parsed[0].url || parsed[0] || '';
+      }
+      return field;
+    } catch {
+      return field || '';
+    }
+  };
+
   // Generate and download vCard by route
   app.get("/api/contact/:ruta/vcard", async (req, res) => {
     try {
@@ -1177,21 +1201,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Contact not found" });
       }
 
-      // Parse JSON fields and extract first URL for each field
-      const parseJsonField = (field: string) => {
-        try {
-          const parsed = JSON.parse(field || '[]');
-          return parsed.length > 0 ? parsed[0].url : '';
-        } catch {
-          return field || '';
-        }
-      };
-
-      const phone = parseJsonField(contact.phone);
-      const email = parseJsonField(contact.email);
-      const whatsapp = parseJsonField(contact.whatsapp);
-      const instagram = parseJsonField(contact.instagram);
-      const website = parseJsonField(contact.website);
+      const phone = parseContactField(contact.phone);
+      const email = parseContactField(contact.email);
+      const whatsapp = parseContactField(contact.whatsapp);
+      const instagram = parseContactField(contact.instagram);
+      const website = parseContactField(contact.website);
 
       const vcard = `BEGIN:VCARD
 VERSION:3.0
@@ -1223,21 +1237,11 @@ END:VCARD`;
         return res.status(404).json({ error: "Contact not found" });
       }
 
-      // Parse JSON fields and extract first URL for each field
-      const parseJsonField = (field: string) => {
-        try {
-          const parsed = JSON.parse(field || '[]');
-          return parsed.length > 0 ? parsed[0].url : '';
-        } catch {
-          return field || '';
-        }
-      };
-
-      const phone = parseJsonField(contact.phone);
-      const email = parseJsonField(contact.email);
-      const whatsapp = parseJsonField(contact.whatsapp);
-      const instagram = parseJsonField(contact.instagram);
-      const website = parseJsonField(contact.website);
+      const phone = parseContactField(contact.phone);
+      const email = parseContactField(contact.email);
+      const whatsapp = parseContactField(contact.whatsapp);
+      const instagram = parseContactField(contact.instagram);
+      const website = parseContactField(contact.website);
 
       const vcard = `BEGIN:VCARD
 VERSION:3.0
