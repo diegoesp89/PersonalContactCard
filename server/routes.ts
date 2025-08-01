@@ -1265,7 +1265,7 @@ END:VCARD`;
     }
   });
 
-  // Generate QR Code for contact
+  // Generate QR Code for contact by ID
   app.get("/api/contact/:id/qr", async (req, res) => {
     try {
       const contactId = parseInt(req.params.id);
@@ -1289,8 +1289,42 @@ END:VCARD`;
         }
       });
 
+      // Use ruta as filename for consistency (avoid Unicode issues)
+      const filename = foundContact.ruta || 'contact';
       res.setHeader('Content-Type', 'image/png');
-      res.setHeader('Content-Disposition', `attachment; filename="QR_${foundContact.name.replace(/\s+/g, '_')}.png"`);
+      res.setHeader('Content-Disposition', `attachment; filename="QR_${filename}.png"`);
+      res.send(qrCodeBuffer);
+    } catch (error) {
+      console.error("Error generating QR code:", error);
+      res.status(500).json({ error: "Error generating QR code" });
+    }
+  });
+
+  // Generate QR Code for contact by route
+  app.get("/api/qr/:ruta", async (req, res) => {
+    try {
+      const { ruta } = req.params;
+      const contact = await storage.getContactByRuta(ruta);
+      
+      if (!contact) {
+        return res.status(404).json({ error: "Contact not found" });
+      }
+
+      const contactUrl = `https://cashirts.cl/${contact.ruta}`;
+      
+      // Generate QR code as PNG buffer
+      const qrCodeBuffer = await QRCode.toBuffer(contactUrl, {
+        type: 'png',
+        width: 300,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      });
+
+      res.setHeader('Content-Type', 'image/png');
+      res.setHeader('Content-Disposition', `attachment; filename="QR_${contact.ruta}.png"`);
       res.send(qrCodeBuffer);
     } catch (error) {
       console.error("Error generating QR code:", error);
