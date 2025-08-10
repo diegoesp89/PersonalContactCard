@@ -98,37 +98,20 @@ export default function MenuDemo() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="flex justify-between items-start mb-4">
-            <div></div>
-            <div className="text-center flex-1">
-              <h1 
-                className="text-4xl font-bold mb-2"
-                style={{ color: menu.primaryColor }}
-              >
-                {menu.name}
-              </h1>
-              {menu.description && (
-                <p 
-                  className="text-lg mb-4"
-                  style={{ color: menu.textColor }}
-                >
-                  {menu.description}
-                </p>
-              )}
-            </div>
-            <Button
-              variant="outline"
-              onClick={() => setLocation(`/${menu.slug}/edit`)}
-              className="bg-transparent border-2 hover:bg-opacity-20"
-              style={{ 
-                borderColor: menu.accentColor,
-                color: menu.accentColor
-              }}
+          <h1 
+            className="text-4xl font-bold mb-2"
+            style={{ color: menu.primaryColor }}
+          >
+            {menu.name}
+          </h1>
+          {menu.description && (
+            <p 
+              className="text-lg mb-4"
+              style={{ color: menu.textColor }}
             >
-              <Edit className="w-4 h-4 mr-2" />
-              Editar
-            </Button>
-          </div>
+              {menu.description}
+            </p>
+          )}
         </div>
 
         {/* Categories Tabs */}

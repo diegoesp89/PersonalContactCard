@@ -12,6 +12,7 @@ import NotFound from "@/pages/not-found";
 import ImageManagement from "@/pages/image-management";
 import MenuDemo from "@/pages/MenuDemo";
 import MenuEditor from "@/pages/MenuEditor";
+import MenuManagement from "@/pages/MenuManagement";
 
 function Router() {
   return (
@@ -21,6 +22,7 @@ function Router() {
       <Route path="/gallery" component={GalleryPage} />
       <Route path="/image-management" component={ImageManagement} />
       <Route path="/menu-demo" component={MenuDemo} />
+      <Route path="/edit-menu" component={MenuManagement} />
       <Route path="/:menuSlug/edit">
         {(params) => <MenuEditor menuSlug={params.menuSlug} />}
       </Route>
