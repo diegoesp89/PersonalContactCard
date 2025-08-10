@@ -24,10 +24,12 @@ function Router() {
       <Route path="/image-management" component={ImageManagement} />
       <Route path="/menu-demo" component={MenuDemo} />
       <Route path="/menu-edit" component={MenuManagement} />
+      {/* More specific routes should come first */}
       <Route path="/:ruta/stats" component={AnalyticsPage} />
       <Route path="/:slug/edit">
         {(params) => <MenuEditor menuSlug={params.slug} />}
       </Route>
+      {/* Generic dynamic route should be last */}
       <Route path="/:slug">
         {(params) => <DynamicRoute slug={params.slug} />}
       </Route>
