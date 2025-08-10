@@ -230,7 +230,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateMenu(id: number, menu: Partial<InsertMenu>): Promise<Menu> {
-    const [updated] = await db.update(menus).set(menu).where(eq(menus.id, id)).returning();
+    // Filter out timestamp fields and other fields that shouldn't be updated manually
+    const { createdAt, updatedAt, ...updateData } = menu as any;
+    
+    // Add current timestamp for updatedAt
+    const dataWithTimestamp = {
+      ...updateData,
+      updatedAt: new Date()
+    };
+    
+    const [updated] = await db.update(menus).set(dataWithTimestamp).where(eq(menus.id, id)).returning();
     return updated;
   }
 
@@ -249,7 +258,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateMenuItem(id: number, item: Partial<InsertMenuItem>): Promise<MenuItem> {
-    const [updated] = await db.update(menuItems).set(item).where(eq(menuItems.id, id)).returning();
+    // Filter out timestamp fields and other fields that shouldn't be updated manually
+    const { createdAt, updatedAt, ...updateData } = item as any;
+    
+    // Add current timestamp for updatedAt
+    const dataWithTimestamp = {
+      ...updateData,
+      updatedAt: new Date()
+    };
+    
+    const [updated] = await db.update(menuItems).set(dataWithTimestamp).where(eq(menuItems.id, id)).returning();
     return updated;
   }
 
