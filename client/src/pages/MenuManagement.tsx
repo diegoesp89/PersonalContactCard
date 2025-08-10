@@ -252,15 +252,26 @@ export default function MenuManagement() {
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-slate-200">Slug del Menú (URL)</Label>
-                    <Input
-                      value={newMenuData.slug}
-                      onChange={(e) => setNewMenuData({ ...newMenuData, slug: e.target.value })}
-                      className="bg-slate-700 border-slate-600 text-slate-100"
-                      placeholder="ej: pizza-menu"
-                    />
+                    <Label className="text-slate-200">Ruta del Menú (URL)</Label>
+                    <div className="flex items-center gap-2">
+                      <span className="text-slate-400 text-sm">/</span>
+                      <Input
+                        value={newMenuData.slug}
+                        onChange={(e) => {
+                          // Sanitize slug: lowercase, no spaces, only alphanumeric and hyphens
+                          const sanitized = e.target.value
+                            .toLowerCase()
+                            .replace(/[^a-z0-9-]/g, '-')
+                            .replace(/-+/g, '-')
+                            .replace(/^-|-$/g, '');
+                          setNewMenuData({ ...newMenuData, slug: sanitized });
+                        }}
+                        className="bg-slate-700 border-slate-600 text-slate-100"
+                        placeholder="pizza-menu"
+                      />
+                    </div>
                     <p className="text-xs text-slate-400 mt-1">
-                      Se usará como /{newMenuData.slug}
+                      Se accederá como: /{newMenuData.slug || "pizza-menu"}
                     </p>
                   </div>
                   <div>

@@ -117,17 +117,25 @@ export default function MenuEditor({ menuSlug }: MenuEditorProps) {
         headers: { 'Content-Type': 'application/json' }
       });
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
         title: "Menú guardado",
         description: "La configuración del menú se ha guardado correctamente.",
       });
+      
+      // If the slug changed, redirect to new URL
+      if (data.slug && data.slug !== menuSlug) {
+        setLocation(`/${data.slug}/edit`);
+      }
+      
       queryClient.invalidateQueries({ queryKey: ['/api/menu', menuSlug] });
+      queryClient.invalidateQueries({ queryKey: ['/api/menu', data.slug] });
+      queryClient.invalidateQueries({ queryKey: ['/api/menus'] });
     },
-    onError: () => {
+    onError: (error: any) => {
       toast({
         title: "Error",
-        description: "No se pudo guardar la configuración del menú.",
+        description: error.message || "No se pudo guardar la configuración del menú.",
         variant: "destructive",
       });
     },
@@ -292,14 +300,39 @@ export default function MenuEditor({ menuSlug }: MenuEditorProps) {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <Label className="text-slate-200">Nombre del Menú</Label>
-                  <Input
-                    value={menuData.name || ""}
-                    onChange={(e) => setMenuData({ ...menuData, name: e.target.value })}
-                    className="bg-slate-700 border-slate-600 text-slate-100"
-                    placeholder="Ej: Menú Principal"
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-slate-200">Nombre del Menú</Label>
+                    <Input
+                      value={menuData.name || ""}
+                      onChange={(e) => setMenuData({ ...menuData, name: e.target.value })}
+                      className="bg-slate-700 border-slate-600 text-slate-100"
+                      placeholder="Ej: Menú Principal"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-slate-200">Ruta del Menú (URL)</Label>
+                    <div className="flex items-center gap-2">
+                      <span className="text-slate-400 text-sm">/</span>
+                      <Input
+                        value={menuData.slug || ""}
+                        onChange={(e) => {
+                          // Sanitize slug: lowercase, no spaces, only alphanumeric and hyphens
+                          const sanitized = e.target.value
+                            .toLowerCase()
+                            .replace(/[^a-z0-9-]/g, '-')
+                            .replace(/-+/g, '-')
+                            .replace(/^-|-$/g, '');
+                          setMenuData({ ...menuData, slug: sanitized });
+                        }}
+                        className="bg-slate-700 border-slate-600 text-slate-100"
+                        placeholder="menu-principal"
+                      />
+                    </div>
+                    <p className="text-xs text-slate-400 mt-1">
+                      Se accederá como: /{menuData.slug || "menu-principal"}
+                    </p>
+                  </div>
                 </div>
                 <div>
                   <Label className="text-slate-200">Descripción</Label>

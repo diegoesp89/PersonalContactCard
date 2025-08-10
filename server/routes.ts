@@ -1694,13 +1694,32 @@ END:VCARD`;
       const { slug } = req.params;
       const menuData = req.body;
       
+      // Sanitize the new slug if provided in the body
+      if (menuData.slug) {
+        menuData.slug = menuData.slug
+          .toLowerCase()
+          .replace(/[^a-z0-9-]/g, '-')
+          .replace(/-+/g, '-')
+          .replace(/^-|-$/g, '');
+      }
+      
       const existingMenu = await storage.getMenuBySlug(slug);
       let menu;
       
       if (existingMenu) {
+        // Check if we're changing the slug
+        if (menuData.slug && menuData.slug !== slug) {
+          // Check if new slug already exists
+          const conflictingMenu = await storage.getMenuBySlug(menuData.slug);
+          if (conflictingMenu && conflictingMenu.id !== existingMenu.id) {
+            return res.status(400).json({ error: "Ya existe un menú con esa ruta" });
+          }
+        }
         menu = await storage.updateMenu(existingMenu.id, menuData);
       } else {
-        menu = await storage.createMenu({ ...menuData, slug });
+        // For new menus, use the provided slug or fall back to URL parameter
+        const finalSlug = menuData.slug || slug;
+        menu = await storage.createMenu({ ...menuData, slug: finalSlug });
       }
       
       res.json(menu);
