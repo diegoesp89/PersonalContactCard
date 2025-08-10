@@ -126,7 +126,7 @@ export default function MenuDemo({ menuSlug }: MenuDemoProps) {
             }}
           >
             <p className="text-lg font-semibold">⚠️ Este menú es un Demo, no está apto para su uso público</p>
-            <p className="text-sm mt-1">Solo visible para administradores - Requiere aprobación para publicación</p>
+            <p className="text-sm mt-1">Requiere aprobación para publicación</p>
           </div>
         )}
 
