@@ -26,35 +26,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useLocation } from "wouter";
 import type { UploadResult } from "@uppy/core";
 
-interface Menu {
-  id: number;
-  slug: string;
-  name: string;
-  description: string;
-  primaryColor: string;
-  secondaryColor: string;
-  accentColor: string;
-  backgroundColor: string;
-  textColor: string;
-  showChefRecommendation: number;
-  showSpicyIndicator: number;
-  showVegetarianIndicator: number;
-  showExtraLabels: number;
-}
-
-interface MenuItem {
-  id?: number;
-  menuId: number;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  specialLabel: string;
-  isVegetarian: number;
-  isSpicy: number;
-  isActive: number;
-  image: string;
-}
+import type { Menu, MenuItem } from "@/../../shared/schema";
 
 export default function MenuManagement() {
   const [, setLocation] = useLocation();

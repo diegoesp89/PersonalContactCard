@@ -74,50 +74,21 @@ export const insertUserSchema = createInsertSchema(users).pick({
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 
-// Menu configuration table
+// Menus table
 export const menus = pgTable("menus", {
   id: serial("id").primaryKey(),
-  slug: text("slug").notNull().unique(), // e.g., "menu", "pizza-menu", "drinks"
-  name: text("name").notNull(), // e.g., "Menú Principal", "Pizzas", "Bebidas"
+  slug: text("slug").notNull().unique(),
+  name: text("name").notNull(),
   description: text("description").notNull().default(""),
-  
-  // Color scheme
-  primaryColor: text("primary_color").notNull().default("#d97706"), // amber-600
-  secondaryColor: text("secondary_color").notNull().default("#92400e"), // amber-700
-  accentColor: text("accent_color").notNull().default("#fbbf24"), // yellow-400
-  backgroundColor: text("background_color").notNull().default("#451a03"), // amber-950
-  textColor: text("text_color").notNull().default("#fef3c7"), // amber-100
-  
-  // Feature toggles
-  showChefRecommendation: integer("show_chef_recommendation").notNull().default(1), // 1 = true, 0 = false
+  primaryColor: text("primary_color").notNull().default("#d97706"),
+  secondaryColor: text("secondary_color").notNull().default("#92400e"),
+  accentColor: text("accent_color").notNull().default("#fbbf24"),
+  backgroundColor: text("background_color").notNull().default("#451a03"),
+  textColor: text("text_color").notNull().default("#fef3c7"),
+  showChefRecommendation: integer("show_chef_recommendation").notNull().default(1),
   showSpicyIndicator: integer("show_spicy_indicator").notNull().default(1),
   showVegetarianIndicator: integer("show_vegetarian_indicator").notNull().default(1),
   showExtraLabels: integer("show_extra_labels").notNull().default(1),
-  
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-// Menu items table
-export const menuItems = pgTable("menu_items", {
-  id: serial("id").primaryKey(),
-  menuId: integer("menu_id").notNull().references(() => menus.id, { onDelete: "cascade" }),
-  
-  name: text("name").notNull(),
-  description: text("description").notNull(),
-  price: integer("price").notNull(), // Price in cents
-  category: text("category").notNull(), // e.g., "entradas", "principales", "postres"
-  image: text("image").notNull().default(""),
-  
-  // Special properties
-  isVegetarian: integer("is_vegetarian").notNull().default(0),
-  isSpicy: integer("is_spicy").notNull().default(0),
-  specialLabel: text("special_label").notNull().default(""), // e.g., "Recomendación del Chef"
-  
-  // Order for display
-  sortOrder: integer("sort_order").notNull().default(0),
-  isActive: integer("is_active").notNull().default(1),
-  
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -128,16 +99,36 @@ export const insertMenuSchema = createInsertSchema(menus).omit({
   updatedAt: true,
 });
 
+export type InsertMenu = z.infer<typeof insertMenuSchema>;
+export type Menu = typeof menus.$inferSelect;
+
+// Menu Items table
+export const menuItems = pgTable("menu_items", {
+  id: serial("id").primaryKey(),
+  menuId: integer("menu_id").notNull().references(() => menus.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  description: text("description").notNull().default(""),
+  price: integer("price").notNull().default(0), // Price in cents
+  category: text("category").notNull(),
+  specialLabel: text("special_label").notNull().default(""),
+  isVegetarian: integer("is_vegetarian").notNull().default(0),
+  isSpicy: integer("is_spicy").notNull().default(0),
+  isActive: integer("is_active").notNull().default(1),
+  image: text("image").notNull().default(""),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const insertMenuItemSchema = createInsertSchema(menuItems).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export type InsertMenu = z.infer<typeof insertMenuSchema>;
-export type Menu = typeof menus.$inferSelect;
 export type InsertMenuItem = z.infer<typeof insertMenuItemSchema>;
 export type MenuItem = typeof menuItems.$inferSelect;
+
+
 
 // Analytics table for tracking user interactions
 export const analytics = pgTable("analytics", {
