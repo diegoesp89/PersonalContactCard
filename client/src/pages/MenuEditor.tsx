@@ -514,6 +514,69 @@ export default function MenuEditor({ menuSlug }: MenuEditorProps) {
                     </div>
                   </div>
                 </div>
+                
+                {/* Color Preview */}
+                <div className="mt-6 p-4 border border-slate-600 rounded-lg">
+                  <Label className="text-slate-200 mb-3 block">Vista Previa de Colores</Label>
+                  <div 
+                    className="p-4 rounded-lg"
+                    style={{ 
+                      backgroundColor: menuData.backgroundColor || "#451a03",
+                      color: menuData.textColor || "#fef3c7"
+                    }}
+                  >
+                    <h3 
+                      className="text-xl font-bold mb-2"
+                      style={{ color: menuData.primaryColor || "#d97706" }}
+                    >
+                      {menuData.name || "Nombre del Menú"}
+                    </h3>
+                    <div className="flex gap-2 mb-3">
+                      <span 
+                        className="px-3 py-1 rounded text-sm border"
+                        style={{ 
+                          borderColor: menuData.secondaryColor || "#92400e",
+                          backgroundColor: menuData.primaryColor || "#d97706",
+                          color: "white"
+                        }}
+                      >
+                        Todos
+                      </span>
+                      <span 
+                        className="px-3 py-1 rounded text-sm border"
+                        style={{ 
+                          borderColor: menuData.secondaryColor || "#92400e",
+                          backgroundColor: "transparent"
+                        }}
+                      >
+                        Entradas
+                      </span>
+                    </div>
+                    <div 
+                      className="p-3 rounded border"
+                      style={{ 
+                        borderColor: menuData.secondaryColor || "#92400e",
+                        backgroundColor: `${menuData.secondaryColor || "#92400e"}15`
+                      }}
+                    >
+                      <h4 
+                        className="font-semibold"
+                        style={{ color: menuData.primaryColor || "#d97706" }}
+                      >
+                        Plato de Ejemplo
+                      </h4>
+                      <p className="text-sm mt-1">
+                        Descripción del plato con los colores seleccionados
+                      </p>
+                      <span 
+                        className="text-lg font-bold mt-2 block"
+                        style={{ color: menuData.accentColor || "#fbbf24" }}
+                      >
+                        $12.990
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
 

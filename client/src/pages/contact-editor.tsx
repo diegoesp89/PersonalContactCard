@@ -1523,6 +1523,45 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                   Color del texto para el nombre y título del perfil
                 </p>
               </div>
+              
+              {/* Color Preview */}
+              <div className="mt-6 p-4 border border-slate-600 rounded-lg">
+                <Label className="text-slate-200 mb-3 block">Vista Previa de Colores</Label>
+                <div 
+                  className="p-6 rounded-lg border-2"
+                  style={{ 
+                    backgroundColor: formData.backgroundColor || "#1e293b",
+                    color: formData.textColor || "#ffffff",
+                    borderColor: "#475569"
+                  }}
+                >
+                  <div className="text-center">
+                    <h3 
+                      className="text-2xl font-bold mb-2"
+                      style={{ color: formData.textColor || "#ffffff" }}
+                    >
+                      {formData.name || "Nombre de Ejemplo"}
+                    </h3>
+                    <p 
+                      className="text-lg mb-4"
+                      style={{ color: formData.textColor || "#ffffff" }}
+                    >
+                      {formData.titulo || "Título del Perfil"}
+                    </p>
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      <div className="px-3 py-1 rounded-full bg-blue-500 text-white text-sm">
+                        WhatsApp
+                      </div>
+                      <div className="px-3 py-1 rounded-full bg-purple-500 text-white text-sm">
+                        Instagram
+                      </div>
+                      <div className="px-3 py-1 rounded-full bg-green-500 text-white text-sm">
+                        Sitio Web
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               {/* Stats Password */}
               <div className="space-y-2">
