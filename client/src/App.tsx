@@ -22,10 +22,7 @@ function Router() {
       <Route path="/gallery" component={GalleryPage} />
       <Route path="/image-management" component={ImageManagement} />
       <Route path="/menu-demo" component={MenuDemo} />
-      <Route path="/edit-menu" component={MenuManagement} />
-      <Route path="/:menuSlug/edit">
-        {(params) => <MenuEditor menuSlug={params.menuSlug} />}
-      </Route>
+      <Route path="/menu-edit" component={MenuManagement} />
       <Route path="/:ruta/stats" component={AnalyticsPage} />
       <Route path="/:ruta" component={ContactPage} />
       <Route component={NotFound} />

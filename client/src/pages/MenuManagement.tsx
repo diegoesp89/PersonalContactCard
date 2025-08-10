@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { ObjectUploader } from "@/components/ObjectUploader";
 import { 
   ArrowLeft,
   Plus,
@@ -12,11 +15,16 @@ import {
   Eye,
   Trash2,
   Save,
-  Settings
+  Settings,
+  Palette,
+  Upload,
+  Image,
+  X
 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useLocation } from "wouter";
+import type { UploadResult } from "@uppy/core";
 
 interface Menu {
   id: number;
@@ -34,12 +42,31 @@ interface Menu {
   showExtraLabels: number;
 }
 
+interface MenuItem {
+  id?: number;
+  menuId: number;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  specialLabel: string;
+  isVegetarian: number;
+  isSpicy: number;
+  isActive: number;
+  image: string;
+}
+
 export default function MenuManagement() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [selectedMenu, setSelectedMenu] = useState<Menu | null>(null);
+  const [showItemForm, setShowItemForm] = useState(false);
+  const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
+  const [menuData, setMenuData] = useState<Partial<Menu>>({});
+  const [items, setItems] = useState<MenuItem[]>([]);
   const [newMenuData, setNewMenuData] = useState({
     slug: "",
     name: "",
@@ -55,6 +82,40 @@ export default function MenuManagement() {
   const { data: menus = [], isLoading } = useQuery<Menu[]>({
     queryKey: ['/api/menus'],
   });
+
+  // Fetch selected menu details
+  const { data: menuResponse } = useQuery({
+    queryKey: ['/api/menu', selectedMenu?.slug],
+    enabled: !!selectedMenu,
+  });
+
+  // Update menu data when selectedMenu changes
+  useEffect(() => {
+    if (selectedMenu) {
+      setMenuData(selectedMenu);
+    }
+  }, [selectedMenu]);
+
+  // Update items when menu response changes
+  useEffect(() => {
+    if (menuResponse) {
+      if (menuResponse.menu) {
+        setMenuData(menuResponse.menu);
+      }
+      if (menuResponse.items) {
+        setItems(menuResponse.items);
+      }
+    }
+  }, [menuResponse]);
+
+  // Categories for menu items
+  const categories = [
+    { id: "appetizers", name: "Aperitivos" },
+    { id: "mains", name: "Platos Principales" },
+    { id: "desserts", name: "Postres" },
+    { id: "drinks", name: "Bebidas" },
+    { id: "sides", name: "Acompañamientos" }
+  ];
 
   // Create new menu
   const createMenuMutation = useMutation({
@@ -110,6 +171,50 @@ export default function MenuManagement() {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center">
         <div className="text-slate-300">Cargando menús...</div>
+      </div>
+    );
+  }
+
+  // Si hay un menú seleccionado, mostrar el editor
+  if (selectedMenu) {
+    return (
+      <div className="min-h-screen bg-slate-900 p-4">
+        <div className="max-w-6xl mx-auto">
+          {/* Header del editor */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="outline"
+                onClick={() => setSelectedMenu(null)}
+                className="bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Volver a Menús
+              </Button>
+              <h1 className="text-2xl font-bold text-slate-100">
+                Editando: {menuData.name}
+              </h1>
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => window.open(`/${selectedMenu.slug}`, '_blank')}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              <Eye className="w-4 h-4 mr-2" />
+              Ver Menú
+            </Button>
+          </div>
+
+          {/* TODO: Aquí irá el editor completo del menú */}
+          <div className="bg-slate-800 rounded-lg p-6">
+            <h2 className="text-xl font-semibold text-slate-100 mb-4">
+              Editor del menú (Por implementar)
+            </h2>
+            <p className="text-slate-300">
+              Funcionalidad de edición completa del menú seleccionado.
+            </p>
+          </div>
+        </div>
       </div>
     );
   }
@@ -210,7 +315,7 @@ export default function MenuManagement() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setLocation(`/${menu.slug}/edit`)}
+                    onClick={() => setSelectedMenu(menu)}
                     className="flex-1 bg-blue-600 border-blue-500 text-white hover:bg-blue-700"
                   >
                     <Edit className="w-4 h-4 mr-2" />
