@@ -136,14 +136,14 @@ export default function MenuDemo({ menuSlug }: MenuDemoProps) {
         {/* Categories Tabs */}
         <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
           <TabsList 
-            className="grid w-full grid-cols-5 mb-8 bg-transparent border-2"
+            className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mb-8 bg-transparent border-2 h-auto p-2"
             style={{ borderColor: menu.secondaryColor }}
           >
             {categories.map((category) => (
               <TabsTrigger
                 key={category.id}
                 value={category.id}
-                className="text-sm font-medium data-[state=active]:text-white transition-all"
+                className="text-xs sm:text-sm font-medium data-[state=active]:text-white transition-all px-2 py-2 sm:px-3 sm:py-2 whitespace-nowrap"
                 style={{
                   color: menu.textColor,
                   backgroundColor: selectedCategory === category.id ? menu.primaryColor : 'transparent',
