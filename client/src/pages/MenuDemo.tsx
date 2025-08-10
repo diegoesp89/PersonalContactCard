@@ -2,270 +2,274 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { 
   Leaf,
   Flame,
   ChefHat,
-  ImageIcon
+  ImageIcon,
+  Edit
 } from "lucide-react";
 
+interface Menu {
+  id: number;
+  slug: string;
+  name: string;
+  description: string;
+  primaryColor: string;
+  secondaryColor: string;
+  accentColor: string;
+  backgroundColor: string;
+  textColor: string;
+  showChefRecommendation: number;
+  showSpicyIndicator: number;
+  showVegetarianIndicator: number;
+  showExtraLabels: number;
+}
+
 interface MenuItem {
-  id: string;
+  id: number;
+  menuId: number;
   name: string;
   description: string;
   price: number;
   category: string;
-  image?: string;
-  isVegetarian?: boolean;
-  isSpicy?: boolean;
-  specialLabel?: string;
+  image: string;
+  isVegetarian: number;
+  isSpicy: number;
+  specialLabel: string;
+  sortOrder: number;
+  isActive: number;
 }
 
-
-
-const menuItems: MenuItem[] = [
-  // Entradas
-  {
-    id: "1",
-    name: "Hummus con Pan Pita",
-    description: "Puré cremoso de garbanzos con tahini, aceite de oliva, limón y ajo, servido con pan pita caliente",
-    price: 8500,
-    category: "entradas",
-    isVegetarian: true,
-    specialLabel: "Recomendación del Chef"
-  },
-  {
-    id: "2",
-    name: "Baba Ganoush",
-    description: "Puré de berenjenas asadas con tahini, ajo, limón y aceite de oliva, acompañado de vegetales frescos",
-    price: 9200,
-    category: "entradas",
-    isVegetarian: true,
-    specialLabel: "Plato favorito de la gente"
-  },
-  {
-    id: "3",
-    name: "Falafel (6 unidades)",
-    description: "Croquetas de garbanzos y especias árabes fritas, servidas con salsa tahini y ensalada",
-    price: 10800,
-    category: "entradas",
-    isVegetarian: true
-  },
-  {
-    id: "4",
-    name: "Kibbeh (4 unidades)",
-    description: "Croquetas de bulgur rellenas con carne de cordero, cebolla y especias, fritas hasta dorar",
-    price: 12500,
-    category: "entradas"
-  },
-
-  // Platos Principales
-  {
-    id: "5",
-    name: "Shawarma de Cordero",
-    description: "Finas láminas de cordero marinado con especias árabes, servido en pan pita con vegetales y salsa tahini",
-    price: 16800,
-    category: "principales"
-  },
-  {
-    id: "6",
-    name: "Shawarma de Pollo",
-    description: "Pollo marinado en especias árabes, servido en pan pita con tomate, cebolla, pepino y salsa ajo",
-    price: 14500,
-    category: "principales"
-  },
-  {
-    id: "7",
-    name: "Kebab de Cordero",
-    description: "Brochetas de cordero marinado con especias orientales, servido con arroz basmati y ensalada tabbouleh",
-    price: 19800,
-    category: "principales"
-  },
-  {
-    id: "8",
-    name: "Mansaf",
-    description: "Cordero cocido en salsa de yogurt fermentado (jameed) con almendras, servido sobre arroz",
-    price: 22500,
-    category: "principales"
-  },
-  {
-    id: "9",
-    name: "Makloubeh Vegetariano",
-    description: "Arroz basmati con berenjenas, coliflor y especias árabes, servido invertido con yogurt",
-    price: 15200,
-    category: "principales",
-    isVegetarian: true
-  },
-
-  // Postres
-  {
-    id: "10",
-    name: "Baklava (3 piezas)",
-    description: "Hojaldre relleno de nueces y pistachos, bañado en miel con agua de rosas",
-    price: 7800,
-    category: "postres",
-    isVegetarian: true
-  },
-  {
-    id: "11",
-    name: "Kanafeh",
-    description: "Postre tradicional con queso fresco cubierto de pasta kadaif y jarabe de azúcar con agua de rosas",
-    price: 8500,
-    category: "postres",
-    isVegetarian: true
-  },
-  {
-    id: "12",
-    name: "Muhallabia",
-    description: "Pudín cremoso de leche con agua de rosas, decorado con pistachos molidos y canela",
-    price: 6200,
-    category: "postres",
-    isVegetarian: true
-  },
-
-  // Bebidas
-  {
-    id: "13",
-    name: "Té de Menta Árabe",
-    description: "Té verde con hojas de menta fresca y azúcar, servido en vaso tradicional",
-    price: 3500,
-    category: "bebidas",
-    isVegetarian: true
-  },
-  {
-    id: "14",
-    name: "Café Árabe (Qahwa)",
-    description: "Café tradicional con cardamomo, servido en tacitas pequeñas con dátiles",
-    price: 4200,
-    category: "bebidas",
-    isVegetarian: true
-  },
-  {
-    id: "15",
-    name: "Limonada con Agua de Rosas",
-    description: "Refrescante limonada con un toque de agua de rosas y menta fresca",
-    price: 4800,
-    category: "bebidas",
-    isVegetarian: true
-  },
-  {
-    id: "16",
-    name: "Jallab",
-    description: "Bebida tradicional de jarabe de dátiles, agua de rosas y piñones, servida con hielo",
-    price: 5500,
-    category: "bebidas",
-    isVegetarian: true
-  }
-];
-
-const categories = [
-  { id: "todos", name: "Todos los platos", icon: "📋" },
-  { id: "entradas", name: "Entradas", icon: "🥗" },
-  { id: "principales", name: "Platos Principales", icon: "🍽️" },
-  { id: "postres", name: "Postres", icon: "🍰" },
-  { id: "bebidas", name: "Bebidas", icon: "🍹" }
-];
-
 export default function MenuDemo() {
-  const [activeCategory, setActiveCategory] = useState("todos");
+  const [, setLocation] = useLocation();
+  const [selectedCategory, setSelectedCategory] = useState("entradas");
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('es-CL', {
-      style: 'currency',
-      currency: 'CLP',
-      minimumFractionDigits: 0
-    }).format(price);
-  };
+  // Fetch menu data from API (defaulting to 'menu' slug)
+  const { data: menuResponse, isLoading } = useQuery({
+    queryKey: ['/api/menu', 'menu'],
+  });
 
-  const filteredItems = activeCategory === "todos" 
-    ? menuItems 
-    : menuItems.filter(item => item.category === activeCategory);
+  const menu: Menu | null = menuResponse?.menu || null;
+  const items: MenuItem[] = menuResponse?.items || [];
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-900 via-orange-900 to-red-900">
-      {/* Header */}
-      <div className="bg-amber-800/80 backdrop-blur-sm border-b border-amber-600 sticky top-0 z-40">
-        <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <ChefHat className="w-8 h-8 text-yellow-400" />
-              <div>
-                <h1 className="text-2xl font-bold text-amber-100">Menú Demo</h1>
-                <p className="text-amber-300 text-sm">Comida rápida - Solo Muestra</p>
-              </div>
-            </div>
-          </div>
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center"
+           style={{ backgroundColor: "#451a03", color: "#fef3c7" }}>
+        <div>Cargando menú...</div>
+      </div>
+    );
+  }
+
+  if (!menu) {
+    return (
+      <div className="min-h-screen flex items-center justify-center"
+           style={{ backgroundColor: "#451a03", color: "#fef3c7" }}>
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Menú no encontrado</h2>
+          <p>No se encontró el menú solicitado.</p>
         </div>
       </div>
+    );
+  }
 
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="w-full">
-            {/* Category Tabs */}
-            <Tabs value={activeCategory} onValueChange={setActiveCategory} className="w-full">
-              <TabsList className="grid w-full grid-cols-5 bg-amber-800 border-amber-600">
-                {categories.map(category => (
-                  <TabsTrigger
-                    key={category.id}
-                    value={category.id}
-                    className="data-[state=active]:bg-yellow-600 data-[state=active]:text-amber-900 text-amber-200"
-                  >
-                    <span className="mr-2">{category.icon}</span>
-                    {category.name}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
+  const categories = [
+    { id: "entradas", name: "Entradas" },
+    { id: "principales", name: "Platos Principales" },
+    { id: "postres", name: "Postres" },
+    { id: "bebidas", name: "Bebidas" },
+  ];
 
-              {categories.map(category => (
-                <TabsContent key={category.id} value={category.id} className="mt-6">
-                  <div className="grid gap-6">
-                    {filteredItems.map(item => (
-                      <Card key={item.id} className="bg-amber-950/70 border-amber-700 hover:border-yellow-500/50 transition-all duration-300 backdrop-blur-sm">
-                        <CardContent className="p-6">
-                          <div className="flex gap-6">
-                            {/* Placeholder para imagen */}
-                            <div className="w-32 h-32 bg-amber-800/50 rounded-lg flex items-center justify-center flex-shrink-0 border border-amber-600">
-                              <ImageIcon className="w-8 h-8 text-amber-400" />
-                            </div>
-                            
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-2 flex-wrap">
-                                <h3 className="text-xl font-semibold text-amber-100">{item.name}</h3>
-                                {item.specialLabel && (
-                                  <Badge className="bg-yellow-600 text-amber-900 font-medium">
-                                    {item.specialLabel}
-                                  </Badge>
-                                )}
-                                {item.isVegetarian && (
-                                  <Badge variant="outline" className="border-green-400 text-green-300 bg-green-900/30">
-                                    <Leaf className="w-3 h-3 mr-1" />
-                                    Vegetariano
-                                  </Badge>
-                                )}
-                                {item.isSpicy && (
-                                  <Badge variant="outline" className="border-red-400 text-red-300 bg-red-900/30">
-                                    <Flame className="w-3 h-3 mr-1" />
-                                    Picante
-                                  </Badge>
-                                )}
-                              </div>
-                              
-                              <p className="text-amber-200 mb-3">{item.description}</p>
-                              
-                              <div className="flex items-center justify-end">
-                                <div className="text-2xl font-bold text-yellow-400">
-                                  {formatPrice(item.price)}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </TabsContent>
-              ))}
-            </Tabs>
+  const getItemsByCategory = (category: string) => 
+    items.filter(item => item.category === category && item.isActive === 1);
+
+  return (
+    <div 
+      className="min-h-screen p-4"
+      style={{ 
+        backgroundColor: menu.backgroundColor,
+        color: menu.textColor 
+      }}
+    >
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="flex justify-between items-start mb-4">
+            <div></div>
+            <div className="text-center flex-1">
+              <h1 
+                className="text-4xl font-bold mb-2"
+                style={{ color: menu.primaryColor }}
+              >
+                {menu.name}
+              </h1>
+              {menu.description && (
+                <p 
+                  className="text-lg mb-4"
+                  style={{ color: menu.textColor }}
+                >
+                  {menu.description}
+                </p>
+              )}
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => setLocation(`/${menu.slug}/edit`)}
+              className="bg-transparent border-2 hover:bg-opacity-20"
+              style={{ 
+                borderColor: menu.accentColor,
+                color: menu.accentColor
+              }}
+            >
+              <Edit className="w-4 h-4 mr-2" />
+              Editar
+            </Button>
+          </div>
         </div>
+
+        {/* Categories Tabs */}
+        <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
+          <TabsList 
+            className="grid w-full grid-cols-4 mb-8 bg-transparent border-2"
+            style={{ borderColor: menu.secondaryColor }}
+          >
+            {categories.map((category) => (
+              <TabsTrigger
+                key={category.id}
+                value={category.id}
+                className="text-sm font-medium data-[state=active]:text-white transition-all"
+                style={{
+                  color: menu.textColor,
+                  backgroundColor: selectedCategory === category.id ? menu.primaryColor : 'transparent',
+                }}
+              >
+                {category.name}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+
+          {categories.map((category) => (
+            <TabsContent key={category.id} value={category.id} className="space-y-6">
+              <div className="grid gap-6">
+                {getItemsByCategory(category.id).map((item) => (
+                  <Card 
+                    key={item.id} 
+                    className="border-2 bg-transparent shadow-lg"
+                    style={{ 
+                      borderColor: menu.secondaryColor,
+                      backgroundColor: `${menu.secondaryColor}15`
+                    }}
+                  >
+                    <CardContent className="p-6">
+                      <div className="flex justify-between items-start gap-4">
+                        <div className="flex-1">
+                          <div className="flex flex-wrap items-center gap-2 mb-2">
+                            <CardTitle 
+                              className="text-xl"
+                              style={{ color: menu.primaryColor }}
+                            >
+                              {item.name}
+                            </CardTitle>
+                            
+                            {/* Special Labels */}
+                            {menu.showExtraLabels === 1 && item.specialLabel && (
+                              <Badge 
+                                className="text-xs font-semibold"
+                                style={{ 
+                                  backgroundColor: menu.accentColor,
+                                  color: menu.backgroundColor
+                                }}
+                              >
+                                <ChefHat className="w-3 h-3 mr-1" />
+                                {item.specialLabel}
+                              </Badge>
+                            )}
+                            
+                            {/* Vegetarian Badge */}
+                            {menu.showVegetarianIndicator === 1 && item.isVegetarian === 1 && (
+                              <Badge 
+                                variant="outline" 
+                                className="text-xs border-2"
+                                style={{ 
+                                  borderColor: menu.accentColor,
+                                  color: menu.accentColor
+                                }}
+                              >
+                                <Leaf className="w-3 h-3 mr-1" />
+                                Vegetariano
+                              </Badge>
+                            )}
+                            
+                            {/* Spicy Badge */}
+                            {menu.showSpicyIndicator === 1 && item.isSpicy === 1 && (
+                              <Badge 
+                                variant="outline" 
+                                className="text-xs border-2"
+                                style={{ 
+                                  borderColor: "#ef4444",
+                                  color: "#ef4444"
+                                }}
+                              >
+                                <Flame className="w-3 h-3 mr-1" />
+                                Picante
+                              </Badge>
+                            )}
+                          </div>
+                          
+                          <p 
+                            className="text-sm mb-4 leading-relaxed"
+                            style={{ color: menu.textColor }}
+                          >
+                            {item.description}
+                          </p>
+                          
+                          <div 
+                            className="text-2xl font-bold"
+                            style={{ color: menu.accentColor }}
+                          >
+                            ${(item.price / 100).toLocaleString('es-CL')}
+                          </div>
+                        </div>
+                        
+                        {/* Placeholder for image */}
+                        {item.image ? (
+                          <div className="w-24 h-24 rounded-lg bg-cover bg-center"
+                               style={{ backgroundImage: `url(${item.image})` }}>
+                          </div>
+                        ) : (
+                          <div 
+                            className="w-24 h-24 rounded-lg flex items-center justify-center border-2 border-dashed"
+                            style={{ borderColor: menu.secondaryColor }}
+                          >
+                            <ImageIcon 
+                              className="w-8 h-8"
+                              style={{ color: menu.secondaryColor }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              
+              {getItemsByCategory(category.id).length === 0 && (
+                <div className="text-center py-12">
+                  <p 
+                    className="text-lg"
+                    style={{ color: menu.textColor }}
+                  >
+                    No hay platos disponibles en esta categoría
+                  </p>
+                </div>
+              )}
+            </TabsContent>
+          ))}
+        </Tabs>
       </div>
     </div>
   );

@@ -1,10 +1,16 @@
 import {
   users,
   contacts,
+  menus,
+  menuItems,
   type User,
   type InsertUser,
   type Contact,
   type InsertContact,
+  type Menu,
+  type InsertMenu,
+  type MenuItem,
+  type InsertMenuItem,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
@@ -19,6 +25,19 @@ export interface IStorage {
   createContact(contact: InsertContact): Promise<Contact>;
   updateContact(id: number, contact: Partial<InsertContact>): Promise<Contact>;
   deleteContact(id: number): Promise<void>;
+  
+  // Menu methods
+  getAllMenus(): Promise<Menu[]>;
+  getMenuBySlug(slug: string): Promise<Menu | undefined>;
+  createMenu(menu: InsertMenu): Promise<Menu>;
+  updateMenu(id: number, menu: Partial<InsertMenu>): Promise<Menu>;
+  deleteMenu(id: number): Promise<void>;
+  
+  // Menu item methods
+  getMenuItems(menuId: number): Promise<MenuItem[]>;
+  createMenuItem(item: InsertMenuItem): Promise<MenuItem>;
+  updateMenuItem(id: number, item: Partial<InsertMenuItem>): Promise<MenuItem>;
+  deleteMenuItem(id: number): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -193,6 +212,49 @@ export class DatabaseStorage implements IStorage {
 
   async deleteContact(id: number): Promise<void> {
     await db.delete(contacts).where(eq(contacts.id, id));
+  }
+
+  // Menu methods implementation
+  async getAllMenus(): Promise<Menu[]> {
+    return db.select().from(menus);
+  }
+
+  async getMenuBySlug(slug: string): Promise<Menu | undefined> {
+    const result = await db.select().from(menus).where(eq(menus.slug, slug));
+    return result[0];
+  }
+
+  async createMenu(menu: InsertMenu): Promise<Menu> {
+    const [created] = await db.insert(menus).values(menu).returning();
+    return created;
+  }
+
+  async updateMenu(id: number, menu: Partial<InsertMenu>): Promise<Menu> {
+    const [updated] = await db.update(menus).set(menu).where(eq(menus.id, id)).returning();
+    return updated;
+  }
+
+  async deleteMenu(id: number): Promise<void> {
+    await db.delete(menus).where(eq(menus.id, id));
+  }
+
+  // Menu item methods implementation
+  async getMenuItems(menuId: number): Promise<MenuItem[]> {
+    return db.select().from(menuItems).where(eq(menuItems.menuId, menuId));
+  }
+
+  async createMenuItem(item: InsertMenuItem): Promise<MenuItem> {
+    const [created] = await db.insert(menuItems).values(item).returning();
+    return created;
+  }
+
+  async updateMenuItem(id: number, item: Partial<InsertMenuItem>): Promise<MenuItem> {
+    const [updated] = await db.update(menuItems).set(item).where(eq(menuItems.id, id)).returning();
+    return updated;
+  }
+
+  async deleteMenuItem(id: number): Promise<void> {
+    await db.delete(menuItems).where(eq(menuItems.id, id));
   }
 }
 

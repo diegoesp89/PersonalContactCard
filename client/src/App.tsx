@@ -11,6 +11,7 @@ import GalleryPage from "@/pages/GalleryPage";
 import NotFound from "@/pages/not-found";
 import ImageManagement from "@/pages/image-management";
 import MenuDemo from "@/pages/MenuDemo";
+import MenuEditor from "@/pages/MenuEditor";
 
 function Router() {
   return (
@@ -20,6 +21,9 @@ function Router() {
       <Route path="/gallery" component={GalleryPage} />
       <Route path="/image-management" component={ImageManagement} />
       <Route path="/menu-demo" component={MenuDemo} />
+      <Route path="/:menuSlug/edit">
+        {(params) => <MenuEditor menuSlug={params.menuSlug} />}
+      </Route>
       <Route path="/:ruta/stats" component={AnalyticsPage} />
       <Route path="/:ruta" component={ContactPage} />
       <Route component={NotFound} />
