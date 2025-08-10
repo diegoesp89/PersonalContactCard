@@ -1582,6 +1582,84 @@ END:VCARD`;
 
   // Menu API Routes
   
+  // Object Storage routes for menu images
+  app.post('/api/objects/upload', async (req, res) => {
+    try {
+      if (!objectStorage) {
+        return res.status(503).json({ error: 'Object Storage not available' });
+      }
+
+      // Generate unique filename for menu image
+      const timestamp = Date.now();
+      const randomString = Math.random().toString(36).substring(2, 8);
+      const filename = `menu-image-${timestamp}-${randomString}.jpg`;
+      
+      // Generate presigned URL for upload
+      const uploadResult = await objectStorage.upload(filename, Buffer.alloc(0));
+      if (uploadResult.error) {
+        console.error('Error generating upload URL:', uploadResult.error);
+        return res.status(500).json({ error: 'Failed to generate upload URL' });
+      }
+      
+      // Return a presigned URL that the frontend can use to upload directly
+      res.json({ uploadURL: `https://storage.googleapis.com/your-bucket/public/${filename}` });
+    } catch (error) {
+      console.error('Error generating upload URL:', error);
+      res.status(500).json({ error: 'Failed to generate upload URL' });
+    }
+  });
+
+  // Serve public objects (menu images)
+  app.get('/public-objects/:filename', async (req, res) => {
+    try {
+      const filename = req.params.filename;
+      
+      // Try to serve from Object Storage first
+      if (objectStorage) {
+        try {
+          const downloadResult = await objectStorage.download(filename);
+          if (!downloadResult.error && downloadResult.value) {
+            let imageBuffer: Buffer;
+            const rawData = downloadResult.value;
+            
+            if (Buffer.isBuffer(rawData)) {
+              imageBuffer = rawData;
+            } else if (Array.isArray(rawData)) {
+              imageBuffer = Buffer.from(rawData);
+            } else if (rawData instanceof Uint8Array) {
+              imageBuffer = Buffer.from(rawData);
+            } else {
+              throw new Error(`Unexpected data type from Object Storage: ${typeof rawData}`);
+            }
+            
+            const ext = path.extname(filename).toLowerCase();
+            const contentType = {
+              '.jpg': 'image/jpeg',
+              '.jpeg': 'image/jpeg', 
+              '.png': 'image/png',
+              '.gif': 'image/gif',
+              '.webp': 'image/webp'
+            }[ext] || 'image/jpeg';
+            
+            res.setHeader('Content-Type', contentType);
+            res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 year cache
+            res.setHeader('Content-Length', imageBuffer.length.toString());
+            res.end(imageBuffer, 'binary');
+            return;
+          }
+        } catch (objectStorageError) {
+          console.log('Object Storage download failed for menu image:', objectStorageError);
+        }
+      }
+      
+      // Fallback to local storage
+      res.redirect(`/api/image/${filename}`);
+    } catch (error) {
+      console.error('Error serving menu image:', error);
+      res.status(404).json({ error: 'Image not found' });
+    }
+  });
+
   // Get all menus
   app.get("/api/menus", async (req, res) => {
     try {

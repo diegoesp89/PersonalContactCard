@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { ObjectUploader } from "@/components/ObjectUploader";
 import { 
   ArrowLeft,
   Plus,
@@ -16,10 +17,14 @@ import {
   Save,
   Eye,
   Palette,
-  Settings
+  Settings,
+  Upload,
+  Image,
+  X
 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import type { UploadResult } from "@uppy/core";
 
 interface Menu {
   id: number;
@@ -590,6 +595,92 @@ export default function MenuEditor({ menuSlug }: MenuEditorProps) {
                   </div>
                 </div>
                 
+                {/* Image Upload Section */}
+                <div>
+                  <Label className="text-slate-200">Imagen del Plato</Label>
+                  <div className="mt-2">
+                    {editingItem.image ? (
+                      <div className="flex items-center gap-4">
+                        <div className="relative">
+                          <img 
+                            src={editingItem.image.startsWith('http') ? editingItem.image : `/public-objects/${editingItem.image}`}
+                            alt={editingItem.name}
+                            className="w-20 h-20 object-cover rounded-lg border border-slate-600"
+                          />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setEditingItem({ ...editingItem, image: "" })}
+                            className="absolute -top-2 -right-2 w-6 h-6 p-0 bg-red-600 border-red-500 text-white hover:bg-red-700"
+                          >
+                            <X className="w-3 h-3" />
+                          </Button>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm text-slate-300">Imagen actual</p>
+                          <ObjectUploader
+                            maxNumberOfFiles={1}
+                            maxFileSize={5242880} // 5MB
+                            onGetUploadParameters={async () => {
+                              const response = await fetch('/api/objects/upload', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' }
+                              });
+                              const data = await response.json();
+                              return {
+                                method: 'PUT' as const,
+                                url: data.uploadURL
+                              };
+                            }}
+                            onComplete={(result) => {
+                              if (result.successful?.[0]?.uploadURL) {
+                                const imageUrl = result.successful[0].uploadURL.split('?')[0];
+                                const imagePath = imageUrl.split('/').pop() || '';
+                                setEditingItem({ ...editingItem, image: imagePath });
+                              }
+                            }}
+                            buttonClassName="bg-blue-600 hover:bg-blue-700 text-sm"
+                          >
+                            <Upload className="w-4 h-4 mr-2" />
+                            Cambiar Imagen
+                          </ObjectUploader>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="border-2 border-dashed border-slate-600 rounded-lg p-6 text-center">
+                        <Image className="w-12 h-12 text-slate-500 mx-auto mb-3" />
+                        <p className="text-slate-400 mb-3">No hay imagen asignada</p>
+                        <ObjectUploader
+                          maxNumberOfFiles={1}
+                          maxFileSize={5242880} // 5MB
+                          onGetUploadParameters={async () => {
+                            const response = await fetch('/api/objects/upload', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' }
+                            });
+                            const data = await response.json();
+                            return {
+                              method: 'PUT' as const,
+                              url: data.uploadURL
+                            };
+                          }}
+                          onComplete={(result) => {
+                            if (result.successful?.[0]?.uploadURL) {
+                              const imageUrl = result.successful[0].uploadURL.split('?')[0];
+                              const imagePath = imageUrl.split('/').pop() || '';
+                              setEditingItem({ ...editingItem, image: imagePath });
+                            }
+                          }}
+                          buttonClassName="bg-green-600 hover:bg-green-700"
+                        >
+                          <Upload className="w-4 h-4 mr-2" />
+                          Subir Imagen
+                        </ObjectUploader>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 <div className="flex gap-6">
                   <div className="flex items-center gap-2">
                     <input
