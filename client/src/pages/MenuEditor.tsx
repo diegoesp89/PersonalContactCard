@@ -62,9 +62,75 @@ interface MenuEditorProps {
 }
 
 export default function MenuEditor({ menuSlug }: MenuEditorProps) {
+  // Handle authentication state
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState("");
+  const [authError, setAuthError] = useState("");
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Authentication mutation
+  const authMutation = useMutation({
+    mutationFn: async (password: string) => {
+      return apiRequest('/api/admin/login', {
+        method: 'POST',
+        body: JSON.stringify({ password }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+    },
+    onSuccess: () => {
+      setIsAuthenticated(true);
+      setAuthError("");
+    },
+    onError: () => {
+      setAuthError("Contraseña incorrecta");
+    },
+  });
+
+  const handleAuth = (e: React.FormEvent) => {
+    e.preventDefault();
+    authMutation.mutate(password);
+  };
+
+  // Show auth form if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-100 dark:from-slate-900 dark:to-slate-800">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-center">Acceso Administrador</CardTitle>
+            <p className="text-center text-muted-foreground">Editor de Menú: {menuSlug}</p>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleAuth} className="space-y-4">
+              <div>
+                <Label htmlFor="password">Contraseña de Administrador</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Ingresa la contraseña"
+                  className="mt-1"
+                />
+                {authError && (
+                  <p className="text-red-500 text-sm mt-2">{authError}</p>
+                )}
+              </div>
+              <Button 
+                type="submit" 
+                className="w-full"
+                disabled={authMutation.isPending}
+              >
+                {authMutation.isPending ? "Verificando..." : "Acceder"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   
   const [menuData, setMenuData] = useState<Partial<Menu>>({
     slug: menuSlug,

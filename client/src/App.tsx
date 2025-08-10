@@ -25,6 +25,9 @@ function Router() {
       <Route path="/menu-demo" component={MenuDemo} />
       <Route path="/menu-edit" component={MenuManagement} />
       <Route path="/:ruta/stats" component={AnalyticsPage} />
+      <Route path="/:slug/edit">
+        {(params) => <MenuEditor menuSlug={params.slug} />}
+      </Route>
       <Route path="/:slug">
         {(params) => <DynamicRoute slug={params.slug} />}
       </Route>
