@@ -1634,7 +1634,7 @@ END:VCARD`;
       const filename = `menu-image-${timestamp}-${randomString}.jpg`;
       
       // Generate presigned URL for upload
-      const uploadResult = await objectStorage.upload(filename, Buffer.alloc(0));
+      const uploadResult = await objectStorage.uploadFromBytes(filename, Buffer.alloc(0));
       if (uploadResult.error) {
         console.error('Error generating upload URL:', uploadResult.error);
         return res.status(500).json({ error: 'Failed to generate upload URL' });
@@ -1656,7 +1656,7 @@ END:VCARD`;
       // Try to serve from Object Storage first
       if (objectStorage) {
         try {
-          const downloadResult = await objectStorage.download(filename);
+          const downloadResult = await objectStorage.downloadAsBytes(filename);
           if (!downloadResult.error && downloadResult.value) {
             let imageBuffer: Buffer;
             const rawData = downloadResult.value;
@@ -1664,7 +1664,7 @@ END:VCARD`;
             if (Buffer.isBuffer(rawData)) {
               imageBuffer = rawData;
             } else if (Array.isArray(rawData)) {
-              imageBuffer = Buffer.from(rawData);
+              imageBuffer = Buffer.from(new Uint8Array(rawData));
             } else if (rawData instanceof Uint8Array) {
               imageBuffer = Buffer.from(rawData);
             } else {
