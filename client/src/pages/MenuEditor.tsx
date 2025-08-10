@@ -559,12 +559,47 @@ export default function MenuEditor({ menuSlug }: MenuEditorProps) {
                         backgroundColor: `${menuData.secondaryColor || "#92400e"}15`
                       }}
                     >
-                      <h4 
-                        className="font-semibold"
-                        style={{ color: menuData.primaryColor || "#d97706" }}
-                      >
-                        Plato de Ejemplo
-                      </h4>
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
+                        <h4 
+                          className="font-semibold"
+                          style={{ color: menuData.primaryColor || "#d97706" }}
+                        >
+                          Plato de Ejemplo
+                        </h4>
+                        
+                        {/* Etiqueta Especial */}
+                        <span 
+                          className="text-xs font-semibold px-2 py-1 rounded flex items-center gap-1"
+                          style={{ 
+                            backgroundColor: menuData.accentColor || "#fbbf24",
+                            color: menuData.backgroundColor || "#451a03"
+                          }}
+                        >
+                          ⭐ Recomendación del Chef
+                        </span>
+                        
+                        {/* Vegetariano */}
+                        <span 
+                          className="text-xs border px-2 py-1 rounded flex items-center gap-1"
+                          style={{ 
+                            borderColor: menuData.accentColor || "#fbbf24",
+                            color: menuData.accentColor || "#fbbf24"
+                          }}
+                        >
+                          🌱 Vegetariano
+                        </span>
+                        
+                        {/* Picante */}
+                        <span 
+                          className="text-xs border px-2 py-1 rounded flex items-center gap-1"
+                          style={{ 
+                            borderColor: "#ef4444",
+                            color: "#ef4444"
+                          }}
+                        >
+                          🌶️ Picante
+                        </span>
+                      </div>
                       <p className="text-sm mt-1">
                         Descripción del plato con los colores seleccionados
                       </p>

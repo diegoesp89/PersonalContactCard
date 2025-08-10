@@ -1546,7 +1546,7 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                       className="text-lg mb-4"
                       style={{ color: formData.textColor || "#ffffff" }}
                     >
-                      {formData.titulo || "Título del Perfil"}
+                      {formData.title || "Título del Perfil"}
                     </p>
                     <div className="flex flex-wrap gap-2 justify-center">
                       <div className="px-3 py-1 rounded-full bg-blue-500 text-white text-sm">
