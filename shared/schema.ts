@@ -26,6 +26,7 @@ export const contacts = pgTable("contacts", {
   inDev: text("inDev").notNull().default("false"),
   ruta: text("ruta").notNull().unique(),
   backgroundColor: text("background_color").notNull().default("#1e293b"), // Default slate-800
+  textColor: text("text_color").notNull().default("#ffffff"), // Default white text
   statsPassword: text("stats_password"),
   defaultLanguage: text("default_language").notNull().default("es"), // es, en, pt
 

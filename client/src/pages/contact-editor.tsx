@@ -46,6 +46,7 @@ interface Contact {
   inDev: string;
   ruta: string;
   backgroundColor: string;
+  textColor: string;
   statsPassword: string;
   defaultLanguage: string;
 
@@ -114,6 +115,7 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
     inDev: contact?.inDev || "true", // Always default to true for new contacts
     ruta: contact?.ruta || "",
     backgroundColor: contact?.backgroundColor || "#1e293b", // Default slate-800
+    textColor: contact?.textColor || "#ffffff", // Default white text
     statsPassword: contact?.statsPassword || "",
     defaultLanguage: contact?.defaultLanguage || "es",
 
@@ -1497,6 +1499,28 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                 </div>
                 <p className="text-xs text-slate-400">
                   Color de fondo para la tarjeta de contacto
+                </p>
+              </div>
+
+              {/* Text Color Picker */}
+              <div className="space-y-2">
+                <Label className="text-slate-200">Color de Texto</Label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={formData.textColor}
+                    onChange={(e) => updateField("textColor", e.target.value)}
+                    className="w-12 h-10 rounded border border-slate-600 bg-transparent cursor-pointer"
+                  />
+                  <Input
+                    value={formData.textColor}
+                    onChange={(e) => updateField("textColor", e.target.value)}
+                    className="bg-slate-800/50 border-slate-600 text-slate-100"
+                    placeholder="#ffffff"
+                  />
+                </div>
+                <p className="text-xs text-slate-400">
+                  Color del texto para el nombre y título del perfil
                 </p>
               </div>
 

@@ -597,10 +597,10 @@ Correo: ${bank.email}`;
                   DEMO
                 </div>
               )}
-              <h1 className={`text-2xl font-bold text-slate-100 mb-2 ${contact.coverImage && !coverImageError ? 'mt-4' : ''}`}>
+              <h1 className={`text-2xl font-bold mb-2 ${contact.coverImage && !coverImageError ? 'mt-4' : ''}`} style={{ color: contact.textColor || '#ffffff' }}>
                 {contact.name}
               </h1>
-              <p className="text-slate-400 font-medium">{contact.title}</p>
+              <p className="font-medium opacity-90" style={{ color: contact.textColor || '#ffffff' }}>{contact.title}</p>
             </div>
 
             {/* Action Buttons */}
