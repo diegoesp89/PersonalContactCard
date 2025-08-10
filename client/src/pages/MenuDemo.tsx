@@ -27,6 +27,7 @@ interface Menu {
   showSpicyIndicator: number;
   showVegetarianIndicator: number;
   showExtraLabels: number;
+  isPublished: number;
 }
 
 interface MenuItem {
@@ -40,7 +41,6 @@ interface MenuItem {
   isVegetarian: number;
   isSpicy: number;
   specialLabel: string;
-  sortOrder: number;
   isActive: number;
 }
 
@@ -60,8 +60,8 @@ export default function MenuDemo({ menuSlug }: MenuDemoProps) {
     queryKey: ['/api/menu', slug],
   });
 
-  const menu: Menu | null = menuResponse?.menu || null;
-  const items: MenuItem[] = menuResponse?.items || [];
+  const menu: Menu | null = (menuResponse as any)?.menu || null;
+  const items: MenuItem[] = (menuResponse as any)?.items || [];
 
   // Update page title when menu data is loaded
   useEffect(() => {
@@ -115,6 +115,21 @@ export default function MenuDemo({ menuSlug }: MenuDemoProps) {
       }}
     >
       <div className="max-w-4xl mx-auto">
+        {/* Demo Banner - only show if menu is not published */}
+        {menu && menu.isPublished === 0 && (
+          <div 
+            className="mb-6 p-4 border-2 border-dashed rounded-lg text-center"
+            style={{ 
+              borderColor: "#ef4444",
+              backgroundColor: "#fef2f2",
+              color: "#dc2626"
+            }}
+          >
+            <p className="text-lg font-semibold">⚠️ Este menú es un Demo, no está apto para su uso público</p>
+            <p className="text-sm mt-1">Solo visible para administradores - Requiere aprobación para publicación</p>
+          </div>
+        )}
+
         {/* Header */}
         <div className="text-center mb-8">
           <h1 
@@ -233,7 +248,10 @@ export default function MenuDemo({ menuSlug }: MenuDemoProps) {
                             className="text-2xl font-bold"
                             style={{ color: menu.accentColor }}
                           >
-                            ${(item.price / 100).toLocaleString('es-CL')}
+                            {menu.isPublished === 1 
+                              ? `$${(item.price / 100).toLocaleString('es-CL')}`
+                              : "$?"
+                            }
                           </div>
                         </div>
                         

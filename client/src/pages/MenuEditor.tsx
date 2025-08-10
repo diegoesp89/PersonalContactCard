@@ -40,6 +40,7 @@ interface Menu {
   showSpicyIndicator: number;
   showVegetarianIndicator: number;
   showExtraLabels: number;
+  isPublished: number;
 }
 
 interface MenuItem {
@@ -110,6 +111,7 @@ export default function MenuEditor({ menuSlug }: MenuEditorProps) {
     showSpicyIndicator: 1,
     showVegetarianIndicator: 1,
     showExtraLabels: 1,
+    isPublished: 0,
   });
   
   const [items, setItems] = useState<MenuItem[]>([]);
@@ -131,6 +133,7 @@ export default function MenuEditor({ menuSlug }: MenuEditorProps) {
           showSpicyIndicator: menuResponse.menu.showSpicyIndicator || 1,
           showVegetarianIndicator: menuResponse.menu.showVegetarianIndicator || 1,
           showExtraLabels: menuResponse.menu.showExtraLabels || 1,
+          isPublished: menuResponse.menu.isPublished || 0,
         });
       }
       if (menuResponse.items) {
@@ -614,6 +617,37 @@ export default function MenuEditor({ menuSlug }: MenuEditorProps) {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Publication Status - SuperAdmin only */}
+            {password === "Mafatanga2025" && (
+              <Card className="bg-slate-800 border-slate-700">
+                <CardHeader>
+                  <CardTitle className="text-slate-100 flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full bg-amber-500"></span>
+                    Estado de Publicación (SuperAdmin)
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-slate-200">Menú Publicado</Label>
+                      <p className="text-xs text-slate-400">
+                        {menuData.isPublished === 1 
+                          ? "Menú aprobado y visible públicamente con precios reales"
+                          : "Menú en modo demo - precios ocultos y banner de advertencia"
+                        }
+                      </p>
+                    </div>
+                    <Switch
+                      checked={menuData.isPublished === 1}
+                      onCheckedChange={(checked) => 
+                        setMenuData({ ...menuData, isPublished: checked ? 1 : 0 })
+                      }
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Feature Toggles */}
             <Card className="bg-slate-800 border-slate-700">

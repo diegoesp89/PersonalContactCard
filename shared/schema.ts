@@ -89,6 +89,7 @@ export const menus = pgTable("menus", {
   showSpicyIndicator: integer("show_spicy_indicator").notNull().default(1),
   showVegetarianIndicator: integer("show_vegetarian_indicator").notNull().default(1),
   showExtraLabels: integer("show_extra_labels").notNull().default(1),
+  isPublished: integer("is_published").notNull().default(0), // 0 = demo/draft, 1 = published by superadmin
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
