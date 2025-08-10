@@ -750,10 +750,10 @@ Correo: ${bank.email}`;
                     <Phone className="text-white w-5 h-5" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-slate-100 font-semibold">
+                    <h3 className="font-semibold" style={{ color: contact.textColor || '#ffffff' }}>
                       {whatsappLink.label || `${t('whatsapp')}${whatsappLinks.length > 1 ? ` ${index + 1}` : ''}`}
                     </h3>
-                    <p className="text-slate-400 text-sm">{whatsappLink.url}</p>
+                    <p className="text-sm opacity-70" style={{ color: contact.textColor || '#ffffff' }}>{whatsappLink.url}</p>
                   </div>
                   <ExternalLink className="text-slate-500 w-4 h-4" />
                 </a>
@@ -771,10 +771,10 @@ Correo: ${bank.email}`;
                     <Phone className="text-white w-5 h-5" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-slate-100 font-semibold">
+                    <h3 className="font-semibold" style={{ color: contact.textColor || '#ffffff' }}>
                       {phoneLink.label || `${t('phone')}${phoneLinks.length > 1 ? ` ${index + 1}` : ''}`}
                     </h3>
-                    <p className="text-slate-400 text-sm">{phoneLink.url}</p>
+                    <p className="text-sm opacity-70" style={{ color: contact.textColor || '#ffffff' }}>{phoneLink.url}</p>
                   </div>
                   <ExternalLink className="text-slate-500 w-4 h-4" />
                 </a>
@@ -792,10 +792,10 @@ Correo: ${bank.email}`;
                     <Mail className="text-white w-5 h-5" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-slate-100 font-semibold">
+                    <h3 className="font-semibold" style={{ color: contact.textColor || '#ffffff' }}>
                       {emailLink.label || `${t('email')}${emailLinks.length > 1 ? ` ${index + 1}` : ''}`}
                     </h3>
-                    <p className="text-slate-400 text-sm">{emailLink.url}</p>
+                    <p className="text-sm opacity-70" style={{ color: contact.textColor || '#ffffff' }}>{emailLink.url}</p>
                   </div>
                   <ExternalLink className="text-slate-500 w-4 h-4" />
                 </a>
@@ -815,10 +815,10 @@ Correo: ${bank.email}`;
                     <Instagram className="text-white w-5 h-5" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-slate-100 font-semibold">
+                    <h3 className="font-semibold" style={{ color: contact.textColor || '#ffffff' }}>
                       {instagramLink.label || `${t('instagram')}${instagramLinks.length > 1 ? ` ${index + 1}` : ''}`}
                     </h3>
-                    <p className="text-slate-400 text-sm">@{instagramLink.url.replace(/^@+/, "")}</p>
+                    <p className="text-sm opacity-70" style={{ color: contact.textColor || '#ffffff' }}>@{instagramLink.url.replace(/^@+/, "")}</p>
                   </div>
                   <ExternalLink className="text-slate-500 w-4 h-4" />
                 </a>
@@ -838,10 +838,10 @@ Correo: ${bank.email}`;
                     <FaTiktok className="text-white w-5 h-5" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-slate-100 font-semibold">
+                    <h3 className="font-semibold" style={{ color: contact.textColor || '#ffffff' }}>
                       {tiktokLink.label || `${t('tiktok')}${tiktokLinks.length > 1 ? ` ${index + 1}` : ''}`}
                     </h3>
-                    <p className="text-slate-400 text-sm">@{tiktokLink.url.replace(/^@+/, "")}</p>
+                    <p className="text-sm opacity-70" style={{ color: contact.textColor || '#ffffff' }}>@{tiktokLink.url.replace(/^@+/, "")}</p>
                   </div>
                   <ExternalLink className="text-slate-500 w-4 h-4" />
                 </a>
@@ -861,10 +861,10 @@ Correo: ${bank.email}`;
                     <FaLinkedin className="text-white w-5 h-5" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-slate-100 font-semibold">
+                    <h3 className="font-semibold" style={{ color: contact.textColor || '#ffffff' }}>
                       {linkedinLink.label || `${t('linkedin')}${linkedinLinks.length > 1 ? ` ${index + 1}` : ''}`}
                     </h3>
-                    <p className="text-slate-400 text-sm">{linkedinLink.url}</p>
+                    <p className="text-sm opacity-70" style={{ color: contact.textColor || '#ffffff' }}>{linkedinLink.url}</p>
                   </div>
                   <ExternalLink className="text-slate-500 w-4 h-4" />
                 </a>
@@ -884,10 +884,10 @@ Correo: ${bank.email}`;
                     <FaTelegram className="text-white w-5 h-5" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-slate-100 font-semibold">
+                    <h3 className="font-semibold" style={{ color: contact.textColor || '#ffffff' }}>
                       {telegramLink.label || `${t('telegram')}${telegramLinks.length > 1 ? ` ${index + 1}` : ''}`}
                     </h3>
-                    <p className="text-slate-400 text-sm">@{telegramLink.url.replace(/^@+/, "")}</p>
+                    <p className="text-sm opacity-70" style={{ color: contact.textColor || '#ffffff' }}>@{telegramLink.url.replace(/^@+/, "")}</p>
                   </div>
                   <ExternalLink className="text-slate-500 w-4 h-4" />
                 </a>
@@ -907,10 +907,10 @@ Correo: ${bank.email}`;
                     <FaYoutube className="text-white w-5 h-5" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-slate-100 font-semibold">
+                    <h3 className="font-semibold" style={{ color: contact.textColor || '#ffffff' }}>
                       {youtubeLink.label || `${t('youtube')}${youtubeLinks.length > 1 ? ` ${index + 1}` : ''}`}
                     </h3>
-                    <p className="text-slate-400 text-sm">{youtubeLink.url}</p>
+                    <p className="text-sm opacity-70" style={{ color: contact.textColor || '#ffffff' }}>{youtubeLink.url}</p>
                   </div>
                   <ExternalLink className="text-slate-500 w-4 h-4" />
                 </a>
@@ -930,10 +930,10 @@ Correo: ${bank.email}`;
                     <FaFacebook className="text-white w-5 h-5" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-slate-100 font-semibold">
+                    <h3 className="font-semibold" style={{ color: contact.textColor || '#ffffff' }}>
                       {facebookLink.label || `${t('facebook')}${facebookLinks.length > 1 ? ` ${index + 1}` : ''}`}
                     </h3>
-                    <p className="text-slate-400 text-sm">{facebookLink.url}</p>
+                    <p className="text-sm opacity-70" style={{ color: contact.textColor || '#ffffff' }}>{facebookLink.url}</p>
                   </div>
                   <ExternalLink className="text-slate-500 w-4 h-4" />
                 </a>
@@ -953,10 +953,10 @@ Correo: ${bank.email}`;
                     <Globe className="text-white w-5 h-5" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-slate-100 font-semibold">
+                    <h3 className="font-semibold" style={{ color: contact.textColor || '#ffffff' }}>
                       {websiteLink.label || `${t('website')}${websiteLinks.length > 1 ? ` ${index + 1}` : ''}`}
                     </h3>
-                    <p className="text-slate-400 text-sm">{websiteLink.url}</p>
+                    <p className="text-sm opacity-70" style={{ color: contact.textColor || '#ffffff' }}>{websiteLink.url}</p>
                   </div>
                   <ExternalLink className="text-slate-500 w-4 h-4" />
                 </a>
@@ -969,8 +969,8 @@ Correo: ${bank.email}`;
                     <Building2 className="text-white w-5 h-5" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-slate-100 font-semibold">{t('officeAddress')}</h3>
-                    <p className="text-slate-400 text-sm">{contact.officeAddress}</p>
+                    <h3 className="font-semibold" style={{ color: contact.textColor || '#ffffff' }}>{t('officeAddress')}</h3>
+                    <p className="text-sm opacity-70" style={{ color: contact.textColor || '#ffffff' }}>{contact.officeAddress}</p>
                   </div>
                 </div>
               )}
@@ -979,7 +979,7 @@ Correo: ${bank.email}`;
             {/* Bank Transfer Information */}
             {banks.length > 0 && (
               <div className="mt-8 space-y-4">
-                <h3 className="text-slate-100 font-semibold flex items-center">
+                <h3 className="font-semibold flex items-center" style={{ color: contact.textColor || '#ffffff' }}>
                   <Building2 className="text-emerald-500 mr-2 w-5 h-5" />
                   {t('bankingInfo')}
                 </h3>
@@ -987,7 +987,7 @@ Correo: ${bank.email}`;
                 {banks.map((bank) => (
                   <div key={bank.id} className="p-6 bg-slate-800/50 rounded-xl border border-slate-700">
                     <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-slate-100 font-medium text-blue-400 flex items-center">
+                      <h4 className="font-medium flex items-center" style={{ color: contact.textColor || '#ffffff' }}>
                         {bank.logo && (
                           <img
                             src={bank.logo}
@@ -1009,30 +1009,30 @@ Correo: ${bank.email}`;
                     </div>
                     <div className="space-y-3 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-slate-400">{t('bankAccount')}:</span>
-                        <span className="text-slate-100 font-medium font-mono">
+                        <span className="opacity-70" style={{ color: contact.textColor || '#ffffff' }}>{t('bankAccount')}:</span>
+                        <span className="font-medium font-mono" style={{ color: contact.textColor || '#ffffff' }}>
                           {bank.account}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-400">{t('rut')}:</span>
-                        <span className="text-slate-100 font-medium">
+                        <span className="opacity-70" style={{ color: contact.textColor || '#ffffff' }}>{t('rut')}:</span>
+                        <span className="font-medium" style={{ color: contact.textColor || '#ffffff' }}>
                           {bank.rut}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-400">{t('accountType')}:</span>
-                        <span className="text-slate-100 font-medium">{bank.accountType}</span>
+                        <span className="opacity-70" style={{ color: contact.textColor || '#ffffff' }}>{t('accountType')}:</span>
+                        <span className="font-medium" style={{ color: contact.textColor || '#ffffff' }}>{bank.accountType}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-400">{t('holder')}:</span>
-                        <span className="text-slate-100 font-medium">
+                        <span className="opacity-70" style={{ color: contact.textColor || '#ffffff' }}>{t('holder')}:</span>
+                        <span className="font-medium" style={{ color: contact.textColor || '#ffffff' }}>
                           {bank.holder}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-400">{t('email')}:</span>
-                        <span className="text-slate-100 font-medium">
+                        <span className="opacity-70" style={{ color: contact.textColor || '#ffffff' }}>{t('email')}:</span>
+                        <span className="font-medium" style={{ color: contact.textColor || '#ffffff' }}>
                           {bank.email}
                         </span>
                       </div>
