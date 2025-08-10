@@ -13,6 +13,7 @@ import ImageManagement from "@/pages/image-management";
 import MenuDemo from "@/pages/MenuDemo";
 import MenuEditor from "@/pages/MenuEditor";
 import MenuManagement from "@/pages/MenuManagement";
+import DynamicRoute from "@/pages/DynamicRoute";
 
 function Router() {
   return (
@@ -24,7 +25,9 @@ function Router() {
       <Route path="/menu-demo" component={MenuDemo} />
       <Route path="/menu-edit" component={MenuManagement} />
       <Route path="/:ruta/stats" component={AnalyticsPage} />
-      <Route path="/:ruta" component={ContactPage} />
+      <Route path="/:slug">
+        {(params) => <DynamicRoute slug={params.slug} />}
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );

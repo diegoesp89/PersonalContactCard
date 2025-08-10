@@ -44,13 +44,20 @@ interface MenuItem {
   isActive: number;
 }
 
-export default function MenuDemo() {
+interface MenuDemoProps {
+  menuSlug?: string;
+}
+
+export default function MenuDemo({ menuSlug }: MenuDemoProps) {
   const [, setLocation] = useLocation();
   const [selectedCategory, setSelectedCategory] = useState("entradas");
 
-  // Fetch menu data from API (defaulting to 'menu' slug)
+  // Use menuSlug from props or default to 'menu'
+  const slug = menuSlug || 'menu';
+
+  // Fetch menu data from API using the slug
   const { data: menuResponse, isLoading } = useQuery({
-    queryKey: ['/api/menu', 'menu'],
+    queryKey: ['/api/menu', slug],
   });
 
   const menu: Menu | null = menuResponse?.menu || null;

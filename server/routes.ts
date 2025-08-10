@@ -294,6 +294,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
     next();
   };
 
+  // Get all menus
+  app.get("/api/menus", async (req, res) => {
+    try {
+      const menus = await storage.getAllMenus();
+      res.json(menus);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      logger.log('MENUS_ERROR', { error: errorMessage }, req);
+      res.status(500).json({ error: "Failed to get menus" });
+    }
+  });
+
+  // Get menu by slug with items
+  app.get("/api/menu/:slug", async (req, res) => {
+    try {
+      const { slug } = req.params;
+      const menu = await storage.getMenuBySlug(slug);
+      if (!menu) {
+        logger.log('MENU_NOT_FOUND', { slug }, req);
+        return res.status(404).json({ error: "Menu not found" });
+      }
+      
+      const items = await storage.getMenuItems(menu.id);
+      logger.log('MENU_VIEW', { 
+        slug, 
+        menuName: menu.name,
+        menuId: menu.id,
+        itemsCount: items.length
+      }, req);
+      
+      res.json({ menu, items });
+    } catch (error) {
+      const { slug } = req.params;
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      logger.log('MENU_VIEW_ERROR', { slug, error: errorMessage }, req);
+      res.status(500).json({ error: "Failed to get menu" });
+    }
+  });
+
   // Get contact by route (for dynamic routes)
   app.get("/api/contact/:ruta", async (req, res) => {
     try {
