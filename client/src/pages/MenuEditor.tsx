@@ -73,11 +73,15 @@ export default function MenuEditor({ menuSlug }: MenuEditorProps) {
   // Authentication mutation
   const authMutation = useMutation({
     mutationFn: async (password: string) => {
-      return apiRequest('/api/admin/login', {
+      const response = await fetch('/api/admin/login', {
         method: 'POST',
         body: JSON.stringify({ password }),
         headers: { 'Content-Type': 'application/json' }
       });
+      if (!response.ok) {
+        throw new Error('Authentication failed');
+      }
+      return response.json();
     },
     onSuccess: () => {
       setIsAuthenticated(true);
@@ -92,45 +96,6 @@ export default function MenuEditor({ menuSlug }: MenuEditorProps) {
     e.preventDefault();
     authMutation.mutate(password);
   };
-
-  // Show auth form if not authenticated
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-100 dark:from-slate-900 dark:to-slate-800">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="text-center">Acceso Administrador</CardTitle>
-            <p className="text-center text-muted-foreground">Editor de Menú: {menuSlug}</p>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleAuth} className="space-y-4">
-              <div>
-                <Label htmlFor="password">Contraseña de Administrador</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Ingresa la contraseña"
-                  className="mt-1"
-                />
-                {authError && (
-                  <p className="text-red-500 text-sm mt-2">{authError}</p>
-                )}
-              </div>
-              <Button 
-                type="submit" 
-                className="w-full"
-                disabled={authMutation.isPending}
-              >
-                {authMutation.isPending ? "Verificando..." : "Acceder"}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
   
   const [menuData, setMenuData] = useState<Partial<Menu>>({
     slug: menuSlug,
@@ -177,11 +142,15 @@ export default function MenuEditor({ menuSlug }: MenuEditorProps) {
   // Save menu configuration
   const saveMenuMutation = useMutation({
     mutationFn: async (data: Partial<Menu>) => {
-      return apiRequest(`/api/admin/menu/${menuSlug}`, {
+      const response = await fetch(`/api/admin/menu/${menuSlug}`, {
         method: 'POST',
         body: JSON.stringify({ ...data, password: "CamisasWenas.!" }),
         headers: { 'Content-Type': 'application/json' }
       });
+      if (!response.ok) {
+        throw new Error('Failed to save menu');
+      }
+      return response.json();
     },
     onSuccess: (data) => {
       toast({
@@ -210,19 +179,20 @@ export default function MenuEditor({ menuSlug }: MenuEditorProps) {
   // Save menu item
   const saveItemMutation = useMutation({
     mutationFn: async (item: MenuItem) => {
-      if (item.id) {
-        return apiRequest(`/api/admin/menu/${menuSlug}/items/${item.id}`, {
-          method: 'PUT',
-          body: JSON.stringify({ ...item, password: "CamisasWenas.!" }),
-          headers: { 'Content-Type': 'application/json' }
-        });
-      } else {
-        return apiRequest(`/api/admin/menu/${menuSlug}/items`, {
-          method: 'POST',
-          body: JSON.stringify({ ...item, password: "CamisasWenas.!" }),
-          headers: { 'Content-Type': 'application/json' }
-        });
+      const url = item.id 
+        ? `/api/admin/menu/${menuSlug}/items/${item.id}`
+        : `/api/admin/menu/${menuSlug}/items`;
+      const method = item.id ? 'PUT' : 'POST';
+      
+      const response = await fetch(url, {
+        method,
+        body: JSON.stringify({ ...item, password: "CamisasWenas.!" }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if (!response.ok) {
+        throw new Error('Failed to save menu item');
       }
+      return response.json();
     },
     onSuccess: () => {
       toast({
@@ -309,6 +279,45 @@ export default function MenuEditor({ menuSlug }: MenuEditorProps) {
     { id: "postres", name: "Postres" },
     { id: "bebidas", name: "Bebidas" },
   ];
+
+  // Show auth form if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-100 dark:from-slate-900 dark:to-slate-800">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-center">Acceso Administrador</CardTitle>
+            <p className="text-center text-muted-foreground">Editor de Menú: {menuSlug}</p>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleAuth} className="space-y-4">
+              <div>
+                <Label htmlFor="password">Contraseña de Administrador</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Ingresa la contraseña"
+                  className="mt-1"
+                />
+                {authError && (
+                  <p className="text-red-500 text-sm mt-2">{authError}</p>
+                )}
+              </div>
+              <Button 
+                type="submit" 
+                className="w-full"
+                disabled={authMutation.isPending}
+              >
+                {authMutation.isPending ? "Verificando..." : "Acceder"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
