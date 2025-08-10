@@ -147,49 +147,7 @@ export default function MenuManagement() {
     );
   }
 
-  // Si hay un menú seleccionado, mostrar el editor
-  if (selectedMenu) {
-    return (
-      <div className="min-h-screen bg-slate-900 p-4">
-        <div className="max-w-6xl mx-auto">
-          {/* Header del editor */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-4">
-              <Button
-                variant="outline"
-                onClick={() => setSelectedMenu(null)}
-                className="bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Volver a Menús
-              </Button>
-              <h1 className="text-2xl font-bold text-slate-100">
-                Editando: {menuData.name}
-              </h1>
-            </div>
-            <Button
-              variant="outline"
-              onClick={() => window.open(`/${selectedMenu.slug}`, '_blank')}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              <Eye className="w-4 h-4 mr-2" />
-              Ver Menú
-            </Button>
-          </div>
 
-          {/* TODO: Aquí irá el editor completo del menú */}
-          <div className="bg-slate-800 rounded-lg p-6">
-            <h2 className="text-xl font-semibold text-slate-100 mb-4">
-              Editor del menú (Por implementar)
-            </h2>
-            <p className="text-slate-300">
-              Funcionalidad de edición completa del menú seleccionado.
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-slate-900 p-4">
@@ -287,7 +245,7 @@ export default function MenuManagement() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setSelectedMenu(menu)}
+                    onClick={() => setLocation(`/${menu.slug}/edit`)}
                     className="flex-1 bg-blue-600 border-blue-500 text-white hover:bg-blue-700"
                   >
                     <Edit className="w-4 h-4 mr-2" />
