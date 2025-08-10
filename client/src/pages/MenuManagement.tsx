@@ -61,7 +61,7 @@ export default function MenuManagement() {
     mutationFn: async (data: typeof newMenuData) => {
       const response = await fetch(`/api/admin/menu/${data.slug}`, {
         method: 'POST',
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, password: "CamisasWenas.!" }),
         headers: { 'Content-Type': 'application/json' }
       });
       if (!response.ok) throw new Error('Failed to create menu');

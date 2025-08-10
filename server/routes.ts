@@ -1689,7 +1689,7 @@ END:VCARD`;
   });
   
   // Create or update menu (admin only)
-  app.post("/api/admin/menu/:slug", async (req, res) => {
+  app.post("/api/admin/menu/:slug", authenticateAdmin, async (req, res) => {
     try {
       const { slug } = req.params;
       const menuData = req.body;
@@ -1730,7 +1730,7 @@ END:VCARD`;
   });
   
   // Create menu item (admin only)
-  app.post("/api/admin/menu/:slug/items", async (req, res) => {
+  app.post("/api/admin/menu/:slug/items", authenticateAdmin, async (req, res) => {
     try {
       const { slug } = req.params;
       const itemData = req.body;
@@ -1749,7 +1749,7 @@ END:VCARD`;
   });
   
   // Update menu item (admin only)
-  app.put("/api/admin/menu/:slug/items/:itemId", async (req, res) => {
+  app.put("/api/admin/menu/:slug/items/:itemId", authenticateAdmin, async (req, res) => {
     try {
       const { itemId } = req.params;
       const itemData = req.body;
@@ -1763,7 +1763,7 @@ END:VCARD`;
   });
   
   // Delete menu item (admin only)
-  app.delete("/api/admin/menu/:slug/items/:itemId", async (req, res) => {
+  app.delete("/api/admin/menu/:slug/items/:itemId", authenticateAdmin, async (req, res) => {
     try {
       const { itemId } = req.params;
       await storage.deleteMenuItem(parseInt(itemId));

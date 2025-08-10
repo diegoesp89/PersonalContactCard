@@ -113,7 +113,7 @@ export default function MenuEditor({ menuSlug }: MenuEditorProps) {
     mutationFn: async (data: Partial<Menu>) => {
       return apiRequest(`/api/admin/menu/${menuSlug}`, {
         method: 'POST',
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, password: "CamisasWenas.!" }),
         headers: { 'Content-Type': 'application/json' }
       });
     },
@@ -147,13 +147,13 @@ export default function MenuEditor({ menuSlug }: MenuEditorProps) {
       if (item.id) {
         return apiRequest(`/api/admin/menu/${menuSlug}/items/${item.id}`, {
           method: 'PUT',
-          body: JSON.stringify(item),
+          body: JSON.stringify({ ...item, password: "CamisasWenas.!" }),
           headers: { 'Content-Type': 'application/json' }
         });
       } else {
         return apiRequest(`/api/admin/menu/${menuSlug}/items`, {
           method: 'POST',
-          body: JSON.stringify(item),
+          body: JSON.stringify({ ...item, password: "CamisasWenas.!" }),
           headers: { 'Content-Type': 'application/json' }
         });
       }
@@ -180,7 +180,9 @@ export default function MenuEditor({ menuSlug }: MenuEditorProps) {
   const deleteItemMutation = useMutation({
     mutationFn: async (itemId: number) => {
       return apiRequest(`/api/admin/menu/${menuSlug}/items/${itemId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        body: JSON.stringify({ password: "CamisasWenas.!" }),
+        headers: { 'Content-Type': 'application/json' }
       });
     },
     onSuccess: () => {
