@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -50,7 +50,7 @@ interface MenuDemoProps {
 
 export default function MenuDemo({ menuSlug }: MenuDemoProps) {
   const [, setLocation] = useLocation();
-  const [selectedCategory, setSelectedCategory] = useState("entradas");
+  const [selectedCategory, setSelectedCategory] = useState("todos");
 
   // Use menuSlug from props or default to 'menu'
   const slug = menuSlug || 'menu';
@@ -62,6 +62,13 @@ export default function MenuDemo({ menuSlug }: MenuDemoProps) {
 
   const menu: Menu | null = menuResponse?.menu || null;
   const items: MenuItem[] = menuResponse?.items || [];
+
+  // Update page title when menu data is loaded
+  useEffect(() => {
+    if (menu) {
+      document.title = menu.name;
+    }
+  }, [menu]);
 
   if (isLoading) {
     return (
@@ -85,14 +92,19 @@ export default function MenuDemo({ menuSlug }: MenuDemoProps) {
   }
 
   const categories = [
+    { id: "todos", name: "Todos" },
     { id: "entradas", name: "Entradas" },
     { id: "principales", name: "Platos Principales" },
     { id: "postres", name: "Postres" },
     { id: "bebidas", name: "Bebidas" },
   ];
 
-  const getItemsByCategory = (category: string) => 
-    items.filter(item => item.category === category && item.isActive === 1);
+  const getItemsByCategory = (category: string) => {
+    if (category === "todos") {
+      return items.filter(item => item.isActive === 1);
+    }
+    return items.filter(item => item.category === category && item.isActive === 1);
+  };
 
   return (
     <div 
@@ -124,7 +136,7 @@ export default function MenuDemo({ menuSlug }: MenuDemoProps) {
         {/* Categories Tabs */}
         <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
           <TabsList 
-            className="grid w-full grid-cols-4 mb-8 bg-transparent border-2"
+            className="grid w-full grid-cols-5 mb-8 bg-transparent border-2"
             style={{ borderColor: menu.secondaryColor }}
           >
             {categories.map((category) => (
