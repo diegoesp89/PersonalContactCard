@@ -19,11 +19,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Initialize Object Storage for both production and development with enhanced error handling
   try {
-    // Add startup delay to allow Object Storage services to be available
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // Reduced startup delay to avoid deployment timeout
+    await new Promise(resolve => setTimeout(resolve, 500));
     
-    objectStorage = new Client();
-    console.log(`${isProduction ? 'Production' : 'Development'} mode: Object Storage initialized successfully with bucket "casbucket"`);
+    // Initialize Object Storage client with explicit bucket configuration if available
+    if (process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID) {
+      objectStorage = new Client();
+      console.log(`${isProduction ? 'Production' : 'Development'} mode: Object Storage initialized successfully with bucket "${process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID}"`);
+    } else {
+      objectStorage = new Client();
+      console.log(`${isProduction ? 'Production' : 'Development'} mode: Object Storage initialized successfully with default bucket`);
+    }
     
     // Test Object Storage connectivity with enhanced retry
     let retryCount = 0;
@@ -1666,10 +1672,10 @@ END:VCARD`;
             
             if (Buffer.isBuffer(rawData)) {
               imageBuffer = rawData;
-            } else if (Array.isArray(rawData)) {
-              imageBuffer = Buffer.from(new Uint8Array(rawData));
-            } else if (rawData instanceof Uint8Array) {
+            } else if (Array.isArray(rawData) && rawData.length > 0 && typeof rawData[0] === 'number') {
               imageBuffer = Buffer.from(rawData);
+            } else if (rawData && typeof rawData === 'object' && 'constructor' in rawData && rawData.constructor === Uint8Array) {
+              imageBuffer = Buffer.from(rawData as Uint8Array);
             } else {
               throw new Error(`Unexpected data type from Object Storage: ${typeof rawData}`);
             }

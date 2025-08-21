@@ -10,7 +10,7 @@ app.use(express.urlencoded({ extended: false }));
 // Middleware for redirecting old replit.app URLs to cashirts.cl (PRODUCTION ONLY)
 app.use((req, res, next) => {
   // Only apply redirect in production environment
-  const isProduction = process.env.NODE_ENV === 'production' || process.env.REPLIT_DEPLOYMENT === 'true';
+  const isProduction = process.env.NODE_ENV === 'production' || process.env.REPLIT_DEPLOYMENT === '1';
   
   if (isProduction) {
     const host = req.get('host') || '';
@@ -67,8 +67,15 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  // Seed database on startup
-  await seedDatabase();
+  // Seed database on startup with error handling
+  try {
+    await seedDatabase();
+    console.log('Database seeding completed successfully');
+  } catch (error) {
+    console.error('Database seeding failed:', error instanceof Error ? error.message : 'Unknown error');
+    // Continue startup even if seeding fails to prevent deployment failure
+    console.warn('Continuing startup despite seeding failure - database may need manual initialization');
+  }
   
   const server = await registerRoutes(app);
 
