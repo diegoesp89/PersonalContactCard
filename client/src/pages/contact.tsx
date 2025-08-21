@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import {
   Phone,
@@ -45,6 +45,7 @@ interface Contact {
   inDev: string;
   ruta: string;
   backgroundColor: string;
+  textColor: string;
   defaultLanguage: string;
 
   banks: string; // JSON string of Bank[]
@@ -629,6 +630,9 @@ Correo: ${bank.email}`;
                       <Share2 className="w-5 h-5 text-violet-400" />
                       {t('shareOptions')}
                     </DialogTitle>
+                    <DialogDescription className="text-slate-400 text-center">
+                      Choose how you'd like to share this contact card
+                    </DialogDescription>
                   </DialogHeader>
                   
                   {!showQRView ? (

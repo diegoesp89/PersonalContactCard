@@ -39,6 +39,14 @@ export const translations = {
     copyLink: 'Copiar Enlace',
     shareNative: 'Compartir',
     linkCopied: 'Enlace copiado al portapapeles',
+    back: 'Volver',
+    qrError: 'Error al generar código QR',
+    scanQR: 'Escanear código QR',
+    downloadQR: 'Descargar QR',
+    copy: 'Copiar',
+    bankAccount: 'Cuenta Bancaria',
+    rut: 'RUT',
+    holder: 'Titular',
     
     // Languages
     spanish: 'Español',
@@ -84,6 +92,14 @@ export const translations = {
     copyLink: 'Copy Link',
     shareNative: 'Share',
     linkCopied: 'Link copied to clipboard',
+    back: 'Back',
+    qrError: 'Error generating QR code',
+    scanQR: 'Scan QR code',
+    downloadQR: 'Download QR',
+    copy: 'Copy',
+    bankAccount: 'Bank Account',
+    rut: 'RUT',
+    holder: 'Holder',
     
     // Languages
     spanish: 'Spanish',
@@ -129,6 +145,14 @@ export const translations = {
     copyLink: 'Copiar Link',
     shareNative: 'Compartilhar',
     linkCopied: 'Link copiado para a área de transferência',
+    back: 'Voltar',
+    qrError: 'Erro ao gerar código QR',
+    scanQR: 'Escanear código QR',
+    downloadQR: 'Baixar QR',
+    copy: 'Copiar',
+    bankAccount: 'Conta Bancária',
+    rut: 'RUT',
+    holder: 'Titular',
     
     // Languages
     spanish: 'Espanhol',

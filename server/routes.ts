@@ -1672,8 +1672,10 @@ END:VCARD`;
             
             if (Buffer.isBuffer(rawData)) {
               imageBuffer = rawData;
+            } else if (Array.isArray(rawData) && rawData.length > 0 && Buffer.isBuffer(rawData[0])) {
+              imageBuffer = rawData[0] as Buffer;
             } else if (Array.isArray(rawData) && rawData.length > 0 && typeof rawData[0] === 'number') {
-              imageBuffer = Buffer.from(rawData);
+              imageBuffer = Buffer.from(rawData as unknown as number[]);
             } else if (rawData && typeof rawData === 'object' && 'constructor' in rawData && rawData.constructor === Uint8Array) {
               imageBuffer = Buffer.from(rawData as Uint8Array);
             } else {

@@ -31,7 +31,7 @@ export default function ImageGalleryModal({ isOpen, currentImage, onSelectImage,
   const queryClient = useQueryClient();
 
   // Fetch gallery images
-  const { data: galleryImages = [], isLoading } = useQuery({
+  const { data: galleryImages = [], isLoading } = useQuery<GalleryImage[]>({
     queryKey: ['/api/gallery'],
     enabled: isOpen
   });
@@ -39,12 +39,6 @@ export default function ImageGalleryModal({ isOpen, currentImage, onSelectImage,
   // Upload mutation
   const uploadMutation = useMutation({
     mutationFn: async (file: File) => {
-      console.log('Starting upload mutation for file:', {
-        name: file.name,
-        type: file.type,
-        size: file.size,
-        isMobile: /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-      });
 
       const formData = new FormData();
       formData.append('profileImage', file);
@@ -73,13 +67,12 @@ export default function ImageGalleryModal({ isOpen, currentImage, onSelectImage,
         }
         
         const result = await response.json();
-        console.log('Upload successful:', result);
         return result;
       } catch (error) {
         clearTimeout(timeoutId);
         console.error('Upload fetch error:', error);
         
-        if (error.name === 'AbortError') {
+        if (error instanceof Error && error.name === 'AbortError') {
           throw new Error('La subida tardó demasiado. Intenta con una imagen más pequeña.');
         }
         
@@ -170,13 +163,6 @@ export default function ImageGalleryModal({ isOpen, currentImage, onSelectImage,
     const file = event.target.files?.[0];
     if (!file) return;
 
-    console.log('File selected:', {
-      name: file.name,
-      type: file.type,
-      size: file.size,
-      lastModified: file.lastModified,
-      isMobile: /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-    });
 
     // More specific validation for mobile devices
     const validImageTypes = [
@@ -343,24 +329,6 @@ export default function ImageGalleryModal({ isOpen, currentImage, onSelectImage,
               <p className="text-slate-400 text-sm">
                 Máximo 5MB - JPG, PNG, GIF, WebP, HEIC
               </p>
-              <Button
-                onClick={() => {
-                  console.log('Debug mobile upload:', {
-                    userAgent: navigator.userAgent,
-                    isMobile: /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
-                    supportedFeatures: {
-                      FormData: typeof FormData !== 'undefined',
-                      fetch: typeof fetch !== 'undefined',
-                      FileReader: typeof FileReader !== 'undefined'
-                    }
-                  });
-                }}
-                variant="outline"
-                size="sm"
-                className="text-xs"
-              >
-                Debug Info
-              </Button>
             </div>
             <p className="text-slate-400 text-xs">
               📱 En móviles: "Galería" para elegir foto existente, "Cámara" para tomar nueva foto
