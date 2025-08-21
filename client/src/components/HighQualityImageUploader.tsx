@@ -8,7 +8,7 @@ import AwsS3 from "@uppy/aws-s3";
 import type { UploadResult } from "@uppy/core";
 import { Button } from "@/components/ui/button";
 
-interface ObjectUploaderProps {
+interface HighQualityImageUploaderProps {
   maxNumberOfFiles?: number;
   maxFileSize?: number;
   onGetUploadParameters: () => Promise<{
@@ -23,37 +23,35 @@ interface ObjectUploaderProps {
 }
 
 /**
- * A file upload component that renders as a button and provides a modal interface for
- * file management.
- * 
- * Features:
- * - Renders as a customizable button that opens a file upload modal
- * - Provides a modal interface for:
- *   - File selection
- *   - File preview
- *   - Upload progress tracking
- *   - Upload status display
- * 
- * The component uses Uppy under the hood to handle all file upload functionality.
- * All file management features are automatically handled by the Uppy dashboard modal.
+ * Uploader de imágenes optimizado para máxima calidad
+ * Especialmente diseñado para imágenes de cover y perfiles
+ * - Sin compresión automática
+ * - Tamaño máximo de archivo aumentado para alta calidad
+ * - Preserva calidad original de la imagen
  */
-export function ObjectUploader({
+export function HighQualityImageUploader({
   maxNumberOfFiles = 1,
-  maxFileSize = 25165824, // 24MB para imágenes de máxima calidad
+  maxFileSize = 25165824, // 24MB para máxima calidad
   onGetUploadParameters,
   onComplete,
   buttonClassName,
   children,
-}: ObjectUploaderProps) {
+}: HighQualityImageUploaderProps) {
   const [showModal, setShowModal] = useState(false);
   const [uppy] = useState(() =>
     new Uppy({
       restrictions: {
         maxNumberOfFiles,
         maxFileSize,
-        allowedFileTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'],
+        // Acepta todos los formatos de imagen comunes
+        allowedFileTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/bmp', 'image/tiff'],
       },
       autoProceed: false,
+      // Configuraciones para preservar calidad
+      meta: {
+        preserveQuality: true,
+        highQuality: true
+      }
     })
       .use(AwsS3, {
         shouldUseMultipart: false,
@@ -76,6 +74,7 @@ export function ObjectUploader({
         open={showModal}
         onRequestClose={() => setShowModal(false)}
         proudlyDisplayPoweredByUppy={false}
+        note="Para máxima calidad, usa imágenes de alta resolución. Formatos recomendados: PNG o JPEG de alta calidad."
       />
     </div>
   );

@@ -262,10 +262,10 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
+    if (file.size > 25 * 1024 * 1024) {
       toast({
         title: "Error", 
-        description: "La imagen debe ser menor a 5MB",
+        description: "La imagen debe ser menor a 25MB",
         variant: "destructive",
       });
       return;
@@ -764,7 +764,7 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                     )}
                   </div>
                   <p className="text-xs text-slate-400 mt-2">
-                    Haz clic para abrir la galería de imágenes
+                    Haz clic para abrir la galería de imágenes. Usa imágenes de alta resolución para máxima calidad.
                   </p>
                 </div>
               </div>
@@ -859,6 +859,9 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                       </Button>
                     )}
                   </div>
+                  <p className="text-xs text-slate-400 mt-2">
+                    Para máxima calidad, usa imágenes de alta resolución (hasta 25MB). Formatos recomendados: PNG o JPEG de alta calidad.
+                  </p>
                 </div>
               </div>
             </CardContent>

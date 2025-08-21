@@ -125,7 +125,7 @@ export default function ImageEditor({
 
         // Create form data and upload
         const formData = new FormData();
-        formData.append('profileImage', blob, 'edited-image.png');
+        formData.append('profileImage', blob, 'edited-image.jpg');
 
         const response = await fetch('/api/upload', {
           method: 'POST',
@@ -139,7 +139,7 @@ export default function ImageEditor({
         const data = await response.json();
         onSave(data.imageUrl);
         onClose();
-      }, 'image/png', 0.9);
+      }, 'image/jpeg', 0.95);
     } catch (error) {
       console.error('Error saving edited image:', error);
     }
