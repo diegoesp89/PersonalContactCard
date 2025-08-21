@@ -138,7 +138,7 @@ export default function HomePage() {
               onClick={() => setShowCASModal(true)}
               className="hover:text-slate-300 underline transition-colors cursor-pointer"
             >
-              CAS (Contacto)
+              CAS - Contactáctanos si quieres tu propia tarjeta
             </button> - Todos los Derechos Reservados - 2025.
             <br />
             Sistema de Contactos Digitales
