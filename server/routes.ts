@@ -724,13 +724,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
           
           // Set appropriate headers with better MIME type detection
+          // Preserva imágenes existentes con detección mejorada
           const ext = path.extname(filename).toLowerCase();
           const contentType = {
             '.jpg': 'image/jpeg',
             '.jpeg': 'image/jpeg', 
             '.png': 'image/png',
             '.gif': 'image/gif',
-            '.webp': 'image/webp'
+            '.webp': 'image/webp',
+            '.bmp': 'image/bmp',
+            '.tiff': 'image/tiff'
           }[ext] || 'image/jpeg';
           
           console.log('Serving image from Object Storage:', {
