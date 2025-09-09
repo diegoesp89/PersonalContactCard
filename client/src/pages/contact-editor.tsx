@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { 
@@ -1678,13 +1679,46 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                       />
                     </div>
                     <div className="md:col-span-2">
-                      <Label className="text-slate-200">Logo (URL)</Label>
-                      <Input
-                        value={bank.logo || ""}
-                        onChange={(e) => updateBank(bank.id, "logo", e.target.value)}
-                        className="bg-slate-800/50 border-slate-600 text-slate-100"
-                        placeholder="/mp.svg, /bci.svg, etc."
-                      />
+                      <Label className="text-slate-200">Logo del Banco</Label>
+                      <div className="flex items-center gap-3">
+                        <Select
+                          value={bank.logo || ""}
+                          onValueChange={(value) => updateBank(bank.id, "logo", value)}
+                        >
+                          <SelectTrigger className="bg-slate-800/50 border-slate-600 text-slate-100 flex-1">
+                            <SelectValue placeholder="Selecciona un logo" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-slate-800 border-slate-600">
+                            <SelectItem value="" className="text-slate-100">
+                              Sin logo
+                            </SelectItem>
+                            <SelectItem value="/mp.svg" className="text-slate-100">
+                              MercadoPago
+                            </SelectItem>
+                            <SelectItem value="/bci.svg" className="text-slate-100">
+                              BCI
+                            </SelectItem>
+                            <SelectItem value="/std.svg" className="text-slate-100">
+                              Santander
+                            </SelectItem>
+                            <SelectItem value="/tenpo.svg" className="text-slate-100">
+                              Tenpo
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {bank.logo && (
+                          <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+                            <img
+                              src={bank.logo}
+                              alt="Logo del banco"
+                              className="w-8 h-8 object-contain"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).style.display = 'none';
+                              }}
+                            />
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
