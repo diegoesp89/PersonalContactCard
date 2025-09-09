@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { 
@@ -15,7 +18,9 @@ import {
   QrCode,
   LogOut,
   BarChart3,
-  Search
+  Search,
+  Filter,
+  ArrowUpDown
 } from "lucide-react";
 
 interface Contact {
@@ -54,6 +59,11 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState("name"); // name, date, ruta
+  const [sortOrder, setSortOrder] = useState("asc"); // asc, desc
+  const [statusFilter, setStatusFilter] = useState("all"); // all, published, dev
+  const [showInDev, setShowInDev] = useState(true);
+  const [showPublished, setShowPublished] = useState(true);
   
   // Check if user is superadmin
   const isSuperAdmin = password === "Mafatanga2025";
@@ -79,23 +89,64 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
     retry: 1
   });
 
-  // Filter and sort contacts alphabetically
+  // Filter and sort contacts
   const filteredAndSortedContacts = useMemo(() => {
     let filtered = contacts;
     
     // Filter by search term
     if (searchTerm.trim()) {
       const term = searchTerm.toLowerCase();
-      filtered = contacts.filter(contact => {
+      filtered = filtered.filter(contact => {
         const fullName = `${contact.name}`.toLowerCase();
         const route = `/${contact.ruta}`.toLowerCase();
         return fullName.includes(term) || route.includes(term);
       });
     }
     
-    // Sort alphabetically by name
-    return filtered.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
-  }, [contacts, searchTerm]);
+    // Filter by status
+    if (statusFilter !== "all") {
+      if (statusFilter === "dev") {
+        filtered = filtered.filter(contact => contact.inDev === "true");
+      } else if (statusFilter === "published") {
+        filtered = filtered.filter(contact => contact.inDev !== "true");
+      }
+    }
+    
+    // Alternative filter by show/hide switches
+    if (!showInDev && !showPublished) {
+      return []; // If both are hidden, show nothing
+    } else if (!showInDev) {
+      filtered = filtered.filter(contact => contact.inDev !== "true");
+    } else if (!showPublished) {
+      filtered = filtered.filter(contact => contact.inDev === "true");
+    }
+    
+    // Sort by selected criteria
+    const sorted = [...filtered].sort((a, b) => {
+      let compareValue = 0;
+      
+      switch (sortBy) {
+        case "name":
+          compareValue = a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+          break;
+        case "ruta":
+          compareValue = a.ruta.toLowerCase().localeCompare(b.ruta.toLowerCase());
+          break;
+        case "status":
+          // Sort by development status (published first, then dev)
+          const aStatus = a.inDev === "true" ? 1 : 0;
+          const bStatus = b.inDev === "true" ? 1 : 0;
+          compareValue = aStatus - bStatus;
+          break;
+        default:
+          compareValue = a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+      }
+      
+      return sortOrder === "asc" ? compareValue : -compareValue;
+    });
+    
+    return sorted;
+  }, [contacts, searchTerm, statusFilter, showInDev, showPublished, sortBy, sortOrder]);
 
   const deleteContactMutation = useMutation({
     mutationFn: async (id: number) => {
@@ -261,8 +312,90 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
           </div>
         </div>
 
-        {/* Search Bar */}
-        <div className="mb-6">
+        {/* Filters and Controls */}
+        <div className="mb-6 space-y-4">
+          {/* Filter Controls */}
+          <Card className="glass-effect border-slate-700">
+            <CardHeader className="pb-4">
+              <div className="flex items-center gap-2">
+                <Filter className="w-5 h-5 text-slate-400" />
+                <CardTitle className="text-lg text-slate-100">Filtros y Ordenación</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Sort By */}
+                <div className="space-y-2">
+                  <Label className="text-slate-200 text-sm">Ordenar por</Label>
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="bg-slate-800/50 border-slate-600 text-slate-100">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-800 border-slate-600">
+                      <SelectItem value="name" className="text-slate-100">Nombre</SelectItem>
+                      <SelectItem value="ruta" className="text-slate-100">Ruta</SelectItem>
+                      <SelectItem value="status" className="text-slate-100">Estado</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                {/* Sort Order */}
+                <div className="space-y-2">
+                  <Label className="text-slate-200 text-sm">Orden</Label>
+                  <Select value={sortOrder} onValueChange={setSortOrder}>
+                    <SelectTrigger className="bg-slate-800/50 border-slate-600 text-slate-100">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-800 border-slate-600">
+                      <SelectItem value="asc" className="text-slate-100">Ascendente (A-Z)</SelectItem>
+                      <SelectItem value="desc" className="text-slate-100">Descendente (Z-A)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                {/* Status Filter */}
+                <div className="space-y-2">
+                  <Label className="text-slate-200 text-sm">Filtrar por estado</Label>
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger className="bg-slate-800/50 border-slate-600 text-slate-100">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-800 border-slate-600">
+                      <SelectItem value="all" className="text-slate-100">Todos</SelectItem>
+                      <SelectItem value="published" className="text-slate-100">Solo Publicados</SelectItem>
+                      <SelectItem value="dev" className="text-slate-100">Solo en Desarrollo</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              {/* Show/Hide Toggles */}
+              <div className="flex items-center gap-6 pt-2 border-t border-slate-600">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="show-published"
+                    checked={showPublished}
+                    onCheckedChange={setShowPublished}
+                  />
+                  <Label htmlFor="show-published" className="text-slate-200 text-sm">
+                    Mostrar Publicados
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="show-dev"
+                    checked={showInDev}
+                    onCheckedChange={setShowInDev}
+                  />
+                  <Label htmlFor="show-dev" className="text-slate-200 text-sm">
+                    Mostrar en Desarrollo
+                  </Label>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          {/* Search Bar */}
           <div className="relative max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
             <Input
@@ -273,11 +406,29 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
               className="pl-10 bg-slate-800/50 border-slate-700 text-slate-100 placeholder-slate-400 focus:border-blue-400"
             />
           </div>
-          {searchTerm && (
-            <p className="text-sm text-slate-400 mt-2">
-              {filteredAndSortedContacts.length} contacto{filteredAndSortedContacts.length !== 1 ? 's' : ''} encontrado{filteredAndSortedContacts.length !== 1 ? 's' : ''}
+          
+          {/* Results Count */}
+          <div className="flex items-center justify-between text-sm text-slate-400">
+            <p>
+              Mostrando {filteredAndSortedContacts.length} de {contacts.length} contacto{contacts.length !== 1 ? 's' : ''}
+              {searchTerm && ` (filtrado por: "${searchTerm}")`}
             </p>
-          )}
+            {filteredAndSortedContacts.length !== contacts.length && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setSearchTerm("");
+                  setStatusFilter("all");
+                  setShowInDev(true);
+                  setShowPublished(true);
+                }}
+                className="text-blue-400 hover:text-blue-300"
+              >
+                Limpiar filtros
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Contacts Grid */}
