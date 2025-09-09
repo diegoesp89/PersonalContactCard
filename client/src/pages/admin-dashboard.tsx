@@ -62,7 +62,6 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
   const [sortBy, setSortBy] = useState("name"); // name, date, ruta
   const [sortOrder, setSortOrder] = useState("asc"); // asc, desc
   const [statusFilter, setStatusFilter] = useState("all"); // all, published, dev
-  const [showInDev, setShowInDev] = useState(true);
   const [showPublished, setShowPublished] = useState(true);
   
   // Check if user is superadmin
@@ -112,12 +111,8 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
       }
     }
     
-    // Alternative filter by show/hide switches
-    if (!showInDev && !showPublished) {
-      return []; // If both are hidden, show nothing
-    } else if (!showInDev) {
-      filtered = filtered.filter(contact => contact.inDev !== "true");
-    } else if (!showPublished) {
+    // Filter by show/hide published
+    if (!showPublished) {
       filtered = filtered.filter(contact => contact.inDev === "true");
     }
     
@@ -146,7 +141,7 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
     });
     
     return sorted;
-  }, [contacts, searchTerm, statusFilter, showInDev, showPublished, sortBy, sortOrder]);
+  }, [contacts, searchTerm, statusFilter, showPublished, sortBy, sortOrder]);
 
   const deleteContactMutation = useMutation({
     mutationFn: async (id: number) => {
@@ -381,16 +376,6 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
                     Mostrar Publicados
                   </Label>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="show-dev"
-                    checked={showInDev}
-                    onCheckedChange={setShowInDev}
-                  />
-                  <Label htmlFor="show-dev" className="text-slate-200 text-sm">
-                    Mostrar en Desarrollo
-                  </Label>
-                </div>
               </div>
             </CardContent>
           </Card>
@@ -420,7 +405,6 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
                 onClick={() => {
                   setSearchTerm("");
                   setStatusFilter("all");
-                  setShowInDev(true);
                   setShowPublished(true);
                 }}
                 className="text-blue-400 hover:text-blue-300"
@@ -446,7 +430,7 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
                   </div>
                   <div className="flex gap-1">
                     {contact.inDev === "true" && (
-                      <AlertTriangle className="w-4 h-4 text-amber-400" title="En desarrollo" />
+                      <AlertTriangle className="w-4 h-4 text-amber-400" />
                     )}
                   </div>
                 </div>
