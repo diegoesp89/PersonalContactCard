@@ -1704,6 +1704,9 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                             <SelectItem value="/tenpo.svg" className="text-slate-100">
                               Tenpo
                             </SelectItem>
+                            <SelectItem value="/best.png" className="text-slate-100">
+                              Banco Estado
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                         {bank.logo && bank.logo !== "none" && (
