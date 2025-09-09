@@ -1682,14 +1682,14 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                       <Label className="text-slate-200">Logo del Banco</Label>
                       <div className="flex items-center gap-3">
                         <Select
-                          value={bank.logo || ""}
-                          onValueChange={(value) => updateBank(bank.id, "logo", value)}
+                          value={bank.logo || "none"}
+                          onValueChange={(value) => updateBank(bank.id, "logo", value === "none" ? "" : value)}
                         >
                           <SelectTrigger className="bg-slate-800/50 border-slate-600 text-slate-100 flex-1">
                             <SelectValue placeholder="Selecciona un logo" />
                           </SelectTrigger>
                           <SelectContent className="bg-slate-800 border-slate-600">
-                            <SelectItem value="" className="text-slate-100">
+                            <SelectItem value="none" className="text-slate-100">
                               Sin logo
                             </SelectItem>
                             <SelectItem value="/mp.svg" className="text-slate-100">
@@ -1706,7 +1706,7 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                             </SelectItem>
                           </SelectContent>
                         </Select>
-                        {bank.logo && (
+                        {bank.logo && bank.logo !== "none" && (
                           <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
                             <img
                               src={bank.logo}
