@@ -427,7 +427,7 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
                     <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-700 flex-shrink-0">
                       {contact.profileImage ? (
                         <img
-                          src={contact.profileImage.startsWith('/') ? `/api/image${contact.profileImage}` : contact.profileImage}
+                          src={contact.profileImage}
                           alt={contact.name}
                           className="w-full h-full object-cover"
                           onError={(e) => {
@@ -436,7 +436,7 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
                         />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center">
-                          <User className="w-6 h-6 text-slate-400" />
+                          <Users className="w-6 h-6 text-slate-400" />
                         </div>
                       )}
                     </div>
