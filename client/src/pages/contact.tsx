@@ -1047,7 +1047,15 @@ Correo: ${bank.email}`;
             )}
 
             {/* Footer */}
-            <div className="mt-8 text-center">
+            <div className="mt-8 text-center space-y-2">
+              <div className="mb-2">
+                <a 
+                  href="/stats"
+                  className="inline-flex items-center gap-1 text-slate-400 text-xs hover:text-slate-300 underline transition-colors"
+                >
+                  📊 Ver estadísticas
+                </a>
+              </div>
               <p className="text-slate-500 text-xs">
                 <button 
                   onClick={() => setShowCASModal(true)}
