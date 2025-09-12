@@ -1050,7 +1050,7 @@ Correo: ${bank.email}`;
             <div className="mt-8 text-center space-y-2">
               <div className="mb-2">
                 <a 
-                  href="/stats"
+                  href={`/${routeParam}/stats`}
                   className="inline-flex items-center gap-1 text-slate-400 text-xs hover:text-slate-300 underline transition-colors"
                 >
                   📊 Ver estadísticas
