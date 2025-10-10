@@ -18,6 +18,7 @@ import {
   QrCode,
   X,
   Lock,
+  MapPin,
 } from "lucide-react";
 import { FaTiktok, FaLinkedin, FaTelegram, FaYoutube, FaFacebook } from "react-icons/fa";
 import ImageModal from "@/components/ImageModal";
@@ -1069,15 +1070,37 @@ Correo: ${bank.email}`;
                 </a>
               ))}
 
-              {/* Office Address */}
+              {/* Office Address with Map */}
               {contact.officeAddress && (
-                <div className="contact-item flex items-center p-4 rounded-xl border border-slate-700">
-                  <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mr-4 shadow-md">
-                    <Building2 className="text-white w-5 h-5" />
+                <div className="space-y-3">
+                  <div className="contact-item flex items-center p-4 rounded-xl border border-slate-700">
+                    <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mr-4 shadow-md">
+                      <Building2 className="text-white w-5 h-5" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold" style={{ color: contact.textColor || '#ffffff' }}>{t('officeAddress')}</h3>
+                      <p className="text-sm opacity-70" style={{ color: contact.textColor || '#ffffff' }}>{contact.officeAddress}</p>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold" style={{ color: contact.textColor || '#ffffff' }}>{t('officeAddress')}</h3>
-                    <p className="text-sm opacity-70" style={{ color: contact.textColor || '#ffffff' }}>{contact.officeAddress}</p>
+                  
+                  {/* Google Maps Embed */}
+                  <div className="rounded-xl overflow-hidden border border-slate-700 shadow-lg">
+                    <div className="bg-slate-800 px-4 py-2 flex items-center gap-2 border-b border-slate-700">
+                      <MapPin className="w-4 h-4 text-purple-400" />
+                      <span className="text-sm font-medium text-slate-200">Ubicación en el mapa</span>
+                    </div>
+                    <div className="relative w-full" style={{ height: '300px' }}>
+                      <iframe
+                        width="100%"
+                        height="100%"
+                        style={{ border: 0 }}
+                        referrerPolicy="no-referrer-when-downgrade"
+                        loading="lazy"
+                        allowFullScreen
+                        src={`https://www.google.com/maps/embed/v1/place?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&q=${encodeURIComponent(contact.officeAddress)}&zoom=15`}
+                        data-testid="map-embed"
+                      />
+                    </div>
                   </div>
                 </div>
               )}
