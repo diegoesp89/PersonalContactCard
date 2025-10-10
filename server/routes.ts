@@ -353,7 +353,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         contactName: contact.name,
         contactId: contact.id 
       }, req);
-      res.json(contact);
+      
+      // Exclude sensitive extended profile password from response
+      const { extendedProfilePassword, ...safeContact } = contact;
+      res.json(safeContact);
     } catch (error) {
       const { ruta } = req.params;
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -369,7 +372,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!contact) {
         return res.status(404).json({ error: "Contact not found" });
       }
-      res.json(contact);
+      
+      // Exclude sensitive extended profile password from response
+      const { extendedProfilePassword, ...safeContact } = contact;
+      res.json(safeContact);
     } catch (error) {
       res.status(500).json({ error: "Failed to get contact" });
     }

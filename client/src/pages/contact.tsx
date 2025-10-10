@@ -55,7 +55,7 @@ interface Contact {
   
   // Extended profile fields
   extendedProfileRoute: string;
-  extendedProfilePassword: string;
+  extendedProfilePassword?: string; // Not sent from backend for security
 }
 
 interface Bank {
@@ -789,7 +789,7 @@ Correo: ${bank.email}`;
               </Dialog>
               
               {/* Extended Profile Button - Only show if configured */}
-              {contact?.extendedProfileRoute && contact?.extendedProfilePassword && (
+              {contact?.extendedProfileRoute && (
                 <Dialog open={showExtendedProfileModal} onOpenChange={setShowExtendedProfileModal}>
                   <DialogTrigger asChild>
                     <Button
