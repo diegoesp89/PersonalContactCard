@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import {
   Phone,
@@ -15,6 +17,7 @@ import {
   Globe,
   QrCode,
   X,
+  Lock,
 } from "lucide-react";
 import { FaTiktok, FaLinkedin, FaTelegram, FaYoutube, FaFacebook } from "react-icons/fa";
 import ImageModal from "@/components/ImageModal";
@@ -49,6 +52,10 @@ interface Contact {
   defaultLanguage: string;
 
   banks: string; // JSON string of Bank[]
+  
+  // Extended profile fields
+  extendedProfileRoute: string;
+  extendedProfilePassword: string;
 }
 
 interface Bank {
@@ -83,6 +90,9 @@ function ContactPageContent() {
   const [showImageModal, setShowImageModal] = useState(false);
   const [showCASModal, setShowCASModal] = useState(false);
   const [showTranslateModal, setShowTranslateModal] = useState(false);
+  const [showExtendedProfileModal, setShowExtendedProfileModal] = useState(false);
+  const [extendedProfilePassword, setExtendedProfilePassword] = useState("");
+  const [verifyingExtendedProfile, setVerifyingExtendedProfile] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
 
   // Get route parameter from URL
@@ -254,6 +264,47 @@ function ContactPageContent() {
     trackEvent('share_click');
     setShowShareModal(true);
     setShowQRView(false);
+  };
+
+  const handleVerifyExtendedProfile = async () => {
+    if (!contact || !extendedProfilePassword) return;
+    
+    setVerifyingExtendedProfile(true);
+    try {
+      const response = await fetch(`/api/verify-extended-profile/${contact.ruta}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password: extendedProfilePassword }),
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        toast({
+          title: "Acceso concedido",
+          description: "Redirigiendo al perfil extendido...",
+        });
+        // Redirect to extended profile
+        setTimeout(() => {
+          window.location.href = `/${data.extendedProfileRoute}`;
+        }, 500);
+      } else {
+        toast({
+          title: "Contraseña incorrecta",
+          description: "La contraseña ingresada no es válida",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo verificar el perfil extendido",
+        variant: "destructive",
+      });
+    } finally {
+      setVerifyingExtendedProfile(false);
+    }
   };
 
   const handleShowQR = async () => {
@@ -736,6 +787,58 @@ Correo: ${bank.email}`;
                   )}
                 </DialogContent>
               </Dialog>
+              
+              {/* Extended Profile Button - Only show if configured */}
+              {contact?.extendedProfileRoute && contact?.extendedProfilePassword && (
+                <Dialog open={showExtendedProfileModal} onOpenChange={setShowExtendedProfileModal}>
+                  <DialogTrigger asChild>
+                    <Button
+                      className="flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:translate-y-[-2px] shadow-lg"
+                    >
+                      <Lock className="w-4 h-4 mr-2" />
+                      Perfil Extendido
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700">
+                    <DialogHeader>
+                      <DialogTitle className="text-slate-100 text-center flex items-center justify-center gap-2">
+                        <Lock className="w-5 h-5 text-amber-400" />
+                        Acceso al Perfil Extendido
+                      </DialogTitle>
+                      <DialogDescription className="text-slate-400 text-center">
+                        Ingresa la contraseña para acceder al perfil extendido
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="extendedPassword" className="text-slate-200">
+                          Contraseña
+                        </Label>
+                        <Input
+                          id="extendedPassword"
+                          type="password"
+                          value={extendedProfilePassword}
+                          onChange={(e) => setExtendedProfilePassword(e.target.value)}
+                          className="bg-slate-700 border-slate-600 text-slate-100"
+                          placeholder="Ingresa la contraseña"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              handleVerifyExtendedProfile();
+                            }
+                          }}
+                        />
+                      </div>
+                      <Button
+                        onClick={handleVerifyExtendedProfile}
+                        disabled={verifyingExtendedProfile || !extendedProfilePassword}
+                        className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white"
+                      >
+                        {verifyingExtendedProfile ? "Verificando..." : "Acceder"}
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              )}
             </div>
 
             {/* Contact Information */}
