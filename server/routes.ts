@@ -1505,6 +1505,39 @@ END:VCARD`;
     }
   });
 
+  // Verify extended profile password
+  app.post("/api/verify-extended-profile/:ruta", async (req, res) => {
+    try {
+      const { password } = req.body;
+      const { ruta } = req.params;
+      
+      // Get the contact by ruta
+      const contact = await storage.getContactByRuta(ruta);
+      if (!contact) {
+        return res.status(404).json({ error: "Contact not found" });
+      }
+      
+      // Check if contact has an extended profile configured
+      if (!contact.extendedProfileRoute || !contact.extendedProfilePassword) {
+        return res.status(404).json({ error: "No extended profile configured" });
+      }
+      
+      // Verify password
+      if (password !== contact.extendedProfilePassword) {
+        return res.status(401).json({ error: "Incorrect password" });
+      }
+      
+      // Password is correct, return the extended profile route
+      res.json({ 
+        success: true, 
+        extendedProfileRoute: contact.extendedProfileRoute 
+      });
+    } catch (error) {
+      console.error('Extended profile verification error:', error);
+      res.status(500).json({ error: "Failed to verify extended profile" });
+    }
+  });
+
   // Logs endpoint (admin only)
   app.get("/logs", async (req, res) => {
     try {
