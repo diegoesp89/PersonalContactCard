@@ -29,12 +29,14 @@ export const contacts = pgTable("contacts", {
   textColor: text("text_color").notNull().default("#ffffff"), // Default white text
   statsPassword: text("stats_password"),
   defaultLanguage: text("default_language").notNull().default("es"), // es, en, pt
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 
   banks: text("banks").notNull().default("[]"), // JSON array of bank objects
 });
 
 export const insertContactSchema = createInsertSchema(contacts).omit({
   id: true,
+  createdAt: true,
 });
 
 export type InsertContact = z.infer<typeof insertContactSchema>;

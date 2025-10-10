@@ -29,8 +29,9 @@ Preferred communication style: Simple, everyday language.
 
 ### Database Design
 - **ORM**: Drizzle ORM configured for PostgreSQL.
-- **Schema**: Stores contact information, personal details, banking information, multiple social media links, multiple contact details (phone, email, WhatsApp, website), profile images, cover images, and analytics data.
-- **Migration**: Drizzle Kit for database migrations, ensuring schema updates for new features like multi-link fields and cover images.
+- **Schema**: Stores contact information, personal details, banking information, multiple social media links, multiple contact details (phone, email, WhatsApp, website), profile images, cover images, analytics data, and creation timestamps.
+- **Migration**: Drizzle Kit for database migrations, ensuring schema updates for new features like multi-link fields, cover images, and creation date tracking.
+- **Creation Date Tracking**: Each contact includes a `createdAt` timestamp field that records when the contact was created, visible in both the editor and statistics pages.
 
 ### Key Features Implemented:
 - Dynamic contact routes and QR code generation for direct access and sharing.
@@ -63,3 +64,6 @@ Preferred communication style: Simple, everyday language.
 - Replit Object Storage: For persistent image storage and serving.
 - PostgreSQL database: For primary data storage.
 - QR code generation (internal API endpoint).
+
+## Recent Changes
+- **2025-10-10**: Added creation date tracking (`createdAt`) to all contacts. This field is automatically set when a contact is created and is displayed in both the contact editor and statistics pages. Existing contacts were assigned today's date.

@@ -36,6 +36,7 @@ interface Contact {
   id: number;
   name: string;
   ruta: string;
+  createdAt?: string;
 }
 
 interface EventCount {
@@ -237,6 +238,15 @@ export default function AnalyticsPage() {
           <div>
             <h1 className="text-3xl font-bold">Estadísticas - {analytics.contact.name}</h1>
             <p className="text-slate-400">{analytics.period}</p>
+            {analytics.contact.createdAt && (
+              <p className="text-slate-500 text-sm mt-1">
+                📅 Creado: {new Date(analytics.contact.createdAt).toLocaleDateString('es-CL', { 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric'
+                })}
+              </p>
+            )}
           </div>
           <div className="flex items-center gap-4">
             <Label className="text-slate-300">Período (días):</Label>

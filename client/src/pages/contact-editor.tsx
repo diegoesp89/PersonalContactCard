@@ -50,6 +50,7 @@ interface Contact {
   textColor: string;
   statsPassword: string;
   defaultLanguage: string;
+  createdAt?: string;
 
   banks: string;
 }
@@ -777,26 +778,42 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
             <CardHeader>
               <CardTitle className="text-slate-100">Información Básica</CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="name" className="text-slate-200">Nombre *</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => updateField("name", e.target.value)}
-                  className="bg-slate-800/50 border-slate-600 text-slate-100"
-                  required
-                />
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="name" className="text-slate-200">Nombre *</Label>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => updateField("name", e.target.value)}
+                    className="bg-slate-800/50 border-slate-600 text-slate-100"
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="title" className="text-slate-200">Título/Empresa</Label>
+                  <Input
+                    id="title"
+                    value={formData.title}
+                    onChange={(e) => updateField("title", e.target.value)}
+                    className="bg-slate-800/50 border-slate-600 text-slate-100"
+                  />
+                </div>
               </div>
-              <div>
-                <Label htmlFor="title" className="text-slate-200">Título/Empresa</Label>
-                <Input
-                  id="title"
-                  value={formData.title}
-                  onChange={(e) => updateField("title", e.target.value)}
-                  className="bg-slate-800/50 border-slate-600 text-slate-100"
-                />
-              </div>
+              {contact?.createdAt && (
+                <div className="pt-2 border-t border-slate-700">
+                  <Label className="text-slate-200">Fecha de Creación</Label>
+                  <p className="text-slate-400 text-sm mt-1">
+                    {new Date(contact.createdAt).toLocaleDateString('es-CL', { 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
 
