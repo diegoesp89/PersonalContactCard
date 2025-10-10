@@ -44,6 +44,7 @@ Preferred communication style: Simple, everyday language.
 - Integrated system contact details (WhatsApp, phone, email, Instagram) in a footer modal.
 - Special features like a "DEMO" ribbon for `inDev` contacts and a dedicated `/menu-demo` page with an Arabic theme.
 - Automatic redirection from old Replit URLs to `cashirts.cl`.
+- **Extended Profile**: Password-protected linking between contacts. Contacts can have an "Extended Profile" button that requires password verification before redirecting to another contact's profile. Password validation is server-side only for security.
 
 ## External Dependencies
 
@@ -67,3 +68,4 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 - **2025-10-10**: Added creation date tracking (`createdAt`) to all contacts. This field is automatically set when a contact is created and is displayed in both the contact editor and statistics pages. Existing contacts were assigned today's date.
+- **2025-10-10**: Implemented Extended Profile feature allowing password-protected contact linking. Contacts can link to another contact's profile via a password-protected button. Includes security fix to prevent password exposure (passwords excluded from API responses, validation server-side only).
