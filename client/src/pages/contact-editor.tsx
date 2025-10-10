@@ -53,6 +53,10 @@ interface Contact {
   createdAt?: string;
 
   banks: string;
+  
+  // Extended profile fields
+  extendedProfileRoute: string;
+  extendedProfilePassword: string;
 }
 
 interface Bank {
@@ -121,7 +125,11 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
     statsPassword: contact?.statsPassword || "",
     defaultLanguage: contact?.defaultLanguage || "es",
 
-    banks: contact?.banks || "[]"
+    banks: contact?.banks || "[]",
+    
+    // Extended profile fields
+    extendedProfileRoute: contact?.extendedProfileRoute || "",
+    extendedProfilePassword: contact?.extendedProfilePassword || "",
   });
 
   const [banks, setBanks] = useState<Bank[]>([]);
@@ -906,6 +914,49 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
               <p className="text-xs text-slate-400 mt-2">
                 Los visitantes verán este idioma por defecto, pero podrán cambiarlo con el botón "Traducir"
               </p>
+            </CardContent>
+          </Card>
+
+          {/* Extended Profile */}
+          <Card className="glass-effect border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-slate-100">Perfil Extendido</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-slate-400">
+                Vincula este contacto con otro perfil protegido por contraseña
+              </p>
+              <div>
+                <Label htmlFor="extendedProfileRoute" className="text-slate-200">
+                  Ruta del Contacto Vinculado
+                </Label>
+                <Input
+                  id="extendedProfileRoute"
+                  value={formData.extendedProfileRoute}
+                  onChange={(e) => updateField("extendedProfileRoute", e.target.value)}
+                  className="bg-slate-800/50 border-slate-600 text-slate-100"
+                  placeholder="nombre-del-contacto"
+                />
+                <p className="text-xs text-slate-400 mt-1">
+                  Ingresa la ruta (URL) del contacto al que quieres vincular
+                </p>
+              </div>
+              <div>
+                <Label htmlFor="extendedProfilePassword" className="text-slate-200">
+                  Contraseña de Acceso
+                </Label>
+                <Input
+                  id="extendedProfilePassword"
+                  type="password"
+                  value={formData.extendedProfilePassword}
+                  onChange={(e) => updateField("extendedProfilePassword", e.target.value)}
+                  className="bg-slate-800/50 border-slate-600 text-slate-100"
+                  placeholder="Contraseña para acceder al perfil extendido"
+                />
+                <p className="text-xs text-slate-400 mt-1">
+                  Los visitantes necesitarán esta contraseña para acceder al perfil vinculado
+                </p>
+              </div>
             </CardContent>
           </Card>
 

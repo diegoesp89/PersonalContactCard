@@ -32,6 +32,10 @@ export const contacts = pgTable("contacts", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 
   banks: text("banks").notNull().default("[]"), // JSON array of bank objects
+  
+  // Extended profile fields
+  extendedProfileRoute: text("extended_profile_route").notNull().default(""),
+  extendedProfilePassword: text("extended_profile_password").notNull().default(""),
 });
 
 export const insertContactSchema = createInsertSchema(contacts).omit({
