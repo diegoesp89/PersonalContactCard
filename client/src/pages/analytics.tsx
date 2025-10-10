@@ -366,7 +366,7 @@ export default function AnalyticsPage() {
                     data={analytics.eventCounts}
                     cx="50%"
                     cy="50%"
-                    outerRadius={100}
+                    outerRadius={50}
                     fill="#8884d8"
                     dataKey="count"
                     label={(entry) => `${formatEventName(entry.event)}: ${entry.count}`}
