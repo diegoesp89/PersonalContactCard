@@ -1240,24 +1240,9 @@ Correo: ${bank.email}`;
               <ExternalLink className="text-slate-500 w-4 h-4 group-hover:text-green-400 transition-colors" />
             </a>
 
-            {/* Phone */}
-            <a
-              href="tel:+56982306759"
-              className="flex items-center p-4 rounded-xl border border-slate-700 hover:bg-blue-500/10 hover:border-blue-500/30 transition-all duration-300 group"
-            >
-              <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
-                <Phone className="text-white w-4 h-4" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-slate-100 font-semibold text-sm">Teléfono</h3>
-                <p className="text-slate-400 text-sm">+569 8230 6759</p>
-              </div>
-              <ExternalLink className="text-slate-500 w-4 h-4 group-hover:text-blue-400 transition-colors" />
-            </a>
-
             {/* Email */}
             <a
-              href="mailto:crt.cas@gmail.com"
+              href="mailto:casdigital.card@gmail.com"
               className="flex items-center p-4 rounded-xl border border-slate-700 hover:bg-red-500/10 hover:border-red-500/30 transition-all duration-300 group"
             >
               <div className="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center mr-3">
@@ -1265,14 +1250,14 @@ Correo: ${bank.email}`;
               </div>
               <div className="flex-1">
                 <h3 className="text-slate-100 font-semibold text-sm">Email</h3>
-                <p className="text-slate-400 text-sm">crt.cas@gmail.com</p>
+                <p className="text-slate-400 text-sm">casdigital.card@gmail.com</p>
               </div>
               <ExternalLink className="text-slate-500 w-4 h-4 group-hover:text-red-400 transition-colors" />
             </a>
 
             {/* Instagram */}
             <a
-              href="https://instagram.com/cashirts_camisas_a_medida"
+              href="https://www.instagram.com/cas_shirts_and_market"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center p-4 rounded-xl border border-slate-700 hover:bg-pink-500/10 hover:border-pink-500/30 transition-all duration-300 group"
@@ -1282,7 +1267,7 @@ Correo: ${bank.email}`;
               </div>
               <div className="flex-1">
                 <h3 className="text-slate-100 font-semibold text-sm">Instagram</h3>
-                <p className="text-slate-400 text-sm">@cashirts_camisas_a_medida</p>
+                <p className="text-slate-400 text-sm">@cas_shirts_and_market</p>
               </div>
               <ExternalLink className="text-slate-500 w-4 h-4 group-hover:text-pink-400 transition-colors" />
             </a>
