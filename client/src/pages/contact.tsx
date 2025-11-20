@@ -1084,24 +1084,33 @@ Correo: ${bank.email}`;
                   </div>
                   
                   {/* Google Maps Embed */}
-                  <div className="rounded-xl overflow-hidden border border-slate-700 shadow-lg">
-                    <div className="bg-slate-800 px-4 py-2 flex items-center gap-2 border-b border-slate-700">
-                      <MapPin className="w-4 h-4 text-purple-400" />
-                      <span className="text-sm font-medium text-slate-200">Ubicación en el mapa</span>
+                  {import.meta.env.VITE_GOOGLE_MAPS_API_KEY ? (
+                    <div className="rounded-xl overflow-hidden border border-slate-700 shadow-lg">
+                      <div className="bg-slate-800 px-4 py-2 flex items-center gap-2 border-b border-slate-700">
+                        <MapPin className="w-4 h-4 text-purple-400" />
+                        <span className="text-sm font-medium text-slate-200">Ubicación en el mapa</span>
+                      </div>
+                      <div className="relative w-full" style={{ height: '300px' }}>
+                        <iframe
+                          width="100%"
+                          height="100%"
+                          style={{ border: 0 }}
+                          referrerPolicy="no-referrer-when-downgrade"
+                          loading="lazy"
+                          allowFullScreen
+                          src={`https://www.google.com/maps/embed/v1/place?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&q=${encodeURIComponent(contact.officeAddress)}&zoom=15`}
+                          data-testid="map-embed"
+                        />
+                      </div>
                     </div>
-                    <div className="relative w-full" style={{ height: '300px' }}>
-                      <iframe
-                        width="100%"
-                        height="100%"
-                        style={{ border: 0 }}
-                        referrerPolicy="no-referrer-when-downgrade"
-                        loading="lazy"
-                        allowFullScreen
-                        src={`https://www.google.com/maps/embed/v1/place?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&q=${encodeURIComponent(contact.officeAddress)}&zoom=15`}
-                        data-testid="map-embed"
-                      />
+                  ) : (
+                    <div className="rounded-xl border border-slate-700 p-4 bg-slate-800/50">
+                      <p className="text-slate-400 text-sm text-center">
+                        <MapPin className="w-4 h-4 inline mr-1" />
+                        Mapa no disponible - Configuración pendiente
+                      </p>
                     </div>
-                  </div>
+                  )}
                 </div>
               )}
             </div>
@@ -1277,6 +1286,110 @@ Correo: ${bank.email}`;
               </div>
               <ExternalLink className="text-slate-500 w-4 h-4 group-hover:text-pink-400 transition-colors" />
             </a>
+          </div>
+
+          {/* EULA - Terms and Conditions */}
+          <div className="border-t border-slate-700 pt-4 mt-4">
+            <div className="max-h-64 overflow-y-auto px-2 space-y-3 text-slate-300 text-xs">
+              {language === 'es' && (
+                <>
+                  <h3 className="font-semibold text-sm text-slate-100">CASdigital Card — Modo de Uso y Condiciones de Uso</h3>
+                  
+                  <div className="space-y-2">
+                    <div>
+                      <h4 className="font-medium text-slate-200">1. Funcionamiento de la Tarjeta</h4>
+                      <p className="text-slate-400">La tarjeta CASdigital cuenta con tecnología QR y NFC integrada, enlazada directamente a una plataforma digital donde se almacenan los datos del usuario. Al acercar la tarjeta a un teléfono o escaneando el código QR, el dispositivo accede al perfil digital del titular, permitiendo visualizar, guardar o registrar la información de contacto.</p>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-medium text-slate-200">2. Uso y Compartición de Datos</h4>
+                      <p className="text-slate-400">Al compartir la tarjeta, la persona que la recibe podrá guardar los datos en su teléfono mediante su agenda o aplicaciones compatibles. El titular es responsable de la veracidad y del contenido publicado en su perfil digital.</p>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-medium text-slate-200">3. Administración del Perfil</h4>
+                      <p className="text-slate-400">El usuario puede solicitar en cualquier momento: agregar información (teléfonos, links, redes sociales, etc.), modificar información existente, retirar información, o actualizar su fotografía o imagen del perfil.</p>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-medium text-slate-200">4. Perfil Extendido (Servicio Opcional)</h4>
+                      <p className="text-slate-400">El usuario puede contratar un Perfil Extendido, que agrega funciones avanzadas y contenido adicional dentro del mismo sistema. Este servicio tiene un costo adicional. El Perfil Extendido incluye acceso mediante contraseña, la cual puede ser solicitada y administrada por el cliente.</p>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-medium text-slate-200">5. Condiciones de Uso</h4>
+                      <p className="text-slate-400">La tarjeta CASdigital es un medio de acceso a la plataforma; su uso implica aceptar que el contenido mostrado es responsabilidad del titular. CASdigital garantiza la vinculación técnica del QR y NFC, pero no se responsabiliza por el uso o entrega voluntaria de la tarjeta a terceros. La plataforma puede actualizarse o modificarse, y dichas actualizaciones podrán ser informadas según corresponda.</p>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {language === 'en' && (
+                <>
+                  <h3 className="font-semibold text-sm text-slate-100">CASdigital Card — Usage and Terms of Use</h3>
+                  
+                  <div className="space-y-2">
+                    <div>
+                      <h4 className="font-medium text-slate-200">1. Card Functionality</h4>
+                      <p className="text-slate-400">CASdigital Card includes integrated QR and NFC technology, linked directly to a digital platform where the user's information is stored. By tapping the card on a smartphone or scanning the QR code, the device will access the user's digital profile, allowing the viewer to see, save, or store the contact information.</p>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-medium text-slate-200">2. Data Use and Sharing</h4>
+                      <p className="text-slate-400">When sharing the card, the recipient may save the contact details on their device through their address book or compatible applications. The cardholder is fully responsible for the accuracy and content displayed in their digital profile.</p>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-medium text-slate-200">3. Profile Management</h4>
+                      <p className="text-slate-400">The user may request at any time: add new information (phone numbers, links, social media, etc.), modify existing information, remove information, or update their profile image or photo.</p>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-medium text-slate-200">4. Extended Profile (Optional Service)</h4>
+                      <p className="text-slate-400">Users may choose to upgrade to an Extended Profile, which offers additional features and enhanced content within the system. This service has an additional cost. The Extended Profile includes password-protected access, which can be requested and managed by the customer.</p>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-medium text-slate-200">5. Terms of Use</h4>
+                      <p className="text-slate-400">The CASdigital Card acts as an access point to the digital platform; by using it, the user accepts that the displayed information is their responsibility. CASdigital guarantees the QR and NFC linking, but is not responsible for misuse or voluntary sharing of the card with third parties. Platform updates or changes may occur and be communicated when applicable.</p>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {language === 'pt' && (
+                <>
+                  <h3 className="font-semibold text-sm text-slate-100">CASdigital Card — Modo de Uso e Condições de Uso</h3>
+                  
+                  <div className="space-y-2">
+                    <div>
+                      <h4 className="font-medium text-slate-200">1. Funcionamento do Cartão</h4>
+                      <p className="text-slate-400">O cartão CASdigital possui tecnologia QR e NFC integrada, conectada diretamente a uma plataforma digital onde os dados do usuário são armazenados. Ao aproximar o cartão de um celular ou escaneando o código QR, o dispositivo acessa o perfil digital do titular, permitindo visualizar, salvar ou registrar as informações de contato.</p>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-medium text-slate-200">2. Uso e Compartilhamento de Dados</h4>
+                      <p className="text-slate-400">Ao compartilhar o cartão, a pessoa receptora pode salvar os dados no seu telefone por meio da agenda ou aplicativos compatíveis. O titular é responsável pela veracidade e pelo conteúdo exibido em seu perfil digital.</p>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-medium text-slate-200">3. Administração do Perfil</h4>
+                      <p className="text-slate-400">O usuário pode solicitar a qualquer momento: adicionar novas informações (telefones, links, redes sociais, etc.), modificar informações existentes, remover informações, ou atualizar sua foto ou imagem do perfil.</p>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-medium text-slate-200">4. Perfil Estendido (Serviço Opcional)</h4>
+                      <p className="text-slate-400">O usuário pode contratar um Perfil Estendido, que inclui funções avançadas e conteúdo adicional dentro da plataforma. Este serviço possui um custo adicional. O Perfil Estendido oferece acesso através de senha, que pode ser solicitada e administrada pelo cliente.</p>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-medium text-slate-200">5. Condições de Uso</h4>
+                      <p className="text-slate-400">O cartão CASdigital é um meio de acesso à plataforma; seu uso implica a aceitação de que o conteúdo exibido é responsabilidade do titular. A CASdigital garante o funcionamento do QR e NFC, mas não se responsabiliza pelo uso indevido ou compartilhamento voluntário do cartão com terceiros. A plataforma pode passar por atualizações, que poderão ser informadas conforme necessário.</p>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
 
           <div className="text-center pt-4 border-t border-slate-700">
