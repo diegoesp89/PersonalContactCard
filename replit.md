@@ -41,10 +41,11 @@ Preferred communication style: Simple, everyday language.
 - Conditional display of contact information (e.g., WhatsApp only if data exists).
 - Real-time search and alphabetical sorting in the admin panel.
 - Robust error handling and caching for image serving from Object Storage.
-- Integrated system contact details (WhatsApp, phone, email, Instagram) in a footer modal.
+- Integrated system contact details (WhatsApp, phone, email, Instagram) in a footer modal with EULA (Terms and Conditions) in three languages.
 - Special features like a "DEMO" ribbon for `inDev` contacts and a dedicated `/menu-demo` page with an Arabic theme.
 - Automatic redirection from old Replit URLs to `cashirts.cl`.
 - **Extended Profile**: Password-protected linking between contacts. Contacts can have an "Extended Profile" button that requires password verification before redirecting to another contact's profile. Password validation is server-side only for security.
+- **Google Maps Integration**: Interactive map display for office addresses using Google Maps Embed API with secure environment variable configuration.
 
 ## External Dependencies
 
@@ -65,7 +66,10 @@ Preferred communication style: Simple, everyday language.
 - Replit Object Storage: For persistent image storage and serving.
 - PostgreSQL database: For primary data storage.
 - QR code generation (internal API endpoint).
+- Google Maps Embed API: For displaying interactive location maps (requires VITE_GOOGLE_MAPS_API_KEY).
 
 ## Recent Changes
+- **2025-11-20**: Integrated Google Maps Embed API to display interactive maps when contacts have office addresses configured. Implemented secure environment variable handling with `.gitignore` protection and runtime fallback for missing API keys.
+- **2025-11-20**: Added comprehensive EULA (End User License Agreement - Terms and Conditions) to the system contact modal with automatic language switching between Spanish, English, and Portuguese based on user's selected language.
 - **2025-10-10**: Added creation date tracking (`createdAt`) to all contacts. This field is automatically set when a contact is created and is displayed in both the contact editor and statistics pages. Existing contacts were assigned today's date.
 - **2025-10-10**: Implemented Extended Profile feature allowing password-protected contact linking. Contacts can link to another contact's profile via a password-protected button. Includes security fix to prevent password exposure (passwords excluded from API responses, validation server-side only).
