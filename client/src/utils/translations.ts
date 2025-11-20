@@ -52,6 +52,24 @@ export const translations = {
     spanish: 'Español',
     english: 'Inglés',
     portuguese: 'Portugués',
+    
+    // Extended Profile
+    extendedProfile: 'Perfil Extendido',
+    extendedProfileAccess: 'Acceso al Perfil Extendido',
+    extendedProfileDescription: 'Ingresa la contraseña para acceder al perfil extendido',
+    password: 'Contraseña',
+    enterPassword: 'Ingresa la contraseña',
+    verifying: 'Verificando...',
+    access: 'Acceder',
+    
+    // Map
+    mapLocation: 'Ubicación en el mapa',
+    mapNotAvailable: 'Mapa no disponible - Configuración pendiente',
+    
+    // Footer
+    viewStats: 'Ver estadísticas',
+    casFooter: 'CAS - Contactáctanos si quieres tu propia tarjeta',
+    allRightsReserved: 'Todos los Derechos Reservados',
   },
   
   en: {
@@ -105,6 +123,24 @@ export const translations = {
     spanish: 'Spanish',
     english: 'English',
     portuguese: 'Portuguese',
+    
+    // Extended Profile
+    extendedProfile: 'Extended Profile',
+    extendedProfileAccess: 'Extended Profile Access',
+    extendedProfileDescription: 'Enter the password to access the extended profile',
+    password: 'Password',
+    enterPassword: 'Enter password',
+    verifying: 'Verifying...',
+    access: 'Access',
+    
+    // Map
+    mapLocation: 'Map Location',
+    mapNotAvailable: 'Map not available - Configuration pending',
+    
+    // Footer
+    viewStats: 'View statistics',
+    casFooter: 'CAS - Contact us if you want your own card',
+    allRightsReserved: 'All Rights Reserved',
   },
   
   pt: {
@@ -158,6 +194,24 @@ export const translations = {
     spanish: 'Espanhol',
     english: 'Inglês',
     portuguese: 'Português',
+    
+    // Extended Profile
+    extendedProfile: 'Perfil Estendido',
+    extendedProfileAccess: 'Acesso ao Perfil Estendido',
+    extendedProfileDescription: 'Digite a senha para acessar o perfil estendido',
+    password: 'Senha',
+    enterPassword: 'Digite a senha',
+    verifying: 'Verificando...',
+    access: 'Acessar',
+    
+    // Map
+    mapLocation: 'Localização no mapa',
+    mapNotAvailable: 'Mapa não disponível - Configuração pendente',
+    
+    // Footer
+    viewStats: 'Ver estatísticas',
+    casFooter: 'CAS - Entre em contato se você quiser seu próprio cartão',
+    allRightsReserved: 'Todos os Direitos Reservados',
   },
 };
 

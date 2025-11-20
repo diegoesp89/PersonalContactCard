@@ -797,23 +797,23 @@ Correo: ${bank.email}`;
                       className="flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:translate-y-[-2px] shadow-lg"
                     >
                       <Lock className="w-4 h-4 mr-2" />
-                      Perfil Extendido
+                      {t('extendedProfile')}
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700">
                     <DialogHeader>
                       <DialogTitle className="text-slate-100 text-center flex items-center justify-center gap-2">
                         <Lock className="w-5 h-5 text-amber-400" />
-                        Acceso al Perfil Extendido
+                        {t('extendedProfileAccess')}
                       </DialogTitle>
                       <DialogDescription className="text-slate-400 text-center">
-                        Ingresa la contraseña para acceder al perfil extendido
+                        {t('extendedProfileDescription')}
                       </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4 py-4">
                       <div className="space-y-2">
                         <Label htmlFor="extendedPassword" className="text-slate-200">
-                          Contraseña
+                          {t('password')}
                         </Label>
                         <Input
                           id="extendedPassword"
@@ -821,7 +821,7 @@ Correo: ${bank.email}`;
                           value={extendedProfilePassword}
                           onChange={(e) => setExtendedProfilePassword(e.target.value)}
                           className="bg-slate-700 border-slate-600 text-slate-100"
-                          placeholder="Ingresa la contraseña"
+                          placeholder={t('enterPassword')}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter') {
                               handleVerifyExtendedProfile();
@@ -834,7 +834,7 @@ Correo: ${bank.email}`;
                         disabled={verifyingExtendedProfile || !extendedProfilePassword}
                         className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white"
                       >
-                        {verifyingExtendedProfile ? "Verificando..." : "Acceder"}
+                        {verifyingExtendedProfile ? t('verifying') : t('access')}
                       </Button>
                     </div>
                   </DialogContent>
@@ -1088,7 +1088,7 @@ Correo: ${bank.email}`;
                     <div className="rounded-xl overflow-hidden border border-slate-700 shadow-lg">
                       <div className="bg-slate-800 px-4 py-2 flex items-center gap-2 border-b border-slate-700">
                         <MapPin className="w-4 h-4 text-purple-400" />
-                        <span className="text-sm font-medium text-slate-200">Ubicación en el mapa</span>
+                        <span className="text-sm font-medium text-slate-200">{t('mapLocation')}</span>
                       </div>
                       <div className="relative w-full" style={{ height: '300px' }}>
                         <iframe
@@ -1107,7 +1107,7 @@ Correo: ${bank.email}`;
                     <div className="rounded-xl border border-slate-700 p-4 bg-slate-800/50">
                       <p className="text-slate-400 text-sm text-center">
                         <MapPin className="w-4 h-4 inline mr-1" />
-                        Mapa no disponible - Configuración pendiente
+                        {t('mapNotAvailable')}
                       </p>
                     </div>
                   )}
@@ -1188,7 +1188,7 @@ Correo: ${bank.email}`;
                   href={`/${routeParam}/stats`}
                   className="inline-flex items-center gap-1 text-slate-400 text-xs hover:text-slate-300 underline transition-colors"
                 >
-                  📊 Ver estadísticas
+                  📊 {t('viewStats')}
                 </a>
               </div>
               <p className="text-slate-500 text-xs">
@@ -1196,8 +1196,8 @@ Correo: ${bank.email}`;
                   onClick={() => setShowCASModal(true)}
                   className="hover:text-slate-300 underline transition-colors cursor-pointer"
                 >
-                  CAS - Contactáctanos si quieres tu propia tarjeta
-                </button> - Todos los Derechos Reservados - 2025.
+                  {t('casFooter')}
+                </button> - {t('allRightsReserved')} - 2025.
               </p>
             </div>
           </div>
