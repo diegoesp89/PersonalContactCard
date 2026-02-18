@@ -581,6 +581,16 @@ Correo: ${bank.email}`;
               >
                 🇧🇷 {getLanguageName('pt', language)}
               </Button>
+              <Button
+                variant={language === 'de' ? 'default' : 'outline'}
+                onClick={() => {
+                  setLanguage('de');
+                  setShowTranslateModal(false);
+                }}
+                className="w-full justify-start"
+              >
+                🇩🇪 {getLanguageName('de', language)}
+              </Button>
             </div>
           </DialogContent>
         </Dialog>
@@ -1383,6 +1393,39 @@ Correo: ${bank.email}`;
                     <div>
                       <h4 className="font-medium text-slate-200">5. Condições de Uso</h4>
                       <p className="text-slate-400">O cartão CASdigital é um meio de acesso à plataforma; seu uso implica a aceitação de que o conteúdo exibido é responsabilidade do titular. A CASdigital garante o funcionamento do QR e NFC, mas não se responsabiliza pelo uso indevido ou compartilhamento voluntário do cartão com terceiros. A plataforma pode passar por atualizações, que poderão ser informadas conforme necessário.</p>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {language === 'de' && (
+                <>
+                  <h3 className="font-semibold text-sm text-slate-100">CASdigital Card — Nutzung und Nutzungsbedingungen</h3>
+                  
+                  <div className="space-y-2">
+                    <div>
+                      <h4 className="font-medium text-slate-200">1. Funktionsweise der Karte</h4>
+                      <p className="text-slate-400">Die CASdigital-Karte verfügt über integrierte QR- und NFC-Technologie, die direkt mit einer digitalen Plattform verbunden ist, auf der die Daten des Nutzers gespeichert werden. Durch Annähern der Karte an ein Smartphone oder Scannen des QR-Codes greift das Gerät auf das digitale Profil des Inhabers zu und ermöglicht das Anzeigen, Speichern oder Erfassen der Kontaktinformationen.</p>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-medium text-slate-200">2. Datennutzung und -weitergabe</h4>
+                      <p className="text-slate-400">Beim Teilen der Karte kann der Empfänger die Kontaktdaten über sein Adressbuch oder kompatible Anwendungen auf seinem Telefon speichern. Der Inhaber ist für die Richtigkeit und den Inhalt seines digitalen Profils verantwortlich.</p>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-medium text-slate-200">3. Profilverwaltung</h4>
+                      <p className="text-slate-400">Der Nutzer kann jederzeit folgende Änderungen anfordern: neue Informationen hinzufügen (Telefonnummern, Links, soziale Medien usw.), bestehende Informationen ändern, Informationen entfernen oder sein Profilfoto oder -bild aktualisieren.</p>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-medium text-slate-200">4. Erweitertes Profil (Optionaler Service)</h4>
+                      <p className="text-slate-400">Der Nutzer kann ein erweitertes Profil erwerben, das erweiterte Funktionen und zusätzliche Inhalte innerhalb der Plattform bietet. Dieser Service ist kostenpflichtig. Das erweiterte Profil bietet passwortgeschützten Zugang, der vom Kunden angefordert und verwaltet werden kann.</p>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-medium text-slate-200">5. Nutzungsbedingungen</h4>
+                      <p className="text-slate-400">Die CASdigital-Karte dient als Zugang zur digitalen Plattform; ihre Nutzung impliziert die Akzeptanz, dass der angezeigte Inhalt in der Verantwortung des Inhabers liegt. CASdigital garantiert die technische Verknüpfung von QR und NFC, übernimmt jedoch keine Verantwortung für die missbräuchliche oder freiwillige Weitergabe der Karte an Dritte. Die Plattform kann aktualisiert oder geändert werden, und solche Änderungen werden gegebenenfalls mitgeteilt.</p>
                     </div>
                   </div>
                 </>

@@ -910,6 +910,7 @@ export default function ContactEditor({ contact, onBack, password }: ContactEdit
                 <option value="es">Español</option>
                 <option value="en">English</option>
                 <option value="pt">Português</option>
+                <option value="de">Deutsch</option>
               </select>
               <p className="text-xs text-slate-400 mt-2">
                 Los visitantes verán este idioma por defecto, pero podrán cambiarlo con el botón "Traducir"

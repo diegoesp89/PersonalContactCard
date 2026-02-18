@@ -28,7 +28,7 @@ export const contacts = pgTable("contacts", {
   backgroundColor: text("background_color").notNull().default("#1e293b"), // Default slate-800
   textColor: text("text_color").notNull().default("#ffffff"), // Default white text
   statsPassword: text("stats_password"),
-  defaultLanguage: text("default_language").notNull().default("es"), // es, en, pt
+  defaultLanguage: text("default_language").notNull().default("es"), // es, en, pt, de
   createdAt: timestamp("created_at").defaultNow().notNull(),
 
   banks: text("banks").notNull().default("[]"), // JSON array of bank objects

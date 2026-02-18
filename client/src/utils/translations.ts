@@ -1,4 +1,4 @@
-export type Language = 'es' | 'en' | 'pt';
+export type Language = 'es' | 'en' | 'pt' | 'de';
 
 export const translations = {
   es: {
@@ -52,6 +52,7 @@ export const translations = {
     spanish: 'Español',
     english: 'Inglés',
     portuguese: 'Portugués',
+    german: 'Alemán',
     
     // Extended Profile
     extendedProfile: 'Perfil Extendido',
@@ -123,6 +124,7 @@ export const translations = {
     spanish: 'Spanish',
     english: 'English',
     portuguese: 'Portuguese',
+    german: 'German',
     
     // Extended Profile
     extendedProfile: 'Extended Profile',
@@ -194,6 +196,7 @@ export const translations = {
     spanish: 'Espanhol',
     english: 'Inglês',
     portuguese: 'Português',
+    german: 'Alemão',
     
     // Extended Profile
     extendedProfile: 'Perfil Estendido',
@@ -213,6 +216,78 @@ export const translations = {
     casFooter: 'CAS - Entre em contato se você quiser seu próprio cartão',
     allRightsReserved: 'Todos os Direitos Reservados',
   },
+
+  de: {
+    // Contact info labels
+    phone: 'Telefon',
+    email: 'E-Mail',
+    whatsapp: 'WhatsApp',
+    website: 'Webseite',
+    officeAddress: 'Büroadresse',
+    
+    // Social media labels
+    instagram: 'Instagram',
+    tiktok: 'TikTok',
+    linkedin: 'LinkedIn',
+    telegram: 'Telegram',
+    youtube: 'YouTube',
+    facebook: 'Facebook',
+    
+    // Banking labels
+    bankingInfo: 'Bankinformationen',
+    bankName: 'Bank',
+    accountNumber: 'Kontonummer',
+    accountType: 'Kontotyp',
+    accountHolder: 'Kontoinhaber',
+    
+    // Action buttons
+    saveContact: 'Kontakt speichern',
+    shareContact: 'Teilen',
+    translate: 'Übersetzen',
+    call: 'Anrufen',
+    sendEmail: 'E-Mail senden',
+    sendMessage: 'Nachricht senden',
+    visit: 'Besuchen',
+    
+    // Share modal
+    shareOptions: 'Freigabeoptionen',
+    qrCode: 'QR-Code',
+    copyLink: 'Link kopieren',
+    shareNative: 'Teilen',
+    linkCopied: 'Link in die Zwischenablage kopiert',
+    back: 'Zurück',
+    qrError: 'Fehler beim Erstellen des QR-Codes',
+    scanQR: 'QR-Code scannen',
+    downloadQR: 'QR herunterladen',
+    copy: 'Kopieren',
+    bankAccount: 'Bankkonto',
+    rut: 'RUT',
+    holder: 'Inhaber',
+    
+    // Languages
+    spanish: 'Spanisch',
+    english: 'Englisch',
+    portuguese: 'Portugiesisch',
+    german: 'Deutsch',
+    
+    // Extended Profile
+    extendedProfile: 'Erweitertes Profil',
+    extendedProfileAccess: 'Zugang zum erweiterten Profil',
+    extendedProfileDescription: 'Geben Sie das Passwort ein, um auf das erweiterte Profil zuzugreifen',
+    password: 'Passwort',
+    enterPassword: 'Passwort eingeben',
+    verifying: 'Überprüfung...',
+    access: 'Zugreifen',
+    
+    // Map
+    mapLocation: 'Standort auf der Karte',
+    mapNotAvailable: 'Karte nicht verfügbar - Konfiguration ausstehend',
+    
+    // Footer
+    viewStats: 'Statistiken anzeigen',
+    casFooter: 'CAS - Kontaktieren Sie uns, wenn Sie Ihre eigene Karte möchten',
+    allRightsReserved: 'Alle Rechte vorbehalten',
+  },
 };
 
 export const getTranslation = (language: Language, key: keyof typeof translations.es): string => {
@@ -220,10 +295,11 @@ export const getTranslation = (language: Language, key: keyof typeof translation
 };
 
 export const getLanguageName = (language: Language, currentLang: Language): string => {
-  const languageMap = {
-    es: { es: 'Español', en: 'Spanish', pt: 'Espanhol' },
-    en: { es: 'Inglés', en: 'English', pt: 'Inglês' },
-    pt: { es: 'Portugués', en: 'Portuguese', pt: 'Português' },
+  const languageMap: Record<Language, Record<Language, string>> = {
+    es: { es: 'Español', en: 'Spanish', pt: 'Espanhol', de: 'Spanisch' },
+    en: { es: 'Inglés', en: 'English', pt: 'Inglês', de: 'Englisch' },
+    pt: { es: 'Portugués', en: 'Portuguese', pt: 'Português', de: 'Portugiesisch' },
+    de: { es: 'Alemán', en: 'German', pt: 'Alemão', de: 'Deutsch' },
   };
   
   return languageMap[language][currentLang] || language.toUpperCase();
