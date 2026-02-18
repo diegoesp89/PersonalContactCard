@@ -503,16 +503,29 @@ Correo: ${bank.email}`;
   // Parse banks and social links from JSON using helper function
   const banks: Bank[] = contact?.banks ? JSON.parse(contact.banks) : [];
   
-  const phoneLinks: SocialLink[] = parseJSONField(contact?.phone);
-  const emailLinks: SocialLink[] = parseJSONField(contact?.email);
-  const whatsappLinks: SocialLink[] = parseJSONField(contact?.whatsapp);
-  const websiteLinks: SocialLink[] = parseJSONField(contact?.website);
-  const instagramLinks: SocialLink[] = parseJSONField(contact?.instagram);
-  const tiktokLinks: SocialLink[] = parseJSONField(contact?.tiktok);
-  const linkedinLinks: SocialLink[] = parseJSONField(contact?.linkedin);
-  const telegramLinks: SocialLink[] = parseJSONField(contact?.telegram);
-  const youtubeLinks: SocialLink[] = parseJSONField(contact?.youtube);
-  const facebookLinks: SocialLink[] = parseJSONField(contact?.facebook);
+  const isInternalLink = (url: string): boolean => {
+    const normalizedUrl = url.toLowerCase().trim();
+    const currentHost = window.location.hostname.toLowerCase();
+    const internalPatterns = [
+      'cashirts.cl',
+      currentHost,
+    ];
+    return internalPatterns.some(pattern => normalizedUrl.includes(pattern));
+  };
+
+  const filterExternalLinks = (links: SocialLink[]): SocialLink[] =>
+    links.filter(link => !isInternalLink(link.url));
+
+  const phoneLinks: SocialLink[] = filterExternalLinks(parseJSONField(contact?.phone));
+  const emailLinks: SocialLink[] = filterExternalLinks(parseJSONField(contact?.email));
+  const whatsappLinks: SocialLink[] = filterExternalLinks(parseJSONField(contact?.whatsapp));
+  const websiteLinks: SocialLink[] = filterExternalLinks(parseJSONField(contact?.website));
+  const instagramLinks: SocialLink[] = filterExternalLinks(parseJSONField(contact?.instagram));
+  const tiktokLinks: SocialLink[] = filterExternalLinks(parseJSONField(contact?.tiktok));
+  const linkedinLinks: SocialLink[] = filterExternalLinks(parseJSONField(contact?.linkedin));
+  const telegramLinks: SocialLink[] = filterExternalLinks(parseJSONField(contact?.telegram));
+  const youtubeLinks: SocialLink[] = filterExternalLinks(parseJSONField(contact?.youtube));
+  const facebookLinks: SocialLink[] = filterExternalLinks(parseJSONField(contact?.facebook));
 
 
 
