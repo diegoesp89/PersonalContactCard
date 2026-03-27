@@ -116,7 +116,7 @@ export default function HomePage() {
           </h1>
           
           <a
-            href="https://instagram.com/cashirts_camisas_a_medida"
+            href="https://www.instagram.com/cas_shirts_and_market"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-center p-4 rounded-xl border border-slate-700 hover:translate-y-[-2px] transition-all duration-300 hover:bg-pink-500/10 hover:border-pink-500/30 group"
@@ -214,7 +214,7 @@ export default function HomePage() {
 
             {/* Instagram */}
             <a
-              href="https://instagram.com/cashirts_camisas_a_medida"
+              href="https://www.instagram.com/cas_shirts_and_market"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center p-4 rounded-xl border border-slate-700 hover:bg-pink-500/10 hover:border-pink-500/30 transition-all duration-300 group"
