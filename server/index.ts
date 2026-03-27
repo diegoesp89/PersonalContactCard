@@ -2,74 +2,6 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { seedDatabase } from "./seed";
-import { spawn, type ChildProcess } from "child_process";
-import path from "path";
-import { createProxyMiddleware } from "http-proxy-middleware";
-
-const FOUNDRY_PORT = 30000;
-const FOUNDRY_ROUTE_PREFIX = "foundry";
-const FOUNDRY_DIR = path.resolve("FoundryVTT-Node-13.351");
-const FOUNDRY_USERDATA = path.resolve("FoundryVTT-userdata");
-
-let foundryProcess: ChildProcess | null = null;
-
-function startFoundryVTT(): Promise<void> {
-  return new Promise((resolve) => {
-    console.log("[FoundryVTT] Starting server...");
-
-    foundryProcess = spawn(
-      "node",
-      [
-        "main.js",
-        `--port=${FOUNDRY_PORT}`,
-        `--routePrefix=${FOUNDRY_ROUTE_PREFIX}`,
-        `--dataPath=${FOUNDRY_USERDATA}`,
-        "--noupnp",
-      ],
-      {
-        cwd: FOUNDRY_DIR,
-        env: { ...process.env, NODE_ENV: "production" },
-        stdio: ["ignore", "pipe", "pipe"],
-      }
-    );
-
-    foundryProcess.stdout?.on("data", (data: Buffer) => {
-      const lines = data.toString().trim().split("\n");
-      lines.forEach((line) => console.log(`[FoundryVTT] ${line}`));
-    });
-
-    foundryProcess.stderr?.on("data", (data: Buffer) => {
-      const lines = data.toString().trim().split("\n");
-      lines.forEach((line) => console.error(`[FoundryVTT] ${line}`));
-    });
-
-    foundryProcess.on("error", (err) => {
-      console.error(`[FoundryVTT] Process error: ${err.message}`);
-    });
-
-    foundryProcess.on("exit", (code, signal) => {
-      console.log(`[FoundryVTT] Process exited with code ${code}, signal ${signal}`);
-      foundryProcess = null;
-    });
-
-    setTimeout(() => {
-      console.log(`[FoundryVTT] Ready — proxying /foundry → http://localhost:${FOUNDRY_PORT}`);
-      resolve();
-    }, 5000);
-  });
-}
-
-function stopFoundryVTT() {
-  if (foundryProcess) {
-    console.log("[FoundryVTT] Shutting down...");
-    foundryProcess.kill("SIGTERM");
-    foundryProcess = null;
-  }
-}
-
-process.on("SIGTERM", () => { stopFoundryVTT(); process.exit(0); });
-process.on("SIGINT", () => { stopFoundryVTT(); process.exit(0); });
-process.on("exit", () => { stopFoundryVTT(); });
 
 const app = express();
 app.use(express.json());
@@ -77,22 +9,25 @@ app.use(express.urlencoded({ extended: false }));
 
 // Middleware for redirecting old replit.app URLs to cashirts.cl (PRODUCTION ONLY)
 app.use((req, res, next) => {
+  // Only apply redirect in production environment
   const isProduction = process.env.NODE_ENV === 'production' || process.env.REPLIT_DEPLOYMENT === '1';
   
   if (isProduction) {
     const host = req.get('host') || '';
     const originalUrl = req.originalUrl;
     
+    // Check if the request comes from a replit domain
     if (host.includes('replit.dev') || host.includes('repl.app') || host.includes('replit.app')) {
+      // Only redirect if it's not an API call or static file
       if (!originalUrl.startsWith('/api/') && 
           !originalUrl.startsWith('/uploads/') && 
-          !originalUrl.includes('.') &&
-          !originalUrl.startsWith('/__repl') &&
-          !originalUrl.startsWith('/logs') &&
-          !originalUrl.startsWith('/foundry')) {
+          !originalUrl.includes('.') && // Not a static file (css, js, png, etc.)
+          !originalUrl.startsWith('/__repl') && // Not replit internal paths
+          !originalUrl.startsWith('/logs')) { // Not logs page
         
         const redirectUrl = `https://cashirts.cl${originalUrl}`;
         console.log(`[REDIRECT] ${host}${originalUrl} -> ${redirectUrl}`);
+        
         return res.redirect(301, redirectUrl);
       }
     }
@@ -132,30 +67,13 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  await startFoundryVTT();
-
-  app.use(
-    "/foundry",
-    createProxyMiddleware({
-      target: `http://localhost:${FOUNDRY_PORT}`,
-      changeOrigin: true,
-      ws: true,
-      on: {
-        error: (err, req, res) => {
-          console.error(`[FoundryVTT] Proxy error: ${(err as Error).message}`);
-          if (res && typeof (res as Response).status === 'function') {
-            (res as Response).status(502).json({ message: "FoundryVTT is not available" });
-          }
-        },
-      },
-    })
-  );
-
+  // Seed database on startup with error handling
   try {
     await seedDatabase();
     console.log('Database seeding completed successfully');
   } catch (error) {
     console.error('Database seeding failed:', error instanceof Error ? error.message : 'Unknown error');
+    // Continue startup even if seeding fails to prevent deployment failure
     console.warn('Continuing startup despite seeding failure - database may need manual initialization');
   }
   
@@ -169,12 +87,19 @@ app.use((req, res, next) => {
     throw err;
   });
 
+  // importantly only setup vite in development and after
+  // setting up all the other routes so the catch-all route
+  // doesn't interfere with the other routes
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
     serveStatic(app);
   }
 
+  // ALWAYS serve the app on the port specified in the environment variable PORT
+  // Other ports are firewalled. Default to 5000 if not specified.
+  // this serves both the API and the client.
+  // It is the only port that is not firewalled.
   const port = parseInt(process.env.PORT || '5000', 10);
   server.listen({
     port,
@@ -182,11 +107,5 @@ app.use((req, res, next) => {
     reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
-  });
-
-  server.on("upgrade", (req, socket, head) => {
-    if (req.url?.startsWith("/foundry")) {
-      console.log(`[FoundryVTT] WebSocket upgrade for ${req.url}`);
-    }
   });
 })();
