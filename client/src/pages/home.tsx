@@ -126,7 +126,7 @@ export default function HomePage() {
             </div>
             <div className="flex-1 text-left">
               <h3 className="text-slate-100 font-semibold">Instagram</h3>
-              <p className="text-slate-400 text-sm">@cashirts_camisas_a_medida</p>
+              <p className="text-slate-400 text-sm">@cas_shirts_and_market</p>
             </div>
           </a>
         </div>
@@ -224,7 +224,7 @@ export default function HomePage() {
               </div>
               <div className="flex-1">
                 <h3 className="text-slate-100 font-semibold text-sm">Instagram</h3>
-                <p className="text-slate-400 text-sm">@cashirts_camisas_a_medida</p>
+                <p className="text-slate-400 text-sm">@cas_shirts_and_market</p>
               </div>
               <ExternalLink className="text-slate-500 w-4 h-4 group-hover:text-pink-400 transition-colors" />
             </a>
