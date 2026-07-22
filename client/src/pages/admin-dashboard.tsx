@@ -20,7 +20,8 @@ import {
   BarChart3,
   Search,
   Filter,
-  ArrowUpDown
+  ArrowUpDown,
+  ShieldOff
 } from "lucide-react";
 
 interface Contact {
@@ -203,6 +204,42 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
     }
   });
 
+  // Global block query & mutation (SuperAdmin only)
+  const { data: globalBlockData } = useQuery({
+    queryKey: ["/api/system/global-block"],
+    queryFn: async () => {
+      const res = await fetch("/api/system/global-block");
+      return res.json() as Promise<{ blocked: boolean }>;
+    },
+    enabled: isSuperAdmin,
+    refetchInterval: isSuperAdmin ? 5000 : false,
+  });
+
+  const globalBlockMutation = useMutation({
+    mutationFn: async (blocked: boolean) => {
+      const res = await fetch("/api/system/global-block", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password, blocked }),
+      });
+      if (!res.ok) throw new Error("Error al cambiar el bloqueo global");
+      return res.json() as Promise<{ blocked: boolean }>;
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(["/api/system/global-block"], data);
+      toast({
+        title: data.blocked ? "🔒 Bloqueo global activado" : "🔓 Bloqueo global desactivado",
+        description: data.blocked
+          ? "Todas las vistas públicas muestran el mensaje de error"
+          : "Las vistas públicas están disponibles normalmente",
+        variant: data.blocked ? "destructive" : "default",
+      });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "No se pudo cambiar el estado", variant: "destructive" });
+    },
+  });
+
   const downloadQR = async (contact: Contact) => {
     try {
       const response = await fetch(`/api/contact/${contact.id}/qr`);
@@ -282,7 +319,22 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
               </p>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap justify-end">
+            {/* Global Block Toggle - SuperAdmin only */}
+            {isSuperAdmin && (
+              <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${globalBlockData?.blocked ? 'border-red-500/50 bg-red-500/10' : 'border-slate-600 bg-slate-800/50'}`}>
+                <ShieldOff className={`w-4 h-4 ${globalBlockData?.blocked ? 'text-red-400' : 'text-slate-400'}`} />
+                <span className={`text-sm font-medium ${globalBlockData?.blocked ? 'text-red-400' : 'text-slate-300'}`}>
+                  Bloqueo global
+                </span>
+                <Switch
+                  checked={globalBlockData?.blocked ?? false}
+                  onCheckedChange={(val) => globalBlockMutation.mutate(val)}
+                  disabled={globalBlockMutation.isPending}
+                  className="data-[state=checked]:bg-red-500"
+                />
+              </div>
+            )}
             <Button
               onClick={() => window.open('/image-management', '_blank')}
               variant="outline"

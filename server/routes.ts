@@ -300,6 +300,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     next();
   };
 
+  // ── Global Block Flag ──────────────────────────────────────────────────────
+  let globalBlockEnabled = false;
+
+  app.get("/api/system/global-block", (_req, res) => {
+    res.json({ blocked: globalBlockEnabled });
+  });
+
+  app.post("/api/system/global-block", (req, res) => {
+    const { password, blocked } = req.body;
+    if (password !== "Mafatanga2025") {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    if (typeof blocked !== "boolean") {
+      return res.status(400).json({ error: "blocked must be a boolean" });
+    }
+    globalBlockEnabled = blocked;
+    logger.log('system', `Global block ${blocked ? 'ENABLED' : 'DISABLED'} by SuperAdmin`);
+    res.json({ blocked: globalBlockEnabled });
+  });
+  // ───────────────────────────────────────────────────────────────────────────
+
   // Get all menus
   app.get("/api/menus", async (req, res) => {
     try {
