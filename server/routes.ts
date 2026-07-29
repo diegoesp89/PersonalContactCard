@@ -300,13 +300,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     next();
   };
 
-  // ── Global Block Flag ──────────────────────────────────────────────────────
-  let globalBlockEnabled = false;
+  // ── Global Block Flag (persisted to disk) ──────────────────────────────────
+  const GLOBAL_BLOCK_FILE = path.join(process.cwd(), "data", "global-block.json");
 
+  function readGlobalBlock(): boolean {
+    try {
+      if (fs.existsSync(GLOBAL_BLOCK_FILE)) {
+        const raw = fs.readFileSync(GLOBAL_BLOCK_FILE, "utf-8");
+        return JSON.parse(raw).blocked === true;
+      }
+    } catch (_) {}
+    return false;
+  }
+
+  function writeGlobalBlock(blocked: boolean): void {
+    try {
+      const dir = path.dirname(GLOBAL_BLOCK_FILE);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(GLOBAL_BLOCK_FILE, JSON.stringify({ blocked }), "utf-8");
+    } catch (err) {
+      logger.log('system', `Failed to persist global block flag: ${err}`);
+    }
+  }
+
+  // Public read — needed so the overlay works for all visitors
   app.get("/api/system/global-block", (_req, res) => {
-    res.json({ blocked: globalBlockEnabled });
+    res.json({ blocked: readGlobalBlock() });
   });
 
+  // Write — superadmin only
   app.post("/api/system/global-block", (req, res) => {
     const { password, blocked } = req.body;
     if (password !== "Mafatanga2025") {
@@ -315,9 +337,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (typeof blocked !== "boolean") {
       return res.status(400).json({ error: "blocked must be a boolean" });
     }
-    globalBlockEnabled = blocked;
+    writeGlobalBlock(blocked);
     logger.log('system', `Global block ${blocked ? 'ENABLED' : 'DISABLED'} by SuperAdmin`);
-    res.json({ blocked: globalBlockEnabled });
+    res.json({ blocked });
   });
   // ───────────────────────────────────────────────────────────────────────────
 
