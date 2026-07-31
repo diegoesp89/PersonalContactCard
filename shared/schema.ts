@@ -137,6 +137,13 @@ export type MenuItem = typeof menuItems.$inferSelect;
 
 
 
+// System settings table — key/value store for persistent config
+export const systemSettings = pgTable("system_settings", {
+  key: text("key").primaryKey(),
+  value: text("value").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 // Analytics table for tracking user interactions
 export const analytics = pgTable("analytics", {
   id: serial("id").primaryKey(),

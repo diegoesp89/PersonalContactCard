@@ -300,36 +300,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     next();
   };
 
-  // ── Global Block Flag (persisted to disk) ──────────────────────────────────
-  const GLOBAL_BLOCK_FILE = path.join(process.cwd(), "data", "global-block.json");
+  // ── Global Block Flag (persisted in DB) ────────────────────────────────────
+  const { systemSettings } = await import("@shared/schema");
 
-  function readGlobalBlock(): boolean {
+  async function readGlobalBlock(): Promise<boolean> {
     try {
-      if (fs.existsSync(GLOBAL_BLOCK_FILE)) {
-        const raw = fs.readFileSync(GLOBAL_BLOCK_FILE, "utf-8");
-        return JSON.parse(raw).blocked === true;
-      }
-    } catch (_) {}
-    return false;
-  }
-
-  function writeGlobalBlock(blocked: boolean): void {
-    try {
-      const dir = path.dirname(GLOBAL_BLOCK_FILE);
-      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-      fs.writeFileSync(GLOBAL_BLOCK_FILE, JSON.stringify({ blocked }), "utf-8");
-    } catch (err) {
-      logger.log('system', `Failed to persist global block flag: ${err}`);
+      const [row] = await db
+        .select()
+        .from(systemSettings)
+        .where(eq(systemSettings.key, "global_block"));
+      return row?.value === "true";
+    } catch (_) {
+      return false;
     }
   }
 
+  async function writeGlobalBlock(blocked: boolean): Promise<void> {
+    await db
+      .insert(systemSettings)
+      .values({ key: "global_block", value: String(blocked) })
+      .onConflictDoUpdate({
+        target: systemSettings.key,
+        set: { value: String(blocked), updatedAt: new Date() },
+      });
+  }
+
   // Public read — needed so the overlay works for all visitors
-  app.get("/api/system/global-block", (_req, res) => {
-    res.json({ blocked: readGlobalBlock() });
+  app.get("/api/system/global-block", async (_req, res) => {
+    const blocked = await readGlobalBlock();
+    res.json({ blocked });
   });
 
   // Write — superadmin only
-  app.post("/api/system/global-block", (req, res) => {
+  app.post("/api/system/global-block", async (req, res) => {
     const { password, blocked } = req.body;
     if (password !== "Mafatanga2025") {
       return res.status(401).json({ error: "Unauthorized" });
@@ -337,7 +340,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (typeof blocked !== "boolean") {
       return res.status(400).json({ error: "blocked must be a boolean" });
     }
-    writeGlobalBlock(blocked);
+    await writeGlobalBlock(blocked);
     logger.log('system', `Global block ${blocked ? 'ENABLED' : 'DISABLED'} by SuperAdmin`);
     res.json({ blocked });
   });
