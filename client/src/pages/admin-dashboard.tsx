@@ -21,7 +21,8 @@ import {
   Search,
   Filter,
   ArrowUpDown,
-  ShieldOff
+  ShieldOff,
+  Download
 } from "lucide-react";
 
 interface Contact {
@@ -335,6 +336,36 @@ export default function AdminDashboard({ onLogout, onEditContact, password }: Ad
                 />
               </div>
             )}
+            <Button
+              variant="outline"
+              className="border-cyan-600/30 text-cyan-400 hover:bg-cyan-600/10"
+              onClick={async () => {
+                try {
+                  const response = await fetch("/api/admin/db-dump", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ password }),
+                  });
+                  if (!response.ok) throw new Error("Error al generar el dump");
+                  const blob = await response.blob();
+                  const disposition = response.headers.get("Content-Disposition") ?? "";
+                  const match = disposition.match(/filename="([^"]+)"/);
+                  const filename = match ? match[1] : "db-dump.sql";
+                  const url = window.URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = filename;
+                  a.click();
+                  window.URL.revokeObjectURL(url);
+                  toast({ title: "Dump descargado", description: filename });
+                } catch {
+                  toast({ title: "Error", description: "No se pudo descargar el dump.", variant: "destructive" });
+                }
+              }}
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Exportar DB
+            </Button>
             <Button
               onClick={() => window.open('/image-management', '_blank')}
               variant="outline"

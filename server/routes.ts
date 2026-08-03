@@ -6,6 +6,7 @@ import { z } from "zod";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { spawn } from "child_process";
 import QRCode from "qrcode";
 import { Client } from "@replit/object-storage";
 import { db } from "./db";
@@ -345,6 +346,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ blocked });
   });
   // ───────────────────────────────────────────────────────────────────────────
+
+  // DB Dump — admin & superadmin
+  app.post("/api/admin/db-dump", (req, res) => {
+    const { password } = req.body;
+    if (password !== "CamisasWenas.!" && password !== "Mafatanga2025") {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const dbUrl = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL;
+    if (!dbUrl) {
+      return res.status(500).json({ error: "DATABASE_URL not configured" });
+    }
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+    const filename = `db-dump-${timestamp}.sql`;
+
+    res.setHeader("Content-Type", "application/octet-stream");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+
+    const pgDump = spawn("pg_dump", ["--no-password", "--clean", "--if-exists", dbUrl]);
+
+    pgDump.stdout.pipe(res);
+
+    pgDump.stderr.on("data", (data) => {
+      logger.log("system", `pg_dump stderr: ${data}`);
+    });
+
+    pgDump.on("error", (err) => {
+      logger.log("system", `pg_dump failed: ${err.message}`);
+      if (!res.headersSent) {
+        res.status(500).json({ error: "pg_dump not available" });
+      }
+    });
+
+    pgDump.on("close", (code) => {
+      if (code !== 0) {
+        logger.log("system", `pg_dump exited with code ${code}`);
+      }
+      res.end();
+    });
+  });
 
   // Get all menus
   app.get("/api/menus", async (req, res) => {
