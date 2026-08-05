@@ -1,0 +1,80 @@
+2026-08-05T22:01:57.70673135Z ==> It looks like we don't have access to your repo, but we'll try to clone it anyway.
+2026-08-05T22:01:57.706753065Z ==> Cloning from https://github.com/diegoesp89/PersonalContactCard
+2026-08-05T22:01:58.322589658Z ==> Checking out commit 0e2ce3da7ce45c97a32b9dc16949fdae5932fc24 in branch main
+2026-08-05T22:01:59.130306055Z ==> Installing dependencies with npm...
+2026-08-05T22:01:59.194750485Z ==> Using Node.js version 24.14.1 (default)
+2026-08-05T22:01:59.194754983Z ==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+2026-08-05T22:02:07.639838622Z 
+2026-08-05T22:02:07.639859029Z added 655 packages, and audited 656 packages in 8s
+2026-08-05T22:02:07.639866714Z 
+2026-08-05T22:02:07.63999365Z 84 packages are looking for funding
+2026-08-05T22:02:07.640094994Z   run `npm fund` for details
+2026-08-05T22:02:07.685899593Z 
+2026-08-05T22:02:07.685918438Z 35 vulnerabilities (4 low, 14 moderate, 16 high, 1 critical)
+2026-08-05T22:02:07.685920232Z 
+2026-08-05T22:02:07.685922275Z To address issues that do not require attention, run:
+2026-08-05T22:02:07.68592384Z   npm audit fix
+2026-08-05T22:02:07.685925258Z 
+2026-08-05T22:02:07.685926756Z To address all issues (including breaking changes), run:
+2026-08-05T22:02:07.685928578Z   npm audit fix --force
+2026-08-05T22:02:07.685929818Z 
+2026-08-05T22:02:07.685931476Z Run `npm audit` for details.
+2026-08-05T22:02:08.99868784Z 
+2026-08-05T22:02:08.998709073Z up to date, audited 656 packages in 1s
+2026-08-05T22:02:08.998714886Z 
+2026-08-05T22:02:08.998807882Z 84 packages are looking for funding
+2026-08-05T22:02:08.998851762Z   run `npm fund` for details
+2026-08-05T22:02:09.048370275Z 
+2026-08-05T22:02:09.048389014Z 35 vulnerabilities (4 low, 14 moderate, 16 high, 1 critical)
+2026-08-05T22:02:09.048390851Z 
+2026-08-05T22:02:09.048392311Z To address issues that do not require attention, run:
+2026-08-05T22:02:09.048393639Z   npm audit fix
+2026-08-05T22:02:09.048394945Z 
+2026-08-05T22:02:09.048396503Z To address all issues (including breaking changes), run:
+2026-08-05T22:02:09.048398057Z   npm audit fix --force
+2026-08-05T22:02:09.048399328Z 
+2026-08-05T22:02:09.048400813Z Run `npm audit` for details.
+2026-08-05T22:02:09.117496016Z ==> Running build command 'npm install; npm run build'...
+2026-08-05T22:02:10.356983995Z 
+2026-08-05T22:02:10.356991955Z up to date, audited 656 packages in 1s
+2026-08-05T22:02:10.357014289Z 
+2026-08-05T22:02:10.357101203Z 84 packages are looking for funding
+2026-08-05T22:02:10.357171379Z   run `npm fund` for details
+2026-08-05T22:02:10.40422006Z 
+2026-08-05T22:02:10.404231435Z 35 vulnerabilities (4 low, 14 moderate, 16 high, 1 critical)
+2026-08-05T22:02:10.404232756Z 
+2026-08-05T22:02:10.404234219Z To address issues that do not require attention, run:
+2026-08-05T22:02:10.404235599Z   npm audit fix
+2026-08-05T22:02:10.404236845Z 
+2026-08-05T22:02:10.404238339Z To address all issues (including breaking changes), run:
+2026-08-05T22:02:10.404249747Z   npm audit fix --force
+2026-08-05T22:02:10.404251141Z 
+2026-08-05T22:02:10.404252593Z Run `npm audit` for details.
+2026-08-05T22:02:10.529996322Z 
+2026-08-05T22:02:10.530011442Z > rest-express@1.0.0 build
+2026-08-05T22:02:10.530013772Z > vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+2026-08-05T22:02:10.530016381Z 
+2026-08-05T22:02:10.689717064Z vite v5.4.19 building for production...
+2026-08-05T22:02:10.731290374Z transforming...
+2026-08-05T22:02:10.9126771Z Browserslist: browsers data (caniuse-lite) is 22 months old. Please run:
+2026-08-05T22:02:10.912691894Z   npx update-browserslist-db@latest
+2026-08-05T22:02:10.912697212Z   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+2026-08-05T22:02:15.875007668Z ✓ 2770 modules transformed.
+2026-08-05T22:02:16.359752417Z rendering chunks...
+2026-08-05T22:02:16.373704477Z computing gzip size...
+2026-08-05T22:02:16.402222171Z ../dist/public/index.html                     1.79 kB │ gzip:   0.78 kB
+2026-08-05T22:02:16.402250885Z ../dist/public/assets/index-DJj8aoEA.css    146.14 kB │ gzip:  23.63 kB
+2026-08-05T22:02:16.40227072Z ../dist/public/assets/index-CkQsxz0w.js   1,196.71 kB │ gzip: 339.50 kB
+2026-08-05T22:02:16.402339553Z 
+2026-08-05T22:02:16.402342397Z (!) Some chunks are larger than 500 kB after minification. Consider:
+2026-08-05T22:02:16.402344379Z - Using dynamic import() to code-split the application
+2026-08-05T22:02:16.402346316Z - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+2026-08-05T22:02:16.402347893Z - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+2026-08-05T22:02:16.402529369Z ✓ built in 5.69s
+2026-08-05T22:02:16.469767306Z 
+2026-08-05T22:02:16.46978164Z   dist/index.js  77.1kb
+2026-08-05T22:02:16.469783117Z 
+2026-08-05T22:02:16.46978449Z ⚡ Done in 7ms
+2026-08-05T22:02:16.476380583Z ==> Publish directory build does not exist!
+2026-08-05T22:02:16.476392883Z ==> Build failed 😞
+2026-08-05T22:02:16.476405341Z ==> Common ways to troubleshoot your deploy: https://render.com/docs/troubleshooting-deploys
